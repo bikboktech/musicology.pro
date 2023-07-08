@@ -373,9 +373,9 @@ const components: any = (theme: Theme) => {
         //     borderColor: theme.palette.grey[300],
         //   },
         // },
-        input: {
-          padding: "12px 14px",
-        },
+        // input: {
+        //   padding: "12px 14px",
+        // },
         inputSizeSmall: {
           padding: "8px 14px",
         },

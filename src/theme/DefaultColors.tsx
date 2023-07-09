@@ -51,6 +51,7 @@ const baselightTheme = {
     text: {
       primary: "#FFFFFF",
       secondary: "#C0C0C0",
+      dark: "#000000",
     },
     action: {
       disabledBackground: "rgba(73,82,88,0.12)",

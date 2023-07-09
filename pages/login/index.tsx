@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Grid, Box, Stack, Typography } from "@mui/material";
-import PageContainer from "../../../../src/components/container/PageContainer";
-import Logo from "../../../../src/layouts/full/shared/logo/Logo";
-import AuthLogin from "../../../login/Login";
+import PageContainer from "../../src/components/container/PageContainer";
+import Logo from "../../src/layouts/full/shared/logo/Logo";
+import Login from "./Login";
+import Image from "next/image";
 
-const Login = () => (
+const LoginPage = () => (
   <PageContainer>
     <Grid
       container
@@ -22,20 +23,16 @@ const Login = () => (
           position: "relative",
           "&:before": {
             content: '""',
-            background: "radial-gradient(#d2f1df, #d3d7fa, #bad8f4)",
+            background: "#000000",
             backgroundSize: "400% 400%",
             animation: "gradient 15s ease infinite",
             position: "absolute",
             height: "100%",
             width: "100%",
-            opacity: "0.3",
           },
         }}
       >
         <Box position="relative">
-          <Box px={3}>
-            <Logo />
-          </Box>
           <Box
             alignItems="center"
             justifyContent="center"
@@ -48,11 +45,10 @@ const Login = () => (
             }}
           >
             <img
-              src={"/images/backgrounds/login-bg.svg"}
+              src={"/images/backgrounds/login-background.jpg"}
               alt="bg"
               style={{
                 width: "100%",
-                maxWidth: "500px",
               }}
             />
           </Box>
@@ -67,32 +63,30 @@ const Login = () => (
         display="flex"
         justifyContent="center"
         alignItems="center"
+        sx={{ height: "100%" }}
       >
         <Box p={4}>
-          <AuthLogin
-            title="Welcome to Modernize"
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "20px",
+            }}
+          >
+            <Image
+              src="/images/logos/musicology-logo.webp"
+              alt="logo"
+              height={145}
+              width={174}
+              priority
+            />
+          </Box>
+          <Login
+            title="Welcome to Musicology.pro"
             subtext={
               <Typography variant="subtitle1" color="textSecondary" mb={1}>
-                Your Admin Dashboard
+                Your Event management dashboard
               </Typography>
-            }
-            subtitle={
-              <Stack direction="row" spacing={1} mt={3}>
-                <Typography color="textSecondary" variant="h6" fontWeight="500">
-                  New to Modernize?
-                </Typography>
-                <Typography
-                  component={Link}
-                  href="/auth/auth1/register"
-                  fontWeight="500"
-                  sx={{
-                    textDecoration: "none",
-                    color: "primary.main",
-                  }}
-                >
-                  Create an account
-                </Typography>
-              </Stack>
             }
           />
         </Box>
@@ -101,5 +95,5 @@ const Login = () => (
   </PageContainer>
 );
 
-Login.layout = "Blank";
-export default Login;
+LoginPage.layout = "Blank";
+export default LoginPage;

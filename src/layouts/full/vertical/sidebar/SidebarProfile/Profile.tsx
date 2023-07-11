@@ -1,31 +1,40 @@
-import React from 'react';
-import { Box, Avatar, Typography, IconButton, Tooltip, useMediaQuery } from '@mui/material';
-import { useSelector } from '../../../../../store/Store';
-import { IconPower } from '@tabler/icons-react';
-import { AppState } from '../../../../../store/Store';
-import Link from 'next/link';
+import React from "react";
+import {
+  Box,
+  Avatar,
+  Typography,
+  IconButton,
+  Tooltip,
+  useMediaQuery,
+} from "@mui/material";
+import { useSelector } from "../../../../../store/Store";
+import { IconPower } from "@tabler/icons-react";
+import { AppState } from "../../../../../store/Store";
+import Link from "next/link";
 
 export const Profile = () => {
   const customizer = useSelector((state: AppState) => state.customizer);
-  const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up('lg'));
-  const hideMenu = lgUp ? customizer.isCollapse && !customizer.isSidebarHover : '';
+  const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
+  const hideMenu = lgUp
+    ? customizer.isCollapse && !customizer.isSidebarHover
+    : "";
 
   return (
     <Box
-      display={'flex'}
+      display={"flex"}
       alignItems="center"
       gap={2}
-      sx={{ m: 3, p: 2, bgcolor: `${'secondary.light'}` }}
+      sx={{ m: 3, p: 2, bgcolor: `${"secondary.light"}` }}
     >
       {!hideMenu ? (
         <>
           <Avatar alt="Remy Sharp" src={"/images/profile/user-1.jpg"} />
 
           <Box>
-            <Typography variant="h6">Mathew</Typography>
-            <Typography variant="caption">Designer</Typography>
+            <Typography variant="h6">Matej</Typography>
+            <Typography variant="caption">Artist</Typography>
           </Box>
-          <Box sx={{ ml: 'auto' }}>
+          <Box sx={{ ml: "auto" }}>
             <Tooltip title="Logout" placement="top">
               <IconButton
                 color="primary"
@@ -40,7 +49,7 @@ export const Profile = () => {
           </Box>
         </>
       ) : (
-        ''
+        ""
       )}
     </Box>
   );

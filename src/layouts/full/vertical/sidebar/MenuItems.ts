@@ -65,6 +65,7 @@ import {
   IconAppWindow,
   IconUsers,
   IconCalendarEvent,
+  IconMusic,
 } from "@tabler/icons-react";
 
 const Menuitems: MenuitemsType[] = [
@@ -86,9 +87,9 @@ const Menuitems: MenuitemsType[] = [
     children: [
       {
         id: uniqueId(),
-        title: "Customers",
+        title: "Clients",
         icon: IconPoint,
-        href: "/users/customers",
+        href: "/users/clients",
       },
       {
         id: uniqueId(),
@@ -97,6 +98,12 @@ const Menuitems: MenuitemsType[] = [
         href: "/users/artists",
       },
     ],
+  },
+  {
+    id: uniqueId(),
+    title: "Playlists",
+    icon: IconMusic,
+    href: "/",
   },
   // {
   //   navlabel: true,

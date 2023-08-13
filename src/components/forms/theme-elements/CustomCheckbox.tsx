@@ -28,7 +28,7 @@ const BpIcon = styled("span")(({ theme }) => ({
   },
   "input:disabled ~ &": {
     boxShadow: "none",
-    background: theme.palette.grey[100],
+    background: theme.palette.secondary.light,
   },
 }));
 

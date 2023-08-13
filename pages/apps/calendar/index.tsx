@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   CardContent,
   Button,
@@ -8,21 +8,21 @@ import {
   Fab,
   TextField,
   Typography,
-} from '@mui/material';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import moment from 'moment';
-import Events from '../../../src/EventData';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+} from "@mui/material";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import moment from "moment";
+import Events from "../../../src/EventData";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
-import PageContainer from '../../../src/components/container/PageContainer';
-import Breadcrumb from '../../../src/layouts/full/shared/breadcrumb/Breadcrumb';
-import { IconCheck } from '@tabler/icons-react';
-import BlankCard from '../../../src/components/shared/BlankCard';
+import PageContainer from "../../../src/components/container/PageContainer";
+import Breadcrumb from "../../../src/layouts/full/shared/breadcrumb/Breadcrumb";
+import { IconCheck } from "@tabler/icons-react";
+import BlankCard from "../../../src/components/shared/BlankCard";
 
-moment.locale('en-GB');
+moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 
 type EvType = {
@@ -36,38 +36,38 @@ type EvType = {
 const BigCalendar = () => {
   const [calevents, setCalEvents] = React.useState<any>(Events);
   const [open, setOpen] = React.useState<boolean>(false);
-  const [title, setTitle] = React.useState<string>('');
+  const [title, setTitle] = React.useState<string>("");
   const [slot, setSlot] = React.useState<EvType>();
   const [start, setStart] = React.useState<any | null>();
   const [end, setEnd] = React.useState<any | null>();
-  const [color, setColor] = React.useState<string>('default');
+  const [color, setColor] = React.useState<string>("default");
   const [update, setUpdate] = React.useState<EvType | undefined | any>();
 
   const ColorVariation = [
     {
       id: 1,
-      eColor: '#1a97f5',
-      value: 'default',
+      eColor: "#1a97f5",
+      value: "default",
     },
     {
       id: 2,
-      eColor: '#39b69a',
-      value: 'green',
+      eColor: "#39b69a",
+      value: "green",
     },
     {
       id: 3,
-      eColor: '#fc4b6c',
-      value: 'red',
+      eColor: "#fc4b6c",
+      value: "red",
     },
     {
       id: 4,
-      eColor: '#615dff',
-      value: 'azure',
+      eColor: "#615dff",
+      value: "azure",
     },
     {
       id: 5,
-      eColor: '#fdd43f',
-      value: 'warning',
+      eColor: "#fdd43f",
+      value: "warning",
     },
   ];
   const addNewEventAlert = (slotInfo: EvType) => {
@@ -79,7 +79,9 @@ const BigCalendar = () => {
 
   const editEvent = (event: any) => {
     setOpen(true);
-    const newEditEvent = calevents.find((elem: EvType) => elem.title === event.title);
+    const newEditEvent = calevents.find(
+      (elem: EvType) => elem.title === event.title
+    );
     setColor(event.color);
     setTitle(newEditEvent.title);
     setColor(newEditEvent.color);
@@ -97,16 +99,17 @@ const BigCalendar = () => {
         }
 
         return elem;
-      }),
+      })
     );
     setOpen(false);
-    setTitle('');
-    setColor('');
-    setStart('');
-    setEnd('');
+    setTitle("");
+    setColor("");
+    setStart("");
+    setEnd("");
     setUpdate(null);
   };
-  const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
+  const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTitle(e.target.value);
   const selectinputChangeHandler = (id: string) => setColor(id);
 
   const submitHandler = (e: React.ChangeEvent<any>) => {
@@ -121,19 +124,21 @@ const BigCalendar = () => {
     setOpen(false);
     e.target.reset();
     setCalEvents(newEvents);
-    setTitle('');
+    setTitle("");
     setStart(new Date());
     setEnd(new Date());
   };
   const deleteHandler = (event: EvType) => {
-    const updatecalEvents = calevents.filter((ind: EvType) => ind.title !== event.title);
+    const updatecalEvents = calevents.filter(
+      (ind: EvType) => ind.title !== event.title
+    );
     setCalEvents(updatecalEvents);
   };
 
   const handleClose = () => {
     // eslint-disable-line newline-before-return
     setOpen(false);
-    setTitle('');
+    setTitle("");
     setStart(new Date());
     setEnd(new Date());
     setUpdate(null);
@@ -169,7 +174,7 @@ const BigCalendar = () => {
             scrollToTime={new Date(1970, 1, 1, 6)}
             defaultDate={new Date()}
             localizer={localizer}
-            style={{ height: 'calc(100vh - 350px' }}
+            style={{ height: "calc(100vh - 350px" }}
             onSelectEvent={(event) => editEvent(event)}
             onSelectSlot={(slotInfo: any) => addNewEventAlert(slotInfo)}
             eventPropGetter={(event: any) => eventColors(event)}
@@ -186,12 +191,12 @@ const BigCalendar = () => {
             {/* Add Edit title */}
             {/* ------------------------------------------- */}
             <Typography variant="h4" sx={{ mb: 2 }}>
-              {update ? 'Update Event' : 'Add Event'}
+              {update ? "Update Event" : "Add Event"}
             </Typography>
             <Typography mb={3} variant="subtitle2">
               {!update
-                ? 'To add Event kindly fillup the title and choose the event color and press the add button'
-                : 'To Edit/Update Event kindly change the title and choose the event color and press the update button'}
+                ? "To add Event kindly fillup the title and choose the event color and press the add button"
+                : "To Edit/Update Event kindly change the title and choose the event color and press the update button"}
               {slot?.title}
             </Typography>
 
@@ -214,7 +219,9 @@ const BigCalendar = () => {
                 inputFormat="MM/dd/yyyy"
                 value={start}
                 onChange={handleStartChange}
-                renderInput={(params: any) => <TextField {...params} fullWidth sx={{ mb: 3 }} />}
+                renderInput={(params: any) => (
+                  <TextField {...params} fullWidth sx={{ mb: 3 }} />
+                )}
               />
               <DatePicker
                 label="End Date"
@@ -227,7 +234,11 @@ const BigCalendar = () => {
                     fullWidth
                     sx={{ mb: 3 }}
                     error={start > end}
-                    helperText={start > end ? 'End date must be later than start date' : ''}
+                    helperText={
+                      start > end
+                        ? "End date must be later than start date"
+                        : ""
+                    }
                   />
                 )}
               />
@@ -248,15 +259,15 @@ const BigCalendar = () => {
                   color="primary"
                   style={{ backgroundColor: mcolor.eColor }}
                   sx={{
-                    marginRight: '3px',
-                    transition: '0.1s ease-in',
-                    scale: mcolor.value === color ? '0.9' : '0.7',
+                    marginRight: "3px",
+                    transition: "0.1s ease-in",
+                    scale: mcolor.value === color ? "0.9" : "0.7",
                   }}
                   size="small"
                   key={mcolor.id}
                   onClick={() => selectinputChangeHandler(mcolor.value)}
                 >
-                  {mcolor.value === color ? <IconCheck width={16} /> : ''}
+                  {mcolor.value === color ? <IconCheck width={16} /> : ""}
                 </Fab>
               );
             })}
@@ -277,10 +288,10 @@ const BigCalendar = () => {
                 Delete
               </Button>
             ) : (
-              ''
+              ""
             )}
             <Button type="submit" disabled={!title} variant="contained">
-              {update ? 'Update Event' : 'Add Event'}
+              {update ? "Update Event" : "Add Event"}
             </Button>
           </DialogActions>
           {/* ------------------------------------------- */}

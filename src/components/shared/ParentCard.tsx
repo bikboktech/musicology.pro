@@ -1,16 +1,24 @@
-import React from 'react';
-import { useTheme } from '@mui/material/styles';
-import { Card, CardHeader, CardContent, Divider, Box } from '@mui/material';
-import { useSelector } from '../../../src/store/Store';
-import { AppState } from '../../../src/store/Store';
+import React from "react";
+import { useTheme } from "@mui/material/styles";
+import { Card, CardHeader, CardContent, Divider, Box } from "@mui/material";
+import { useSelector } from "../../../src/store/Store";
+import { AppState } from "../../../src/store/Store";
 
 type Props = {
   title: string;
   footer?: string | JSX.Element;
   children: JSX.Element;
+  cardStyle?: {};
+  removeDivider?: boolean;
 };
 
-const ParentCard = ({ title, children, footer }: Props) => {
+const ParentCard = ({
+  title,
+  children,
+  footer,
+  cardStyle,
+  removeDivider,
+}: Props) => {
   const customizer = useSelector((state: AppState) => state.customizer);
 
   const theme = useTheme();
@@ -18,12 +26,16 @@ const ParentCard = ({ title, children, footer }: Props) => {
 
   return (
     <Card
-      sx={{ padding: 0, border: !customizer.isCardShadow ? `1px solid ${borderColor}` : 'none' }}
+      sx={{
+        padding: 0,
+        border: !customizer.isCardShadow ? `1px solid ${borderColor}` : "none",
+        ...cardStyle,
+      }}
       elevation={customizer.isCardShadow ? 9 : 0}
-      variant={!customizer.isCardShadow ? 'outlined' : undefined}
+      variant={!customizer.isCardShadow ? "outlined" : undefined}
     >
       <CardHeader title={title} />
-      <Divider />
+      {!removeDivider && <Divider />}
 
       <CardContent>{children}</CardContent>
       {footer ? (
@@ -32,7 +44,7 @@ const ParentCard = ({ title, children, footer }: Props) => {
           <Box p={3}>{footer}</Box>
         </>
       ) : (
-        ''
+        ""
       )}
     </Card>
   );

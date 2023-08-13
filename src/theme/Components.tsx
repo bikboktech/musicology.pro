@@ -154,7 +154,7 @@ const components: any = (theme: Theme) => {
           backgroundColor: theme.palette.primary.light,
           "&:hover": {
             backgroundColor: theme.palette.primary.main,
-            color: "white",
+            color: theme.palette.secondary.main,
           },
         },
         textSecondary: {

@@ -78,9 +78,11 @@ const Breadcrumb = ({ subtitle, items, title, children }: BreadCrumbType) => (
           <>
             <Box sx={{ top: "0px", position: "absolute" }}>
               <Image
-                src={breadcrumbImg}
-                alt={"breadcrumbImg"}
-                style={{ width: "165px", height: "165px" }}
+                src={"/images/logos/musicology-logo.webp"}
+                alt={"musicologyLogo"}
+                height={85}
+                style={{ paddingTop: "15px" }}
+                width={75}
                 priority
               />
             </Box>

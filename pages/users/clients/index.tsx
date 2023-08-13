@@ -79,7 +79,7 @@ const Customers = () => {
   const structureRows = (testData: TestData): any[] => {
     const rowOutput = testData.map((data) => [
       {
-        render: (data) => (
+        render: (data: any) => (
           <Stack spacing={2} direction="row">
             <Avatar
               alt="text"
@@ -108,7 +108,7 @@ const Customers = () => {
   const columns: HeadCell[] = [
     {
       id: "name",
-      label: "Customer name",
+      label: "Client name",
     },
     {
       id: "email",
@@ -123,14 +123,14 @@ const Customers = () => {
   return (
     <PageContainer>
       {/* breadcrumb */}
-      <Breadcrumb title="Customers" items={BCrumb} />
+      <Breadcrumb title="Clients" items={BCrumb} />
       {/* end breadcrumb */}
       <Card>
         <TabContext value={openTab}>
           <Tabs
             value={openTab}
             onChange={handleTabChange}
-            aria-label="customers"
+            aria-label="clients"
             variant="scrollable"
             scrollButtons="auto"
           >
@@ -147,7 +147,7 @@ const Customers = () => {
           {TABS.map((panel) => (
             <TabPanel key={panel.value} value={panel.value}>
               <SmartTable
-                tableName="Customers"
+                tableName="Clients"
                 data={testData}
                 structureTable={(data) => {
                   return data;

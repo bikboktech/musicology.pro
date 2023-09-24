@@ -4,7 +4,9 @@ import { TextField } from "@mui/material";
 
 const CustomTextField = styled((props: any) => <TextField {...props} />)(
   ({ theme }) => ({
-    backgroundColor: theme.palette.secondary.light,
+    "& .MuiInputBase-root": {
+      backgroundColor: theme.palette.secondary.light,
+    },
     "& .MuiOutlinedInput-input:-webkit-autofill": {
       "-webkit-box-shadow": `0 0 0 100px ${theme.palette.text.secondary} inset`,
       "-webkit-text-fill-color": "#000",

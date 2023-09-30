@@ -1,25 +1,17 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import * as yup from "yup";
-import {
-  Formik,
-  FormikHelpers,
-  FormikProps,
-  Form,
-  Field,
-  FieldProps,
-  useFormik,
-} from "formik";
+import { useFormik } from "formik";
 import { Autocomplete, Box, Button, CircularProgress } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import dayjs, { Dayjs } from "dayjs";
 
-import CustomFormLabel from "../../src/components/forms/theme-elements/CustomFormLabel";
-import CustomTextField from "../../src/components/forms/theme-elements/CustomTextField";
+import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
+import CustomTextField from "../forms/theme-elements/CustomTextField";
 import axios, { AxiosError } from "axios";
-import { EventInfoWizardProps } from "../../src/types/events/EventInfoWizardProps";
-import { EventInfoData } from "../../src/types/events/EventInfoData";
-import ErrorSnackbar from "../../src/components/error/ErrorSnackbar";
+import { EventInfoWizardProps } from "../../types/events/EventInfoWizardProps";
+import { EventInfoData } from "../../types/events/EventInfoData";
+import ErrorSnackbar from "../../components/error/ErrorSnackbar";
 
 const getClients = async (
   setClients: Dispatch<
@@ -61,34 +53,13 @@ const EventInfoEdit = ({
   wizardProps,
   values,
   setValues,
+  setEdit,
 }: {
-  wizardProps: EventInfoWizardProps;
-  values: EventInfoData;
-  setValues: Dispatch<SetStateAction<EventInfoData>>;
+  wizardProps?: EventInfoWizardProps;
+  values: EventInfoData | undefined;
+  setValues: Dispatch<SetStateAction<EventInfoData | undefined>>;
+  setEdit?: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const {
-    activeStep,
-    handleBack,
-    isStepOptional,
-    handleSkip,
-    handleNext,
-    steps,
-  } = wizardProps;
-
-  const {
-    id,
-    eventName,
-    eventType,
-    client,
-    eventDate,
-    guestCount,
-    artist,
-    location,
-    venueName,
-    venueContact,
-    additionalInfo,
-  } = values;
-
   const [clients, setClients] = useState<{ id: number; fullName: string }[]>();
   const [eventTypes, setEventTypes] =
     useState<{ id: number; name: string }[]>();
@@ -97,16 +68,25 @@ const EventInfoEdit = ({
 
   const formik = useFormik({
     initialValues: {
-      eventName,
-      eventType,
-      client,
-      eventDate,
-      guestCount,
-      artist,
-      location,
-      venueName,
-      venueContact,
-      additionalInfo,
+      eventName: values?.eventName || null,
+      eventType: values?.eventType || {
+        id: 0,
+        name: "",
+      },
+      client: values?.client || {
+        id: 0,
+        fullName: "",
+      },
+      eventDate: values?.eventDate || dayjs().add(1, "month"),
+      guestCount: values?.guestCount || null,
+      artist: values?.artist || {
+        id: 0,
+        fullName: "",
+      },
+      location: values?.location || null,
+      venueName: values?.venueName || null,
+      venueContact: values?.venueContact || null,
+      additionalInfo: values?.additionalInfo || null,
     },
     validationSchema: yup.object({
       eventName: yup.string().required("Event name is required"),
@@ -124,16 +104,16 @@ const EventInfoEdit = ({
         fullName: yup.string().required("Artist is required"),
       }),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (data) => {
       try {
-        if (id) {
+        if (values?.id) {
           const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/event-info/${id}`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/event-info/${values.id}`,
             JSON.stringify({
-              ...values,
-              clientId: values.client.id,
-              artistId: values.artist.id,
-              eventTypeId: values.eventType.id,
+              ...data,
+              clientId: data?.client?.id,
+              artistId: data?.artist?.id,
+              eventTypeId: data?.eventType?.id,
             }),
             {
               headers: { "Content-Type": "application/json" },
@@ -141,14 +121,18 @@ const EventInfoEdit = ({
           );
 
           setValues(response.data);
+
+          if (setEdit) {
+            setEdit(false);
+          }
         } else {
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/event-info`,
             JSON.stringify({
-              ...values,
-              clientId: values.client.id,
-              artistId: values.artist.id,
-              eventTypeId: values.eventType.id,
+              ...data,
+              clientId: data?.client?.id,
+              artistId: data?.artist?.id,
+              eventTypeId: data?.eventType?.id,
             }),
             {
               headers: { "Content-Type": "application/json" },
@@ -357,24 +341,34 @@ const EventInfoEdit = ({
         <Box display="flex" flexDirection="row" mt={3}>
           <Button
             variant="outlined"
-            disabled={activeStep === 0}
-            onClick={handleBack}
+            disabled={wizardProps?.activeStep === 0}
+            onClick={wizardProps?.handleBack}
             sx={{ mr: 1 }}
           >
-            Back
+            {wizardProps ? "Back" : "Cancel"}
           </Button>
           <Box flex="1 1 auto" />
-          {isStepOptional(activeStep) && (
-            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
+          {wizardProps?.isStepOptional(wizardProps?.activeStep) && (
+            <Button
+              color="inherit"
+              onClick={wizardProps?.handleSkip}
+              sx={{ mr: 1 }}
+            >
               Skip
             </Button>
           )}
 
           {formik.isSubmitting ? (
             <CircularProgress />
+          ) : wizardProps ? (
+            <Button variant="contained" type="submit">
+              {wizardProps.activeStep === wizardProps.steps.length - 1
+                ? "Finish"
+                : "Next"}
+            </Button>
           ) : (
             <Button variant="contained" type="submit">
-              {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              Save
             </Button>
           )}
           <ErrorSnackbar error={error} setError={setError} />

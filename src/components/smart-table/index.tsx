@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import EnhancedTableHead, { HeadCell, Order } from "./EnhancedTableHead";
 import EnhancedTableBody from "./EnhancedTableBody";
-import { Box, Table, TableContainer, TablePagination } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Table,
+  TableContainer,
+  TablePagination,
+  debounce,
+} from "@mui/material";
 import BlankCard from "../../../src/components/shared/BlankCard";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -46,24 +53,50 @@ function stableSort<T>(array: any[], comparator: (a: T, b: T) => number) {
 const SmartTable = ({
   tableName,
   data,
+  setData,
+  getData,
   structureTable,
+  handleRowClick,
+  handleDeleteRows,
   columns,
+  count = 0,
 }: {
   tableName: string;
-  data: any[];
+  count: number;
+  data: any[] | undefined;
+  handleDeleteRows: (
+    setResults: React.Dispatch<React.SetStateAction<any>>,
+    ids: number[]
+  ) => void;
+  getData: any;
+  handleRowClick: (data: any) => void;
+  setData: React.Dispatch<React.SetStateAction<any>>;
   structureTable: (data: any[]) => any[] | undefined;
   columns: HeadCell[];
 }) => {
   const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<any>("calories");
-  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [orderBy, setOrderBy] = React.useState<any>("id");
+  const [selected, setSelected] = React.useState<number[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [search, setSearch] = React.useState("");
 
+  useEffect(() => {
+    getData(setData, {
+      search,
+      limit: rowsPerPage || 5,
+      offset: page * rowsPerPage,
+      sort: {
+        field:
+          columns.find((column) => orderBy === column.id)?.sqlColumn || orderBy,
+        direction: order,
+      },
+    });
+  }, [search, rowsPerPage, page, order, orderBy]);
+
   const tableData = useMemo(
-    () => (structureTable ? structureTable(data) : data) as any[],
+    () => (structureTable ? structureTable(data || []) : data) as any[],
     [data, structureTable]
   );
 
@@ -77,33 +110,13 @@ const SmartTable = ({
   };
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
+    if (event.target.checked && data) {
       const newSelecteds = data.map((n) => n.name);
       setSelected(newSelecteds);
 
       return;
     }
     setSelected([]);
-  };
-
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected: readonly string[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -121,16 +134,8 @@ const SmartTable = ({
     setDense(event.target.checked);
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
-
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // const filteredRows: ProductType[] = getProducts.filter((row) => {
-    //   return row.title.toLowerCase().includes(event.target.value);
-    // });
     setSearch(event.target.value);
-    // setRows(filteredRows);
   };
 
   return (
@@ -140,6 +145,9 @@ const SmartTable = ({
           numSelected={selected.length}
           search={search}
           tableName={tableName}
+          handleDeleteRows={handleDeleteRows}
+          setData={setData}
+          selected={selected}
           handleSearch={(event: any) => handleSearch(event)}
         />
         <TableContainer>
@@ -154,12 +162,14 @@ const SmartTable = ({
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={data.length}
+              rowCount={data?.length || 0}
               columns={columns}
             />
+
             <EnhancedTableBody
               columns={columns}
               tableData={tableData}
+              handleRowClick={handleRowClick}
               selected={selected}
               setSelected={setSelected}
             />
@@ -168,7 +178,7 @@ const SmartTable = ({
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={data.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

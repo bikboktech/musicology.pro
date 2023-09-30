@@ -50,11 +50,10 @@ import {
 } from "@tabler/icons-react";
 import CustomRadio from "../../src/components/forms/theme-elements/CustomRadio";
 import Scrollbar from "../../src/components/custom-scroll/Scrollbar";
-import EventInfo from "./EventInfoEdit";
 import Playlist from "./PlaylistEdit";
 import TimelineComponent from "./TimelineEdit";
 import PlaylistEdit from "./PlaylistEdit";
-import EventInfoEdit from "./EventInfoEdit";
+import EventInfoEdit from "../../src/components/events/EventInfoEdit";
 import { EventInfoData } from "../../src/types/events/EventInfoData";
 
 const steps = ["Event info", "Your playlist", "Timeline"];
@@ -109,28 +108,7 @@ const TABS = [
 ];
 
 const EventWizard = () => {
-  const [eventInfoValues, setEventInfoValues] = React.useState<EventInfoData>({
-    id: null,
-    eventName: "",
-    eventType: {
-      id: 0,
-      name: "",
-    },
-    client: {
-      id: 0,
-      fullName: "",
-    },
-    eventDate: dayjs().add(1, "month"),
-    guestCount: null,
-    artist: {
-      id: 0,
-      fullName: "",
-    },
-    location: null,
-    venueName: null,
-    venueContact: null,
-    address: null,
-  });
+  const [eventInfoValues, setEventInfoValues] = React.useState<EventInfoData>();
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
   const [checked, setChecked] = React.useState<readonly number[]>([]);

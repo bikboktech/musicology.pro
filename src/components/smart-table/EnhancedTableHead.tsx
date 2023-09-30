@@ -14,6 +14,7 @@ export type Order = "asc" | "desc";
 export interface HeadCell {
   id: any;
   label: string;
+  sqlColumn?: string;
   render?: (value: any, row: any) => any;
 }
 

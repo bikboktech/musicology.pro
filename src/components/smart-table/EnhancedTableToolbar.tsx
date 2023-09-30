@@ -13,13 +13,27 @@ import { IconSearch } from "@tabler/icons-react";
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
+  handleDeleteRows: (
+    setResults: React.Dispatch<React.SetStateAction<any>>,
+    ids: number[]
+  ) => void;
+  setData: React.Dispatch<React.SetStateAction<any>>;
   handleSearch: React.ChangeEvent<HTMLInputElement> | any;
+  selected: number[];
   search: string;
   tableName: string;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, handleSearch, search, tableName } = props;
+  const {
+    numSelected,
+    handleDeleteRows,
+    setData,
+    selected,
+    handleSearch,
+    search,
+    tableName,
+  } = props;
 
   return (
     <Toolbar
@@ -63,7 +77,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={() => handleDeleteRows(setData, selected)}>
             <IconTrash width={18} />
           </IconButton>
         </Tooltip>

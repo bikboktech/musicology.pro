@@ -77,7 +77,7 @@ const Menuitems: MenuitemsType[] = [
     id: uniqueId(),
     title: "Events",
     icon: IconCalendarEvent,
-    href: "/",
+    href: "/events",
   },
   {
     id: uniqueId(),

@@ -58,6 +58,7 @@ const SmartTable = ({
   structureTable,
   handleRowClick,
   handleDeleteRows,
+  onCreateClick,
   columns,
   count = 0,
 }: {
@@ -70,6 +71,7 @@ const SmartTable = ({
   ) => void;
   getData: any;
   handleRowClick: (data: any) => void;
+  onCreateClick?: (data: any) => void;
   setData: React.Dispatch<React.SetStateAction<any>>;
   structureTable: (data: any[]) => any[] | undefined;
   columns: HeadCell[];
@@ -144,7 +146,9 @@ const SmartTable = ({
         <EnhancedTableToolbar
           numSelected={selected.length}
           search={search}
+          data={data}
           tableName={tableName}
+          onCreateClick={onCreateClick}
           handleDeleteRows={handleDeleteRows}
           setData={setData}
           selected={selected}

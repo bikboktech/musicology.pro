@@ -25,6 +25,8 @@ export default function EnhancedTableBody(props: EnhancedTableBodyProps) {
     event: React.MouseEvent<unknown>,
     id: number
   ) => {
+    event.stopPropagation();
+
     const selectedIndex = selected.indexOf(id);
     let newSelected: readonly number[] = [];
 

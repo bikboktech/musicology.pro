@@ -4,12 +4,12 @@ import { useFormik } from "formik";
 import { Autocomplete, Box, Button, CircularProgress } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
 import CustomTextField from "../forms/theme-elements/CustomTextField";
-import axios, { AxiosError } from "axios";
-import { EventInfoWizardProps } from "../../types/events/EventInfoWizardProps";
+import axios from "axios";
+import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
 import { EventInfoData } from "../../types/events/EventInfoData";
 import ErrorSnackbar from "../../components/error/ErrorSnackbar";
 
@@ -31,7 +31,7 @@ const getEventTypes = async (
   >
 ) => {
   const eventTypes = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/event-types`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/types`
   );
 
   setEventTypes(eventTypes.data);
@@ -55,7 +55,7 @@ const EventInfoEdit = ({
   setValues,
   setEdit,
 }: {
-  wizardProps?: EventInfoWizardProps;
+  wizardProps?: EventWizardProps;
   values: EventInfoData | undefined;
   setValues: Dispatch<SetStateAction<EventInfoData | undefined>>;
   setEdit?: Dispatch<SetStateAction<boolean>>;
@@ -108,7 +108,7 @@ const EventInfoEdit = ({
       try {
         if (values?.id) {
           const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/event-info/${values.id}`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${values.id}`,
             JSON.stringify({
               ...data,
               clientId: data?.client?.id,
@@ -125,9 +125,11 @@ const EventInfoEdit = ({
           if (setEdit) {
             setEdit(false);
           }
+
+          wizardProps?.handleNext();
         } else {
           const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/event-info`,
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/events`,
             JSON.stringify({
               ...data,
               clientId: data?.client?.id,
@@ -140,6 +142,8 @@ const EventInfoEdit = ({
           );
 
           setValues(response.data);
+
+          wizardProps?.handleNext();
         }
       } catch (err: any) {
         setError(err.response.data);
@@ -342,7 +346,11 @@ const EventInfoEdit = ({
           <Button
             variant="outlined"
             disabled={wizardProps?.activeStep === 0}
-            onClick={wizardProps?.handleBack}
+            onClick={
+              wizardProps
+                ? wizardProps.handleBack
+                : () => setEdit && setEdit(false)
+            }
             sx={{ mr: 1 }}
           >
             {wizardProps ? "Back" : "Cancel"}

@@ -7,8 +7,9 @@ import {
   Typography,
   TextField,
   InputAdornment,
+  Button,
 } from "@mui/material";
-import { IconTrash, IconFilter } from "@tabler/icons-react";
+import { IconTrash, IconFilter, IconPlus } from "@tabler/icons-react";
 import { IconSearch } from "@tabler/icons-react";
 
 interface EnhancedTableToolbarProps {
@@ -19,6 +20,8 @@ interface EnhancedTableToolbarProps {
   ) => void;
   setData: React.Dispatch<React.SetStateAction<any>>;
   handleSearch: React.ChangeEvent<HTMLInputElement> | any;
+  onCreateClick?: (data: any) => void;
+  data: any[] | undefined;
   selected: number[];
   search: string;
   tableName: string;
@@ -27,10 +30,12 @@ interface EnhancedTableToolbarProps {
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const {
     numSelected,
+    data,
     handleDeleteRows,
     setData,
     selected,
     handleSearch,
+    onCreateClick,
     search,
     tableName,
   } = props;
@@ -75,6 +80,13 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           />
         </Box>
       )}
+      {!numSelected && onCreateClick && (
+        <Tooltip title={`Create ${tableName}`}>
+          <IconButton onClick={() => onCreateClick(data)}>
+            <IconPlus size={18} />
+          </IconButton>
+        </Tooltip>
+      )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton onClick={() => handleDeleteRows(setData, selected)}>
@@ -82,11 +94,12 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <IconFilter width={18} />
-          </IconButton>
-        </Tooltip>
+        <></>
+        // <Tooltip title="Filter list">
+        //   <IconButton>
+        //     <IconFilter width={18} />
+        //   </IconButton>
+        // </Tooltip>
       )}
     </Toolbar>
   );

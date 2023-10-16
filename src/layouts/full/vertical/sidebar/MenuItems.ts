@@ -103,7 +103,7 @@ const Menuitems: MenuitemsType[] = [
     id: uniqueId(),
     title: "Playlists",
     icon: IconMusic,
-    href: "/",
+    href: "/playlists",
   },
   // {
   //   navlabel: true,

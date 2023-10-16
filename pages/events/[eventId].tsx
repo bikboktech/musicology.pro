@@ -19,6 +19,9 @@ import EventInfoEdit from "../../src/components/events/EventInfoEdit";
 import { EventInfoData } from "../../src/types/events/EventInfoData";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
+import PlaylistEdit from "../../src/components/playlists/PlaylistEdit";
+import PlaylistInfo from "../../src/components/playlists/PlaylistInfo";
 
 const BCrumb = [
   {
@@ -70,10 +73,24 @@ const getEventInfo = async (
   setEventInfo(event.data);
 };
 
+const getPlaylist = async (
+  eventId: string,
+  setPlaylistInfo: React.Dispatch<
+    React.SetStateAction<PlaylistInfoData | undefined>
+  >
+) => {
+  const playlist = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${eventId}`
+  );
+
+  setPlaylistInfo(playlist.data);
+};
+
 const Event = () => {
   const [value, setValue] = React.useState(0);
   const [edit, setEdit] = React.useState(false);
   const [eventInfo, setEventInfo] = React.useState<EventInfoData>();
+  const [playlistInfo, setPlaylistInfo] = React.useState<PlaylistInfoData>();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -82,9 +99,17 @@ const Event = () => {
     }
   }, [eventInfo, router.query.eventId]);
 
+  React.useEffect(() => {
+    if (!playlistInfo && value === 1 && eventInfo?.id) {
+      getPlaylist(router.query.eventId as string, setPlaylistInfo);
+    }
+  }, [playlistInfo, value]);
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  console.log(value);
 
   return (
     <PageContainer>
@@ -147,7 +172,20 @@ const Event = () => {
                 )}
               </TabPanel>
               <TabPanel value={value} index={1}>
-                <NotificationTab />
+                {edit ? (
+                  <PlaylistEdit
+                    values={playlistInfo}
+                    setValues={setPlaylistInfo}
+                    setEdit={setEdit}
+                    eventId={eventInfo?.id}
+                  />
+                ) : (
+                  <PlaylistInfo
+                    setEdit={setEdit}
+                    values={playlistInfo}
+                    setValues={setPlaylistInfo}
+                  />
+                )}
               </TabPanel>
               <TabPanel value={value} index={2}>
                 <BillsTab />

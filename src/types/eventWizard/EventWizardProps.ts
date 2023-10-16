@@ -1,6 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
-
-export type EventInfoWizardProps = {
+export type EventWizardProps = {
   activeStep: number;
   handleBack: () => void;
   isStepOptional: (step: any) => boolean;

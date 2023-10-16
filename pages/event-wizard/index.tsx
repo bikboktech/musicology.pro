@@ -7,165 +7,35 @@ import {
   Button,
   Typography,
   FormControlLabel,
-  Alert,
   Grid,
-  Autocomplete,
-  ListItemButton,
-  ListItemText,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemIcon,
   useTheme,
-  Paper,
-  CardHeader,
-  Divider,
-  List,
-  RadioGroup,
-  IconButton,
-  InputAdornment,
-  Tabs,
-  Tab,
-  Link,
-  Tooltip,
 } from "@mui/material";
 import PageContainer from "../../src/components/container/PageContainer";
 import Breadcrumb from "../../src/layouts/full/shared/breadcrumb/Breadcrumb";
-import dayjs, { Dayjs } from "dayjs";
-
-import CustomTextField from "../../src/components/forms/theme-elements/CustomTextField";
 import CustomCheckbox from "../../src/components/forms/theme-elements/CustomCheckbox";
-import CustomFormLabel from "../../src/components/forms/theme-elements/CustomFormLabel";
 import ParentCard from "../../src/components/shared/ParentCard";
-import { Stack } from "@mui/system";
-import top100Films from "../../src/components/forms/form-elements/autoComplete/data";
-import { IconChevronUp, IconPhoto, IconSearch } from "@tabler/icons-react";
-import { CheckBox } from "@mui/icons-material";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
-import {
-  IconChevronDown,
-  IconTrash,
-  IconXboxX,
-  IconPlus,
-} from "@tabler/icons-react";
-import CustomRadio from "../../src/components/forms/theme-elements/CustomRadio";
-import Scrollbar from "../../src/components/custom-scroll/Scrollbar";
-import Playlist from "./PlaylistEdit";
 import TimelineComponent from "./TimelineEdit";
-import PlaylistEdit from "./PlaylistEdit";
+import PlaylistEdit from "../../src/components/playlists/PlaylistEdit";
 import EventInfoEdit from "../../src/components/events/EventInfoEdit";
 import { EventInfoData } from "../../src/types/events/EventInfoData";
+import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
 
 const steps = ["Event info", "Your playlist", "Timeline"];
-
-type TrackInfo = {
-  value: number;
-  title: string;
-  year: string;
-};
-
-function not(a: readonly number[], b: readonly number[]) {
-  return a.filter((value) => b.indexOf(value) === -1);
-}
-
-function intersection(a: readonly number[], b: readonly number[]) {
-  return a.filter((value) => b.indexOf(value) !== -1);
-}
-
-function union(a: readonly number[], b: readonly number[]) {
-  return [...a, ...not(b, a)];
-}
-
-const TABS = [
-  {
-    value: "playlistTemplate1",
-    label: "Playlist Template 1",
-  },
-  {
-    value: "playlistTemplate2",
-    label: "Playlist Template 2",
-  },
-  {
-    value: "playlistTemplate3",
-    label: "Playlist Template 3",
-  },
-  {
-    value: "playlistTemplate4",
-    label: "Playlist Template 4",
-  },
-  {
-    value: "playlistTemplate5",
-    label: "Playlist Template 5",
-  },
-  {
-    value: "playlistTemplate6",
-    label: "Playlist Template 6",
-  },
-  {
-    value: "playlistTemplate7",
-    label: "Playlist Template 7",
-  },
-];
 
 const EventWizard = () => {
   const [eventInfoValues, setEventInfoValues] = React.useState<EventInfoData>();
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
-  const [checked, setChecked] = React.useState<readonly number[]>([]);
-  const [left, setLeft] = React.useState<readonly number[]>([0, 1, 2, 3]);
-  const [right, setRight] = React.useState<readonly number[]>([4, 5, 6, 7]);
-  const [playlistName, setPlaylistName] = React.useState<string>("");
-  const [playlistCreationType, setPlaylistCreationType] =
-    React.useState<string>("spotifySearch");
-  const [playlistTracks, setPlaylistTracks] = React.useState<TrackInfo[]>([]);
+  const [playlistValues, setPlaylistValues] =
+    React.useState<PlaylistInfoData>();
+  // const [playlistTracks, setPlaylistTracks] = React.useState<TrackInfo[]>([]);
   const [playlistLink, setPlaylistLink] = React.useState<string>();
-  const [openTab, setOpenTab] = React.useState("playlistTemplate1");
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setOpenTab(newValue);
-  };
-
-  const leftChecked = intersection(checked, left);
-  const rightChecked = intersection(checked, right);
-
-  const handleToggle = (value: number) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
-
-  const numberOfChecked = (items: readonly number[]) =>
-    intersection(checked, items).length;
-
-  const handleToggleAll = (items: readonly number[]) => () => {
-    if (numberOfChecked(items) === items.length) {
-      setChecked(not(checked, items));
-    } else {
-      setChecked(union(checked, items));
-    }
-  };
-
-  const handleCheckedUp = () => {
-    setRight(right.concat(leftChecked));
-    setLeft(not(left, leftChecked));
-    setChecked(not(checked, leftChecked));
-  };
-
-  const handleCheckedDown = () => {
-    setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
-    setChecked(not(checked, rightChecked));
-  };
-
-  const theme = useTheme();
-  const borderColor = theme.palette.primary.main;
+  // const handleCheckedDown = () => {
+  //   setLeft(left.concat(rightChecked));
+  //   setRight(not(right, rightChecked));
+  //   setChecked(not(checked, rightChecked));
+  // };
 
   const isStepOptional = (step: any) => step === 1 || step == 2;
 
@@ -184,90 +54,6 @@ const EventWizard = () => {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const customList = (title: React.ReactNode, items: TrackInfo[]) => {
-    const trackInfoIds = items.map((item) => item.value);
-
-    return (
-      <Paper variant="outlined" sx={{ border: `1px solid ${borderColor}` }}>
-        <CardHeader
-          sx={{ px: 2 }}
-          action={
-            <IconButton disabled={trackInfoIds.length === 0}>
-              <IconTrash />
-            </IconButton>
-          }
-          avatar={
-            <CustomCheckbox
-              onClick={handleToggleAll(trackInfoIds)}
-              checked={
-                numberOfChecked(trackInfoIds) === items.length &&
-                items.length !== 0
-              }
-              indeterminate={
-                numberOfChecked(trackInfoIds) !== items.length &&
-                numberOfChecked(trackInfoIds) !== 0
-              }
-              disabled={trackInfoIds.length === 0}
-              inputProps={{
-                "aria-label": "all items selected",
-              }}
-            />
-          }
-          title={title}
-          subheader={`${numberOfChecked(trackInfoIds)}/${
-            items.length
-          } selected`}
-        />
-        <Divider />
-        <List
-          sx={{
-            width: "100%",
-            height: 230,
-            overflow: "auto",
-          }}
-          dense
-          component="div"
-          role="list"
-        >
-          {items.map((item) => {
-            const labelId = `transfer-list-all-item-${item.value}-label`;
-
-            return (
-              <ListItem
-                key={item.value}
-                role="listitem"
-                button
-                onClick={handleToggle(item.value)}
-              >
-                <ListItemIcon>
-                  <CustomCheckbox
-                    checked={checked.indexOf(item.value) !== -1}
-                    tabIndex={-1}
-                    disableRipple
-                    inputProps={{
-                      "aria-labelledby": labelId,
-                    }}
-                  />
-                </ListItemIcon>
-                <ListItemAvatar>
-                  <Avatar>
-                    <IconPhoto width={20} height={20} />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  id={labelId}
-                  primary={item.title}
-                  secondary={item.year}
-                />
-              </ListItem>
-            );
-          })}
-          <ListItem />
-        </List>
-      </Paper>
-    );
   };
 
   const handleSkip = () => {
@@ -289,9 +75,24 @@ const EventWizard = () => {
   // eslint-disable-next-line consistent-return
   const handleSteps = (step: any) => {
     switch (step) {
+      // case 0:
+      //   return (
+      //     <EventInfoEdit
+      //       wizardProps={{
+      //         activeStep,
+      //         handleBack,
+      //         isStepOptional,
+      //         handleSkip,
+      //         handleNext,
+      //         steps,
+      //       }}
+      //       values={eventInfoValues}
+      //       setValues={setEventInfoValues}
+      //     />
+      //   );
       case 0:
         return (
-          <EventInfoEdit
+          <PlaylistEdit
             wizardProps={{
               activeStep,
               handleBack,
@@ -300,12 +101,11 @@ const EventWizard = () => {
               handleNext,
               steps,
             }}
-            values={eventInfoValues}
-            setValues={setEventInfoValues}
+            eventId={eventInfoValues?.id}
+            values={playlistValues}
+            setValues={setPlaylistValues}
           />
         );
-      case 1:
-        return <PlaylistEdit />;
       case 2:
         return <TimelineComponent />;
       default:

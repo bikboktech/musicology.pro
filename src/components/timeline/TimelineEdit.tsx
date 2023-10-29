@@ -210,7 +210,7 @@ const TimelineEdit = ({
         await axios.put(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/timelines`,
           JSON.stringify({
-            eventId: eventPlaylist?.id,
+            eventId: eventPlaylist?.eventId,
             timelines: values.map((timeline) => ({
               id: timeline.id,
               time: timeline.time,

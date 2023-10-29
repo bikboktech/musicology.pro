@@ -2,6 +2,7 @@ import * as React from "react";
 import PageContainer from "../../src/components/container/PageContainer";
 import Breadcrumb from "../../src/layouts/full/shared/breadcrumb/Breadcrumb";
 import { Grid, Tabs, Tab, Box, CardContent, Divider } from "@mui/material";
+import dayjs from "dayjs";
 
 // components
 import EventInfo from "../../src/components/events/EventInfo";
@@ -22,6 +23,9 @@ import { useRouter } from "next/router";
 import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
 import PlaylistEdit from "../../src/components/playlists/PlaylistEdit";
 import PlaylistInfo from "../../src/components/playlists/PlaylistInfo";
+import TimelineEdit from "../../src/components/timeline/TimelineEdit";
+import TimelineInfo from "../../src/components/timeline/TimelineInfo";
+import { TimelineData } from "../../src/types/timeline/TimelineData";
 
 const BCrumb = [
   {
@@ -86,11 +90,40 @@ const getPlaylist = async (
   setPlaylistInfo(playlist.data);
 };
 
+const getTimeline = async (
+  eventId: string,
+  setTimelineInfo: React.Dispatch<
+    React.SetStateAction<TimelineData[] | undefined>
+  >
+) => {
+  const timelines = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/timelines/${eventId}`
+  );
+
+  setTimelineInfo(
+    timelines.data
+      .map((timeline: TimelineData) => ({
+        ...timeline,
+        time: dayjs(timeline.time),
+      }))
+      .sort((cardA: TimelineData, cardB: TimelineData) => {
+        if (cardA.time < cardB.time) {
+          return -1;
+        }
+        if (cardA.time > cardB.time) {
+          return 1;
+        }
+        return 0;
+      })
+  );
+};
+
 const Event = () => {
   const [value, setValue] = React.useState(0);
   const [edit, setEdit] = React.useState(false);
   const [eventInfo, setEventInfo] = React.useState<EventInfoData>();
   const [playlistInfo, setPlaylistInfo] = React.useState<PlaylistInfoData>();
+  const [timelineInfo, setTimelineInfo] = React.useState<TimelineData[]>();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -100,16 +133,20 @@ const Event = () => {
   }, [eventInfo, router.query.eventId]);
 
   React.useEffect(() => {
-    if (!playlistInfo && value === 1 && eventInfo?.id) {
+    if (!playlistInfo && eventInfo?.id) {
       getPlaylist(router.query.eventId as string, setPlaylistInfo);
     }
-  }, [playlistInfo, value]);
+  }, [eventInfo, value]);
+
+  React.useEffect(() => {
+    if (!timelineInfo && eventInfo?.id) {
+      getTimeline(router.query.eventId as string, setTimelineInfo);
+    }
+  }, [timelineInfo, value]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-
-  console.log(value);
 
   return (
     <PageContainer>
@@ -188,7 +225,21 @@ const Event = () => {
                 )}
               </TabPanel>
               <TabPanel value={value} index={2}>
-                <BillsTab />
+                {edit ? (
+                  <TimelineEdit
+                    values={timelineInfo}
+                    setValues={setTimelineInfo}
+                    setEdit={setEdit}
+                    eventPlaylist={playlistInfo}
+                  />
+                ) : (
+                  <TimelineInfo
+                    setEdit={setEdit}
+                    values={timelineInfo}
+                    setValues={setTimelineInfo}
+                    eventName={eventInfo?.eventName}
+                  />
+                )}
               </TabPanel>
               <TabPanel value={value} index={3}>
                 <SecurityTab />

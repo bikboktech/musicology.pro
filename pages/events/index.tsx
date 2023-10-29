@@ -49,7 +49,8 @@ const getEvents = async (
 
 const handleDeleteRows = async (
   setEvents: Dispatch<SetStateAction<Events | undefined>>,
-  ids: number[]
+  ids: number[],
+  setSelected: Dispatch<SetStateAction<number[]>>
 ) => {
   await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`, {
     data: JSON.stringify({
@@ -58,6 +59,7 @@ const handleDeleteRows = async (
     headers: { "Content-Type": "application/json" },
   });
 
+  setSelected([]);
   await getEvents(setEvents, {});
 };
 const Events = () => {
@@ -113,6 +115,9 @@ const Events = () => {
           setData={setEvents}
           structureTable={(data) => {
             return data;
+          }}
+          onCreateClick={() => {
+            router.push(`/event-wizard`);
           }}
           columns={columns}
         />

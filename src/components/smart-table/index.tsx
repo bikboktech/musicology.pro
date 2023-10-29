@@ -67,7 +67,8 @@ const SmartTable = ({
   data: any[] | undefined;
   handleDeleteRows: (
     setResults: React.Dispatch<React.SetStateAction<any>>,
-    ids: number[]
+    ids: number[],
+    setSelected: React.Dispatch<React.SetStateAction<number[]>>
   ) => void;
   getData: any;
   handleRowClick: (data: any) => void;
@@ -152,6 +153,7 @@ const SmartTable = ({
           handleDeleteRows={handleDeleteRows}
           setData={setData}
           selected={selected}
+          setSelected={setSelected}
           handleSearch={(event: any) => handleSearch(event)}
         />
         <TableContainer>

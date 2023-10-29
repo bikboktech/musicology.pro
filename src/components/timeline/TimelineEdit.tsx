@@ -1,0 +1,545 @@
+import {
+  Box,
+  Button,
+  Typography,
+  useTheme,
+  IconButton,
+  Tooltip,
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  useMediaQuery,
+  Autocomplete,
+  Paper,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  CircularProgress,
+} from "@mui/material";
+import {
+  Timeline,
+  TimelineItem,
+  TimelineOppositeContent,
+  TimelineSeparator,
+  TimelineDot,
+  TimelineConnector,
+  TimelineContent,
+  timelineOppositeContentClasses,
+} from "@mui/lab";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
+import {
+  LocalizationProvider,
+  MobileDateTimePicker,
+} from "@mui/x-date-pickers";
+import { useFormik } from "formik";
+import dayjs from "dayjs";
+
+import Scrollbar from "../custom-scroll/Scrollbar";
+import { Dispatch, SetStateAction, useState } from "react";
+import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
+import CustomTextField from "../forms/theme-elements/CustomTextField";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import buildQueryParams, {
+  QueryParams,
+} from "../smart-table/utils/buildQueryParams";
+import { TrackInfo } from "../../types/playlist/TrackInfo";
+import axios from "axios";
+import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
+import { TimelineData } from "../../types/timeline/TimelineData";
+import { PlaylistInfoData } from "../../types/playlist/PlaylistInfoData";
+import * as yup from "yup";
+import { CardMembership } from "@mui/icons-material";
+import ErrorSnackbar from "../error/ErrorSnackbar";
+
+const getTracks = async (
+  setTracks: Dispatch<SetStateAction<TrackInfo[]>>,
+  params: QueryParams
+) => {
+  const queryParams = buildQueryParams(params);
+
+  const tracks = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/spotify/tracks?${queryParams}`
+  );
+
+  setTracks(tracks.data);
+};
+
+const TimelineEdit = ({
+  wizardProps,
+  values,
+  setValues,
+  setEdit,
+  eventPlaylist,
+}: {
+  wizardProps?: EventWizardProps;
+  values: TimelineData[] | undefined;
+  setValues: Dispatch<SetStateAction<TimelineData[] | undefined>>;
+  setEdit?: Dispatch<SetStateAction<boolean>>;
+  eventPlaylist: PlaylistInfoData | undefined;
+}) => {
+  const [open, setOpen] = useState<{ state: boolean; index?: number }>({
+    state: false,
+  });
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const [tracks, setTracks] = useState<TrackInfo[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      time: dayjs(),
+      track: {
+        artists: "",
+        id: "",
+        imageUrl: "",
+        name: "",
+      },
+      instructions: "",
+    },
+    validationSchema: yup.object({
+      time: yup.date().required("Date is required"),
+      name: yup.string().required("Name is required"),
+    }),
+    onSubmit: async (data, { resetForm }) => {
+      const timeline = values ?? [];
+
+      if (
+        open.index === null ||
+        open.index === undefined ||
+        open.index === -1
+      ) {
+        timeline.push({
+          instructions: data.instructions,
+          name: data.name,
+          time: data.time,
+          track: data.track,
+        });
+      } else {
+        timeline[open.index] = {
+          instructions: data.instructions,
+          name: data.name,
+          time: data.time,
+          track: data.track,
+        };
+      }
+
+      setValues(
+        timeline.sort((cardA, cardB) => {
+          if (cardA.time < cardB.time) {
+            return -1;
+          }
+          if (cardA.time > cardB.time) {
+            return 1;
+          }
+          return 0;
+        })
+      );
+
+      resetForm();
+
+      setOpen({ state: false });
+    },
+  });
+
+  console.log(values);
+
+  const handleClickOpen = (data?: TimelineData) => {
+    if (data) {
+      formik.setFieldValue("name", data.name);
+      formik.setFieldValue("time", data.time);
+      formik.setFieldValue("track", data.track);
+      formik.setFieldValue("instructions", data.instructions);
+    }
+
+    const timelineIndex = values?.findIndex(
+      (card) =>
+        card.name === data?.name &&
+        card.time === data?.time &&
+        card.track === data?.track &&
+        card.instructions === data?.instructions
+    );
+
+    setOpen({ state: true, index: timelineIndex });
+  };
+
+  const removeFromTimeline = (data?: TimelineData) => {
+    const timeline = values?.filter((card) => {
+      if (
+        card.name === data?.name &&
+        card.time === data?.time &&
+        card.track === data?.track &&
+        card.instructions === data?.instructions
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    setValues(timeline);
+  };
+
+  const handleClose = () => {
+    setOpen({ state: false });
+  };
+
+  const compareSelected = (
+    item: TrackInfo,
+    values: PlaylistInfoData | undefined
+  ) => {
+    if (!values?.tracks || !values) {
+      return false;
+    }
+    const isAlreadySelected = values.tracks.find(
+      (track) => item.id === track.id
+    );
+
+    return Boolean(isAlreadySelected);
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+
+    try {
+      if (values?.length) {
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/timelines`,
+          JSON.stringify({
+            eventId: eventPlaylist?.id,
+            timelines: values.map((timeline) => ({
+              id: timeline.id,
+              time: timeline.time,
+              description: timeline.instructions,
+              trackId: timeline.track.id,
+              // notes: string().nullable(),
+            })),
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+
+      if (setEdit) {
+        setEdit(false);
+      }
+
+      wizardProps?.handleNext();
+
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.response.data);
+
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <Box>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "20px 0px",
+          }}
+        >
+          <Button
+            variant="outlined"
+            onClick={() => handleClickOpen()}
+            startIcon={<IconPlus width={18} />}
+          >
+            Add Event
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => setValues([])}
+            startIcon={<IconTrash width={18} />}
+          >
+            Clear
+          </Button>
+        </div>
+        <Stack sx={{ border: "1px solid #FFFFFF", borderRadius: "7px" }}>
+          <Scrollbar
+            sx={{
+              // height: { lg: "calc(100vh - 300px)", sm: "100vh" },
+              maxHeight: "700px",
+            }}
+          >
+            <Timeline
+              className="theme-timeline"
+              nonce={undefined}
+              onResize={undefined}
+              onResizeCapture={undefined}
+              sx={{
+                p: 0,
+                minHeight: "400px",
+                mb: "-40px",
+                [`& .${timelineOppositeContentClasses.root}`]: {
+                  flex: 0.5,
+                  paddingLeft: 0,
+                },
+              }}
+            >
+              {values?.map((card) => (
+                <TimelineItem>
+                  <TimelineOppositeContent sx={{ m: "auto 0" }}>
+                    {dayjs(card.time).format("YY/MM/DD HH:mm")}
+                  </TimelineOppositeContent>
+                  <TimelineSeparator>
+                    <TimelineConnector />
+                    <TimelineDot color="primary" variant="outlined" />
+                    <TimelineConnector />
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    <Box
+                      p={2}
+                      sx={{
+                        position: "relative",
+                        cursor: "pointer",
+                        mb: 1,
+                        transition: "0.1s ease-in",
+                        // transform:
+                        //   activeNote === note.id ? "scale(1)" : "scale(0.95)",
+                        transform: "scale(0.95)",
+                        backgroundColor: `primary.light`,
+                        maxWidth: "300px",
+                      }}
+                      onClick={() => handleClickOpen(card)}
+                    >
+                      <Typography
+                        variant="h6"
+                        noWrap
+                        color={"primary.main"}
+                        sx={{ paddingBottom: "5px" }}
+                      >
+                        {card.name}
+                      </Typography>
+                      {card.track?.id && (
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Typography variant="caption">
+                            <ListItem
+                              key={card.track.id}
+                              sx={{ paddingLeft: 0 }}
+                            >
+                              <ListItemAvatar>
+                                <Avatar src={card.track.imageUrl} />
+                              </ListItemAvatar>
+                              <ListItemText
+                                id={card.track.id}
+                                primary={card.track.name}
+                                secondary={card.track.artists}
+                              />
+                            </ListItem>
+                          </Typography>
+                          <Tooltip title="Delete">
+                            <IconButton
+                              aria-label="delete"
+                              size="small"
+                              onClick={(event) => {
+                                event.stopPropagation();
+
+                                removeFromTimeline(card);
+                              }}
+                            >
+                              <IconTrash width={18} />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      )}
+                      <Typography variant="caption">
+                        {`Instructions: ${card.instructions}`}
+                      </Typography>
+                    </Box>
+                  </TimelineContent>
+                </TimelineItem>
+              ))}
+            </Timeline>
+          </Scrollbar>
+        </Stack>
+        <Box display="flex" flexDirection="row" mt={3}>
+          <Button
+            variant="outlined"
+            disabled={wizardProps?.activeStep === 0}
+            onClick={
+              wizardProps
+                ? wizardProps.handleBack
+                : () => setEdit && setEdit(false)
+            }
+            sx={{ mr: 1 }}
+          >
+            {wizardProps ? "Back" : "Cancel"}
+          </Button>
+          <Box flex="1 1 auto" />
+          {wizardProps?.isStepOptional(wizardProps?.activeStep) && (
+            <Button
+              color="inherit"
+              onClick={wizardProps?.handleSkip}
+              sx={{ mr: 1 }}
+            >
+              Skip
+            </Button>
+          )}
+
+          {loading ? (
+            <CircularProgress />
+          ) : wizardProps ? (
+            <Button variant="contained" onClick={handleSave}>
+              {wizardProps.activeStep === wizardProps.steps.length - 1
+                ? "Finish"
+                : "Next"}
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={handleSave}>
+              Save
+            </Button>
+          )}
+          <ErrorSnackbar error={error} setError={setError} />
+        </Box>
+      </Box>
+      <Dialog
+        fullScreen={fullScreen}
+        open={open.state}
+        onClose={handleClose}
+        aria-labelledby="responsive-dialog-title"
+        sx={{
+          "& .MuiPaper-root": {
+            width: "100%",
+          },
+        }}
+      >
+        <form onSubmit={formik.handleSubmit}>
+          <DialogContent>
+            <Box>
+              <CustomFormLabel htmlFor="name">Name</CustomFormLabel>
+              <CustomTextField
+                id="name"
+                variant="outlined"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+                fullWidth
+              />
+              <CustomFormLabel htmlFor="eventDate">Time</CustomFormLabel>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <MobileDateTimePicker
+                  DialogProps={{
+                    sx: {
+                      "& .MuiButtonBase-root": {
+                        backgroundColor: "transparent",
+                        border: "none",
+                      },
+                    },
+                  }}
+                  onChange={(newValue) => {
+                    formik.setFieldValue("time", newValue);
+                  }}
+                  renderInput={(inputProps) => (
+                    <CustomTextField
+                      fullWidth
+                      name="time"
+                      variant="outlined"
+                      size="medium"
+                      error={formik.touched.time && Boolean(formik.errors.time)}
+                      helperText={formik.touched.time && formik.errors.time}
+                      {...inputProps}
+                    />
+                  )}
+                  value={formik.values.time}
+                />
+              </LocalizationProvider>
+              <CustomFormLabel htmlFor="playlistName">Song</CustomFormLabel>
+              <Autocomplete
+                id="spotify-search"
+                freeSolo
+                fullWidth
+                PaperComponent={(props) => <Paper {...props} elevation={24} />}
+                sx={{
+                  mb: 2,
+                }}
+                onInputChange={async (_, data) => {
+                  await getTracks(setTracks, {
+                    search: data,
+                  });
+                }}
+                onChange={(_, data) => {
+                  if (data) {
+                    formik.setFieldValue("track", data);
+                  }
+                }}
+                getOptionLabel={(option) =>
+                  typeof option === "object" ? option.name : ""
+                }
+                getOptionDisabled={(option) =>
+                  compareSelected(option, eventPlaylist)
+                }
+                value={formik.values.track}
+                options={
+                  tracks?.map((option, index) => ({
+                    ...option,
+                    value: index,
+                  })) || []
+                }
+                renderInput={(params) => (
+                  <CustomTextField
+                    {...params}
+                    placeholder="Powered by Spotify"
+                    aria-label="PoweredBySpotify"
+                  />
+                )}
+                renderOption={(props, option) => {
+                  return (
+                    <ListItem {...props} key={option.id}>
+                      <ListItemAvatar>
+                        <Avatar src={option.imageUrl} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        id={option.id}
+                        primary={option.name}
+                        secondary={option.artists}
+                      />
+                    </ListItem>
+                  );
+                }}
+              />
+              <CustomFormLabel htmlFor="instructions">
+                Instructions
+              </CustomFormLabel>
+              <CustomTextField
+                id="instructions"
+                multiline
+                rows={4}
+                name="instructions"
+                value={formik.values.instructions}
+                onChange={formik.handleChange}
+                variant="outlined"
+                fullWidth
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type="submit" autoFocus>
+              Confirm
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </>
+  );
+};
+
+export default TimelineEdit;

@@ -16,13 +16,15 @@ interface EnhancedTableToolbarProps {
   numSelected: number;
   handleDeleteRows: (
     setResults: React.Dispatch<React.SetStateAction<any>>,
-    ids: number[]
+    ids: number[],
+    setSelected: React.Dispatch<React.SetStateAction<number[]>>
   ) => void;
   setData: React.Dispatch<React.SetStateAction<any>>;
   handleSearch: React.ChangeEvent<HTMLInputElement> | any;
   onCreateClick?: (data: any) => void;
   data: any[] | undefined;
   selected: number[];
+  setSelected: React.Dispatch<React.SetStateAction<number[]>>;
   search: string;
   tableName: string;
 }
@@ -34,6 +36,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     handleDeleteRows,
     setData,
     selected,
+    setSelected,
     handleSearch,
     onCreateClick,
     search,
@@ -89,7 +92,9 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton onClick={() => handleDeleteRows(setData, selected)}>
+          <IconButton
+            onClick={() => handleDeleteRows(setData, selected, setSelected)}
+          >
             <IconTrash width={18} />
           </IconButton>
         </Tooltip>

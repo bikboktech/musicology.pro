@@ -21,11 +21,97 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import React from "react";
+import { useFormik } from "formik";
 
 const GetAQuoteForm = () => {
   const [value3, setValue3] = React.useState<Dayjs | null>(
     dayjs("2018-01-01T00:00:00.000Z")
   );
+
+  // const formik = useFormik({
+  //   initialValues: {
+  //     eventName: values?.eventName || null,
+  //     eventType: values?.eventType || {
+  //       id: 0,
+  //       name: "",
+  //     },
+  //     client: values?.client || {
+  //       id: 0,
+  //       fullName: "",
+  //     },
+  //     eventDate: values?.eventDate || dayjs().add(1, "month"),
+  //     guestCount: values?.guestCount || null,
+  //     artist: values?.artist || {
+  //       id: 0,
+  //       fullName: "",
+  //     },
+  //     location: values?.location || null,
+  //     venueName: values?.venueName || null,
+  //     venueContact: values?.venueContact || null,
+  //     additionalInfo: values?.additionalInfo || null,
+  //   },
+  //   validationSchema: yup.object({
+  //     eventName: yup.string().required("Event name is required"),
+  //     eventType: yup.object({
+  //       id: yup.number(),
+  //       name: yup.string().required("Event type is required"),
+  //     }),
+  //     client: yup.object({
+  //       id: yup.number(),
+  //       fullName: yup.string().required("Client is required"),
+  //     }),
+  //     eventDate: yup.date().required("Event date is required"),
+  //     artist: yup.object({
+  //       id: yup.number(),
+  //       fullName: yup.string().required("Artist is required"),
+  //     }),
+  //   }),
+  //   onSubmit: async (data) => {
+  //     try {
+  //       if (values?.id) {
+  //         const response = await axios.put(
+  //           `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${values.id}`,
+  //           JSON.stringify({
+  //             ...data,
+  //             clientId: data?.client?.id,
+  //             artistId: data?.artist?.id,
+  //             eventTypeId: data?.eventType?.id,
+  //           }),
+  //           {
+  //             headers: { "Content-Type": "application/json" },
+  //           }
+  //         );
+
+  //         setValues(response.data);
+
+  //         if (setEdit) {
+  //           setEdit(false);
+  //         }
+
+  //         wizardProps?.handleNext();
+  //       } else {
+  //         const response = await axios.post(
+  //           `${process.env.NEXT_PUBLIC_API_BASE_URL}/events`,
+  //           JSON.stringify({
+  //             ...data,
+  //             clientId: data?.client?.id,
+  //             artistId: data?.artist?.id,
+  //             eventTypeId: data?.eventType?.id,
+  //           }),
+  //           {
+  //             headers: { "Content-Type": "application/json" },
+  //           }
+  //         );
+
+  //         setValues(response.data);
+
+  //         wizardProps?.handleNext();
+  //       }
+  //     } catch (err: any) {
+  //       setError(err.response.data);
+  //     }
+  //   },
+  // });
 
   return (
     <>

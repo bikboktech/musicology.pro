@@ -42,87 +42,121 @@ const PlaylistInfo = ({
 
   console.log(values, "values");
 
-  return values ? (
-    <Grid container spacing={3}>
-      {/* Edit Details */}
-      <Grid item xs={12}>
-        <BlankCard>
-          <CardContent>
-            <Grid container spacing={3}>
-              <Grid item xs={8} sm={10}>
-                <Typography variant="h5" mb={1}>
-                  {values.name}
-                </Typography>
-                <Typography color="textSecondary" mb={3}>
-                  To change your playlist, click on Edit
-                </Typography>
-              </Grid>
-              <Grid item xs={4} sm={2}>
-                <Button
-                  size="large"
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setEdit(true)}
-                >
-                  Edit
-                </Button>
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <Paper
-                  variant="outlined"
-                  sx={{ border: `1px solid ${borderColor}` }}
-                >
-                  <List
-                    sx={{
-                      width: "100%",
-                      overflow: "auto",
-                    }}
-                    dense
-                    component="div"
-                    role="list"
+  if (!values) {
+    return <CircularProgress />;
+  } else if (!Object.keys(values).length) {
+    return (
+      <Grid container spacing={3}>
+        {/* Edit Details */}
+        <Grid item xs={12}>
+          <BlankCard>
+            <CardContent>
+              <Grid container spacing={3}>
+                <Grid item xs={8} sm={10}>
+                  <Typography variant="h5" mb={1}>
+                    Playlist not created
+                  </Typography>
+                  <Typography color="textSecondary" mb={3}>
+                    To create your playlist, click on Edit
+                  </Typography>
+                </Grid>
+                <Grid item xs={4} sm={2}>
+                  <Button
+                    size="large"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setEdit(true)}
                   >
-                    {values.tracks?.map((track) => {
-                      const labelId = `transfer-list-all-item-${track.id}-label`;
-
-                      return (
-                        <ListItem key={track.id} role="listitem" button>
-                          <ListItemAvatar>
-                            <Avatar src={track.imageUrl} />
-                          </ListItemAvatar>
-                          <ListItemText
-                            id={labelId}
-                            primary={track.name}
-                            secondary={track.artists}
-                          />
-                        </ListItem>
-                      );
-                    })}
-                    <ListItem />
-                  </List>
-                </Paper>
+                    Edit
+                  </Button>
+                </Grid>
               </Grid>
-            </Grid>
-          </CardContent>
-        </BlankCard>
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ justifyContent: "end" }}
-          mt={3}
-        >
-          <Button
-            size="large"
-            variant="outlined"
-            onClick={() => router.push("/events")}
-          >
-            Back
-          </Button>
-        </Stack>
+            </CardContent>
+          </BlankCard>
+        </Grid>
       </Grid>
-    </Grid>
-  ) : (
-    <CircularProgress />
-  );
+    );
+  } else {
+    return (
+      <Grid container spacing={3}>
+        {/* Edit Details */}
+        <Grid item xs={12}>
+          <BlankCard>
+            <CardContent>
+              <Grid container spacing={3}>
+                <Grid item xs={8} sm={10}>
+                  <Typography variant="h5" mb={1}>
+                    {values.name}
+                  </Typography>
+                  <Typography color="textSecondary" mb={3}>
+                    To change your playlist, click on Edit
+                  </Typography>
+                </Grid>
+                <Grid item xs={4} sm={2}>
+                  <Button
+                    size="large"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setEdit(true)}
+                  >
+                    Edit
+                  </Button>
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <Paper
+                    variant="outlined"
+                    sx={{ border: `1px solid ${borderColor}` }}
+                  >
+                    <List
+                      sx={{
+                        width: "100%",
+                        overflow: "auto",
+                      }}
+                      dense
+                      component="div"
+                      role="list"
+                    >
+                      {values.tracks?.map((track) => {
+                        const labelId = `transfer-list-all-item-${track.id}-label`;
+
+                        return (
+                          <ListItem key={track.id} role="listitem" button>
+                            <ListItemAvatar>
+                              <Avatar src={track.imageUrl} />
+                            </ListItemAvatar>
+                            <ListItemText
+                              id={labelId}
+                              primary={track.name}
+                              secondary={track.artists}
+                            />
+                          </ListItem>
+                        );
+                      })}
+                      <ListItem />
+                    </List>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </BlankCard>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ justifyContent: "end" }}
+            mt={3}
+          >
+            <Button
+              size="large"
+              variant="outlined"
+              onClick={() => router.push("/events")}
+            >
+              Back
+            </Button>
+          </Stack>
+        </Grid>
+      </Grid>
+    );
+  }
 };
 
 export default PlaylistInfo;

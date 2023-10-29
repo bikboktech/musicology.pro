@@ -11,15 +11,11 @@ import buildQueryParams, {
 } from "../../src/components/smart-table/utils/buildQueryParams";
 import { useRouter } from "next/router";
 
-type Events = {
+type Playlists = {
   data: {
     id: number;
-    eventName: string;
+    playlistName: string;
     eventType: string;
-    client: string;
-    eventDate: string;
-    artist: string;
-    location: string;
   }[];
   count: number;
 };
@@ -35,37 +31,40 @@ const BCrumb = [
 ];
 
 const getTemplatePlaylists = async (
-  setPlaylists: Dispatch<SetStateAction<Events | undefined>>,
+  setPlaylists: Dispatch<SetStateAction<Playlists | undefined>>,
   params: QueryParams
 ) => {
   const queryParams = buildQueryParams(params);
 
-  const events = await axios.get(
+  const playlists = await axios.get(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists?${queryParams}`
   );
 
-  setPlaylists(events.data);
+  setPlaylists(playlists.data);
 };
 
 const handleDeleteRows = async (
-  setEvents: Dispatch<SetStateAction<Events | undefined>>,
-  ids: number[]
+  setPlaylists: Dispatch<SetStateAction<Playlists | undefined>>,
+  ids: number[],
+  setSelected: Dispatch<SetStateAction<number[]>>
 ) => {
-  await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`, {
-    data: JSON.stringify({
-      ids,
-    }),
-    headers: { "Content-Type": "application/json" },
-  });
+  await axios.delete(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists`,
+    {
+      data: JSON.stringify({
+        ids,
+      }),
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 
-  await getTemplatePlaylists(setEvents, {});
+  setSelected([]);
+  await getTemplatePlaylists(setPlaylists, {});
 };
 
 const Playlists = () => {
-  const [playlists, setPlaylists] = useState<Events>();
+  const [playlists, setPlaylists] = useState<Playlists>();
   const router = useRouter();
-
-  console.log(playlists);
 
   const columns: HeadCell[] = [
     {

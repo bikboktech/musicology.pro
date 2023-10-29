@@ -14,11 +14,12 @@ import PageContainer from "../../src/components/container/PageContainer";
 import Breadcrumb from "../../src/layouts/full/shared/breadcrumb/Breadcrumb";
 import CustomCheckbox from "../../src/components/forms/theme-elements/CustomCheckbox";
 import ParentCard from "../../src/components/shared/ParentCard";
-import TimelineComponent from "./TimelineEdit";
+import TimelineEdit from "../../src/components/timeline/TimelineEdit";
 import PlaylistEdit from "../../src/components/playlists/PlaylistEdit";
 import EventInfoEdit from "../../src/components/events/EventInfoEdit";
 import { EventInfoData } from "../../src/types/events/EventInfoData";
 import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
+import { TimelineData } from "../../src/types/timeline/TimelineData";
 
 const steps = ["Event info", "Your playlist", "Timeline"];
 
@@ -28,6 +29,7 @@ const EventWizard = () => {
   const [skipped, setSkipped] = React.useState(new Set());
   const [playlistValues, setPlaylistValues] =
     React.useState<PlaylistInfoData>();
+  const [timelineValues, setTimelineValues] = React.useState<TimelineData[]>();
   // const [playlistTracks, setPlaylistTracks] = React.useState<TrackInfo[]>([]);
   const [playlistLink, setPlaylistLink] = React.useState<string>();
 
@@ -75,22 +77,22 @@ const EventWizard = () => {
   // eslint-disable-next-line consistent-return
   const handleSteps = (step: any) => {
     switch (step) {
-      // case 0:
-      //   return (
-      //     <EventInfoEdit
-      //       wizardProps={{
-      //         activeStep,
-      //         handleBack,
-      //         isStepOptional,
-      //         handleSkip,
-      //         handleNext,
-      //         steps,
-      //       }}
-      //       values={eventInfoValues}
-      //       setValues={setEventInfoValues}
-      //     />
-      //   );
       case 0:
+        return (
+          <EventInfoEdit
+            wizardProps={{
+              activeStep,
+              handleBack,
+              isStepOptional,
+              handleSkip,
+              handleNext,
+              steps,
+            }}
+            values={eventInfoValues}
+            setValues={setEventInfoValues}
+          />
+        );
+      case 1:
         return (
           <PlaylistEdit
             wizardProps={{
@@ -107,7 +109,21 @@ const EventWizard = () => {
           />
         );
       case 2:
-        return <TimelineComponent />;
+        return (
+          <TimelineEdit
+            wizardProps={{
+              activeStep,
+              handleBack,
+              isStepOptional,
+              handleSkip,
+              handleNext,
+              steps,
+            }}
+            eventPlaylist={playlistValues}
+            values={timelineValues}
+            setValues={setTimelineValues}
+          />
+        );
       default:
         break;
     }

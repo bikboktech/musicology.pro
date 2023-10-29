@@ -231,7 +231,7 @@ const PlaylistEdit = ({
 
   const formik = useFormik({
     initialValues: {
-      playlistName: values?.name,
+      playlistName: values?.name || "",
       eventType: values?.eventType || {
         id: 0,
         name: "",
@@ -247,79 +247,97 @@ const PlaylistEdit = ({
       }),
     }),
     onSubmit: async (formData) => {
-      try {
-        if (isTemplatePlaylist) {
-          if (values?.id) {
-            await axios.put(
-              `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists/${values.id}`,
-              JSON.stringify({
-                playlistName: formData.playlistName,
-                eventTypeId: formData.eventType.id,
-                trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
-              }),
-              {
-                headers: { "Content-Type": "application/json" },
-              }
-            );
+      if (!values?.tracks?.length) {
+        setError("Playlist is empty");
+      } else {
+        try {
+          if (isTemplatePlaylist) {
+            if (values?.id) {
+              await axios.put(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists/${values.id}`,
+                JSON.stringify({
+                  playlistName: formData.playlistName,
+                  eventTypeId: formData.eventType.id,
+                  trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
+                }),
+                {
+                  headers: { "Content-Type": "application/json" },
+                }
+              );
 
-            if (setEdit) {
-              setEdit(false);
+              if (setEdit) {
+                setEdit(false);
+              }
+            } else {
+              const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists`,
+                JSON.stringify({
+                  playlistName: formData.playlistName,
+                  eventTypeId: formData.eventType.id,
+                  trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
+                }),
+                {
+                  headers: { "Content-Type": "application/json" },
+                }
+              );
+
+              setValues({
+                ...values,
+                id: response.data.id,
+                name: response.data.playlistName,
+              });
+
+              router.push(`/playlists/${response.data.id}`);
             }
           } else {
-            const response = await axios.post(
-              `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists`,
-              JSON.stringify({
-                playlistName: formData.playlistName,
-                eventTypeId: formData.eventType.id,
-                trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
-              }),
-              {
-                headers: { "Content-Type": "application/json" },
+            if (values?.id) {
+              const response = await axios.put(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${values.id}`,
+                JSON.stringify({
+                  playlistName: formData.playlistName,
+                  trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
+                }),
+                {
+                  headers: { "Content-Type": "application/json" },
+                }
+              );
+
+              if (setEdit) {
+                setEdit(false);
               }
-            );
 
-            setValues({ ...values, id: response.data.id });
+              setValues({
+                ...values,
+                id: response.data.id,
+                name: response.data.playlistName,
+              });
 
-            router.push(`/playlists/${response.data.id}`);
-          }
-        } else {
-          if (values?.id) {
-            await axios.put(
-              `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists/${values.id}`,
-              JSON.stringify({
-                playlistName: formData.playlistName,
-                trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
-              }),
-              {
-                headers: { "Content-Type": "application/json" },
-              }
-            );
+              wizardProps?.handleNext();
+            } else {
+              const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`,
+                JSON.stringify({
+                  eventId,
+                  playlistName: formData.playlistName,
+                  trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
+                }),
+                {
+                  headers: { "Content-Type": "application/json" },
+                }
+              );
 
-            if (setEdit) {
-              setEdit(false);
+              setValues({
+                ...values,
+                id: response.data.id,
+                name: response.data.playlistName,
+              });
+
+              wizardProps?.handleNext();
             }
-
-            wizardProps?.handleNext();
-          } else {
-            const response = await axios.post(
-              `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlists`,
-              JSON.stringify({
-                eventId,
-                playlistName: formData.playlistName,
-                trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
-              }),
-              {
-                headers: { "Content-Type": "application/json" },
-              }
-            );
-
-            setValues({ ...values, id: response.data.id });
-
-            wizardProps?.handleNext();
           }
+        } catch (err: any) {
+          setError(err.response.data);
         }
-      } catch (err: any) {
-        setError(err.response.data);
       }
     },
   });
@@ -509,6 +527,8 @@ const PlaylistEdit = ({
       </Paper>
     );
   };
+
+  console.log(values, "values");
 
   return (
     <Box>

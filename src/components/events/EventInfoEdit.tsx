@@ -68,7 +68,7 @@ const EventInfoEdit = ({
 
   const formik = useFormik({
     initialValues: {
-      eventName: values?.eventName || null,
+      eventName: values?.eventName || "",
       eventType: values?.eventType || {
         id: 0,
         name: "",
@@ -174,6 +174,9 @@ const EventInfoEdit = ({
     (el?.parentElement ?? el)?.scrollIntoView();
   }, [formik.isSubmitting]);
 
+  console.log(values, "event info values");
+  console.log(values, "event info formik values");
+
   return (
     <Box>
       <form onSubmit={formik.handleSubmit}>
@@ -276,6 +279,7 @@ const EventInfoEdit = ({
           name="guestCount"
           type="number"
           onChange={formik.handleChange}
+          value={formik.values.guestCount}
           fullWidth
         />
         <CustomFormLabel htmlFor="artist">Artist</CustomFormLabel>
@@ -308,6 +312,7 @@ const EventInfoEdit = ({
           id="location"
           variant="outlined"
           name="location"
+          value={formik.values.location}
           onChange={formik.handleChange}
           fullWidth
         />
@@ -316,6 +321,7 @@ const EventInfoEdit = ({
           id="venueName"
           variant="outlined"
           name="venueName"
+          value={formik.values.venueName}
           onChange={formik.handleChange}
           fullWidth
         />
@@ -326,6 +332,7 @@ const EventInfoEdit = ({
           id="venueContact"
           variant="outlined"
           name="venueContact"
+          value={formik.values.venueContact}
           onChange={formik.handleChange}
           fullWidth
         />
@@ -337,6 +344,7 @@ const EventInfoEdit = ({
           multiline
           rows={4}
           name="additionalInfo"
+          value={formik.values.additionalInfo}
           onChange={formik.handleChange}
           variant="outlined"
           fullWidth

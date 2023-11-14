@@ -12,12 +12,12 @@ env:
   # ECS_CLUSTER: MusicologyCluster                 # set this to your Amazon ECS cluster name
   # ECS_TASK_DEFINITION: .github/fargate-task-definition.json # set this to the path to your Amazon ECS task definition
   #                                              # file, e.g. .aws/task-definition.json
-  # CONTAINER_NAME: backend           # set this to the name of the container in the
+  # CONTAINER_NAME: frontend           # set this to the name of the container in the
   #                                              # containerDefinitions section of your task definition
 
 jobs:
-  deploy-backend:
-    name: Deploy Backend
+  deploy-frontend:
+    name: Deploy Frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,6 +37,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
+          IMAGE_TAG: latest
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_FREPO_NAME: ${{ vars.ECR_FREPO_NAME }}
         run: |

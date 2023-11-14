@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography, Button, LinearProgress } from "@mui/material";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+// import { Controller, FieldValues, useForm } from "react-hook-form";
 import axios from "axios";
 
 import CustomTextField from "../../src/components/forms/theme-elements/CustomTextField";
@@ -12,49 +12,49 @@ interface downloaderType {
 
 const PlaylistDownloader = ({ title, subtext }: downloaderType) => {
   const [loading, setLoading] = useState(false);
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  // const {
+  //   register,
+  //   control,
+  //   handleSubmit,
+  //   formState: { errors },
+  // } = useForm();
 
-  const onSubmit = async (data: FieldValues) => {
-    setLoading(true);
-    try {
-      const response = (await axios.post(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlist-management/download`,
-        {
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ playlistLink: data.spotifyPlaylistLink }),
-        }
-      )) as Response;
+  // const onSubmit = async (data: FieldValues) => {
+  //   setLoading(true);
+  //   try {
+  //     const response = (await axios.post(
+  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlist-management/download`,
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ playlistLink: data.spotifyPlaylistLink }),
+  //       }
+  //     )) as Response;
 
-      const contentDisposition = response.headers.get("Content-Disposition");
+  //     const contentDisposition = response.headers.get("Content-Disposition");
 
-      const filenameMatch =
-        contentDisposition && contentDisposition.match(/filename="(.+)"/);
-      const filename = filenameMatch ? filenameMatch[1] : "playlist.zip";
+  //     const filenameMatch =
+  //       contentDisposition && contentDisposition.match(/filename="(.+)"/);
+  //     const filename = filenameMatch ? filenameMatch[1] : "playlist.zip";
 
-      const blob = await response.blob();
+  //     const blob = await response.blob();
 
-      const downloadUrl = window.URL.createObjectURL(blob);
+  //     const downloadUrl = window.URL.createObjectURL(blob);
 
-      const link = document.createElement("a") as HTMLAnchorElement;
-      link.href = downloadUrl;
-      link.setAttribute("download", filename);
+  //     const link = document.createElement("a") as HTMLAnchorElement;
+  //     link.href = downloadUrl;
+  //     link.setAttribute("download", filename);
 
-      document.body.appendChild(link);
+  //     document.body.appendChild(link);
 
-      link.click();
+  //     link.click();
 
-      link.parentNode?.removeChild(link);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.error("Error downloading playlist:", error);
-    }
-  };
+  //     link.parentNode?.removeChild(link);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Error downloading playlist:", error);
+  //   }
+  // };
 
   return (
     <>
@@ -66,9 +66,9 @@ const PlaylistDownloader = ({ title, subtext }: downloaderType) => {
 
       {subtext}
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box my={2}>
-          <Controller
+      {/* <form onSubmit={handleSubmit(onSubmit)}>
+        <Box my={2}> */}
+      {/* <Controller
             name="spotifyPlaylistLink"
             control={control}
             rules={{ required: true }}
@@ -103,8 +103,8 @@ const PlaylistDownloader = ({ title, subtext }: downloaderType) => {
               Download
             </Button>
           )}
-        </Box>
-      </form>
+        </Box> */}
+      {/* </form> */}
     </>
   );
 };

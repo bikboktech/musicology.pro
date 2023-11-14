@@ -146,14 +146,14 @@ const Customers = () => {
           </Tabs>
           {TABS.map((panel) => (
             <TabPanel key={panel.value} value={panel.value}>
-              <SmartTable
+              {/* <SmartTable
                 tableName="Clients"
                 data={testData}
                 structureTable={(data) => {
                   return data;
                 }}
                 columns={columns}
-              />
+              /> */}
             </TabPanel>
           ))}
         </TabContext>

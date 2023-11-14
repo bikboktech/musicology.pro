@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  frontend:
+    container_name: musicology_pro
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${ECR_FREPO_NAME}:latest
+    # image: repository/frontend
+    env_file: .env
+    restart: always
+    ports:
+      - 3000
+    build:
+      dockerfile: Dockerfile.FRONTEND

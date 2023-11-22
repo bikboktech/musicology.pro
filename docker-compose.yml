@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   frontend:
-    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${ECR_BREPO_NAME}:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${ECR_FREPO_NAME}:latest
     container_name: musicology_pro
     build:
       dockerfile: Dockerfile.FRONTEND

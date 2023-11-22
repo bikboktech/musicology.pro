@@ -60,7 +60,7 @@ USER nextjs
 
 # ENV PORT 3000
 # set hostname to localhost
-ENV HOSTNAME "3.125.45.48"
+ENV HOSTNAME "localhost"
 ENV NEXT_PUBLIC_API_BASE_URL=http://$HOSTNAME:8000
 
 # server.js is created by next build from the standalone output

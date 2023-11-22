@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  frontend:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-central-1.amazonaws.com/${ECR_BREPO_NAME}:latest
+    container_name: musicology_pro
+    build:
+      dockerfile: Dockerfile.FRONTEND
+    ports:
+      - "3000:3000"
+    restart: always
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/ssl:/etc/nginx/ssl:ro
+    restart: always

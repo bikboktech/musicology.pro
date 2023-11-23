@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile.FRONTEND
     ports:
       - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL: NEXT_PUBLIC_API_BASE_URL
     restart: always
   # nginx:
   #   image: nginx:latest

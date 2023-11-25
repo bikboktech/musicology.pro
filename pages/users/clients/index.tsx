@@ -14,12 +14,7 @@ import Breadcrumb from "../../../src/layouts/full/shared/breadcrumb/Breadcrumb";
 import PageContainer from "../../../src/components/container/PageContainer";
 import { TabContext, TabPanel } from "@mui/lab";
 import React, { useState } from "react";
-import SmartTable from "../../../src/components/smart-table";
-import {
-  EnTableType,
-  EnhancedTableData,
-} from "../../../src/components/tables/tableData";
-import { getProducts } from "../../../src/store/apps/eCommerce/ECommerceSlice";
+// import { getProducts } from "../../../src/store/apps/eCommerce/ECommerceSlice";
 import { HeadCell } from "../../../src/components/smart-table/EnhancedTableHead";
 
 type TestData = {
@@ -74,7 +69,7 @@ const Customers = () => {
     setOpenTab(newValue);
   };
 
-  const [rows, setRows] = React.useState<any>(getProducts);
+  // const [rows, setRows] = React.useState<any>(getProducts);
 
   const structureRows = (testData: TestData): any[] => {
     const rowOutput = testData.map((data) => [

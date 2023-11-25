@@ -13,9 +13,6 @@ import CustomCheckbox from "../../src/components/forms/theme-elements/CustomChec
 import CustomTextField from "../../src/components/forms/theme-elements/CustomTextField";
 import CustomFormLabel from "../../src/components/forms/theme-elements/CustomFormLabel";
 
-import AuthSocialButtons from "../auth/authForms/AuthSocialButtons";
-import Logo from "../../src/layouts/full/shared/logo/Logo";
-
 const AuthLogin = ({ title, subtext }: loginType) => (
   <>
     {title ? (

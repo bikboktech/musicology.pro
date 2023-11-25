@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Grid, Box, Stack, Typography } from "@mui/material";
 import PageContainer from "../../src/components/container/PageContainer";
-import Logo from "../../src/layouts/full/shared/logo/Logo";
 import Login from "./Login";
 import Image from "next/image";
 

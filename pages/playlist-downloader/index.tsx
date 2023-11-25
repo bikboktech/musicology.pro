@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Grid, Box, Card, Stack, Typography } from "@mui/material";
 // components
 import PageContainer from "../../src/components/container/PageContainer";
-import Logo from "../../src/layouts/full/shared/logo/Logo";
 import PlaylistDownloader from "./PlaylistDownloader";
 import Image from "next/image";
 

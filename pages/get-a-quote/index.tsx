@@ -3,7 +3,6 @@ import { Grid, Box, Card, Stack, Typography } from "@mui/material";
 
 // components
 import PageContainer from "../../src/components/container/PageContainer";
-import Logo from "../../src/layouts/full/shared/logo/Logo";
 import GetAQuoteForm from "./GetAQuoteForm";
 
 const GetAQuote = () => {

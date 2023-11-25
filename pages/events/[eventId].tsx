@@ -13,9 +13,6 @@ import {
   IconTimelineEvent,
 } from "@tabler/icons-react";
 import BlankCard from "../../src/components/shared/BlankCard";
-import NotificationTab from "../../src/components/pages/account-setting/NotificationTab";
-import BillsTab from "../../src/components/pages/account-setting/BillsTab";
-import SecurityTab from "../../src/components/pages/account-setting/SecurityTab";
 import EventInfoEdit from "../../src/components/events/EventInfoEdit";
 import { EventInfoData } from "../../src/types/events/EventInfoData";
 import axios from "axios";
@@ -242,7 +239,7 @@ const Event = () => {
                 )}
               </TabPanel>
               <TabPanel value={value} index={3}>
-                <SecurityTab />
+                {/* <SecurityTab /> */}
               </TabPanel>
             </CardContent>
           </BlankCard>

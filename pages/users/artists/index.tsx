@@ -2,14 +2,6 @@ import { Box, Card, Grid, Paper, Tab, Tabs, Typography } from "@mui/material";
 
 import Breadcrumb from "../../../src/layouts/full/shared/breadcrumb/Breadcrumb";
 import PageContainer from "../../../src/components/container/PageContainer";
-import ParentCard from "../../../src/components/shared/ParentCard";
-import Table2 from "../../../src/components/tables/Table2";
-import Table3 from "../../../src/components/tables/Table3";
-import Table1 from "../../../src/components/tables/Table1";
-import Table4 from "../../../src/components/tables/Table4";
-import Table5 from "../../../src/components/tables/Table5";
-import ChildCard from "../../../src/components/shared/ChildCard";
-import { TabContext, TabPanel } from "@mui/lab";
 import { useState } from "react";
 
 const BCrumb = [
@@ -68,9 +60,7 @@ const Artists = () => {
         {/* <TabPanel key={panel.value} value={panel.value}> */}
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Box>
-              <Table5 />
-            </Box>
+            <Box>{/* <Table5 /> */}</Box>
           </Grid>
         </Grid>
         {/* </TabPanel> */}

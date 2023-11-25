@@ -5,16 +5,6 @@ on:
     branches:
       - feat/aws-ecs-cicd
 
-env:
-  AWS_REGION: eu-central-1                   # set this to your preferred AWS region, e.g. us-west-1
-  # ECR_REPOSITORY: musicology.pro           # set this to your Amazon ECR repository name
-  # ECS_SERVICE: MY_ECS_SERVICE                 # set this to your Amazon ECS service name
-  # ECS_CLUSTER: MusicologyCluster                 # set this to your Amazon ECS cluster name
-  # ECS_TASK_DEFINITION: .github/fargate-task-definition.json # set this to the path to your Amazon ECS task definition
-  #                                              # file, e.g. .aws/task-definition.json
-  # CONTAINER_NAME: frontend           # set this to the name of the container in the
-  #                                              # containerDefinitions section of your task definition
-
 jobs:
   deploy-frontend:
     name: Deploy Frontend
@@ -28,7 +18,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: eu-central-1
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -39,18 +29,12 @@ jobs:
         env:
           IMAGE_TAG: latest
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_FREPO_NAME: ${{ vars.ECR_FREPO_NAME }}
-          AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
-          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+          ECR_REPOSITORY: ${{ vars.ECR_FREPO_NAME }}
         run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          # docker build -t $ECR_REGISTRY/$ECR_FREPO_NAME:$IMAGE_TAG .
-          docker compose build
-          # docker push $ECR_REGISTRY/$ECR_FREPO_NAME:$IMAGE_TAG
-          docker compose push
-          echo "image=$ECR_REGISTRY/$ECR_FREPO_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          # Build a docker container and push it to ECR so that it can be deployed to ECS.
+          bash .github/docker-build.sh
+          bash .github/docker-push.sh
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       # - name: Fill in the new image ID in the Amazon ECS task definition
       #   id: task-def

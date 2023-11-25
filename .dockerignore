@@ -1,7 +1,10 @@
-Dockerfile
+.env
+.git
 .dockerignore
+.gitignore
+
 node_modules
+Dockerfile.*
+.Dockerfile.*
 npm-debug.log
 README.md
-.next
-.git

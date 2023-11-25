@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
 docker build \
-    --file Dockerfile.BACKEND \
+    --file ${DOCKERFILE} \
     --tag ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} \
     .

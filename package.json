@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "export": "next export",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
   },
   "dependencies": {
@@ -50,6 +51,7 @@
     "react-spring": "^9.6.1",
     "react-window": "^1.8.9",
     "redux": "^4.2.0",
+    "sharp": "^0.32.6",
     "simplebar-react": "^3.2.0",
     "slick-carousel": "^1.8.1",
     "stylis-plugin-rtl": "^2.1.1",

@@ -39,7 +39,8 @@ const getEvents = async (
   params: QueryParams
 ) => {
   const queryParams = buildQueryParams(params);
-
+  console.log(process.env);
+  
   const events = await axios.get(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/events?${queryParams}`
   );

@@ -3,7 +3,7 @@ name: Deploy to Amazon ECR
 on:
   push:
     branches:
-      - feat/aws-ecs-cicd
+      - main
 
 jobs:
   deploy-frontend:

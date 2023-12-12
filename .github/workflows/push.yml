@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - ci/resolve-backend
 
 jobs:
   deploy-frontend:

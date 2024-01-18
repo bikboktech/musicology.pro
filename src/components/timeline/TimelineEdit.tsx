@@ -146,8 +146,6 @@ const TimelineEdit = ({
     },
   });
 
-  console.log(values);
-
   const handleClickOpen = (data?: TimelineData) => {
     if (data) {
       formik.setFieldValue("name", data.name);

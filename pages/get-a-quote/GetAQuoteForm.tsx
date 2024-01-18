@@ -7,6 +7,7 @@ import {
   Stack,
   Divider,
   RadioGroup,
+  CircularProgress,
 } from "@mui/material";
 import Link from "next/link";
 import dayjs, { Dayjs } from "dayjs";
@@ -20,270 +21,489 @@ import {
   MobileDateTimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import React from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import * as yup from "yup";
 import { useFormik } from "formik";
+import axios from "axios";
+import ErrorSnackbar from "../../src/components/error/ErrorSnackbar";
+import Image from "next/image";
+import { IconCircleCheck } from "@tabler/icons-react";
 
-const GetAQuoteForm = () => {
-  const [value3, setValue3] = React.useState<Dayjs | null>(
-    dayjs("2018-01-01T00:00:00.000Z")
+const getEventTypes = async (
+  setEventTypes: Dispatch<
+    SetStateAction<{ id: number; name: string }[] | undefined>
+  >
+) => {
+  const eventTypes = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/types`
   );
 
-  // const formik = useFormik({
-  //   initialValues: {
-  //     eventName: values?.eventName || null,
-  //     eventType: values?.eventType || {
-  //       id: 0,
-  //       name: "",
-  //     },
-  //     client: values?.client || {
-  //       id: 0,
-  //       fullName: "",
-  //     },
-  //     eventDate: values?.eventDate || dayjs().add(1, "month"),
-  //     guestCount: values?.guestCount || null,
-  //     artist: values?.artist || {
-  //       id: 0,
-  //       fullName: "",
-  //     },
-  //     location: values?.location || null,
-  //     venueName: values?.venueName || null,
-  //     venueContact: values?.venueContact || null,
-  //     additionalInfo: values?.additionalInfo || null,
-  //   },
-  //   validationSchema: yup.object({
-  //     eventName: yup.string().required("Event name is required"),
-  //     eventType: yup.object({
-  //       id: yup.number(),
-  //       name: yup.string().required("Event type is required"),
-  //     }),
-  //     client: yup.object({
-  //       id: yup.number(),
-  //       fullName: yup.string().required("Client is required"),
-  //     }),
-  //     eventDate: yup.date().required("Event date is required"),
-  //     artist: yup.object({
-  //       id: yup.number(),
-  //       fullName: yup.string().required("Artist is required"),
-  //     }),
-  //   }),
-  //   onSubmit: async (data) => {
-  //     try {
-  //       if (values?.id) {
-  //         const response = await axios.put(
-  //           `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${values.id}`,
-  //           JSON.stringify({
-  //             ...data,
-  //             clientId: data?.client?.id,
-  //             artistId: data?.artist?.id,
-  //             eventTypeId: data?.eventType?.id,
-  //           }),
-  //           {
-  //             headers: { "Content-Type": "application/json" },
-  //           }
-  //         );
+  setEventTypes(eventTypes.data);
+};
 
-  //         setValues(response.data);
+const EXTRA_MUSICIAN_OPTIONS = [
+  {
+    id: "saxophone",
+    label: "Saxophone",
+  },
+  {
+    id: "percussion",
+    label: "Percussion",
+  },
+  {
+    id: "el. violin",
+    label: "El. Violin",
+  },
+  {
+    id: "vocalist/singer/emcee",
+    label: "Vocalist/Singer/Emcee",
+  },
+  {
+    id: "band",
+    label: "Band",
+  },
+];
 
-  //         if (setEdit) {
-  //           setEdit(false);
-  //         }
+const NATURAL_APPROACH_INTERACTION_OPTIONS = [
+  {
+    id: "thoroughPreparations",
+    label: "Prefer thorough preparation and dislike unexpected surprises",
+  },
+  {
+    id: "sociableAtmosphere",
+    label:
+      "Prioritize relationship building and maintain a sociable atmosphere",
+  },
+  {
+    id: "logicalThinking",
+    label: "Favor logical thinking and prioritize results in interactions",
+  },
+];
 
-  //         wizardProps?.handleNext();
-  //       } else {
-  //         const response = await axios.post(
-  //           `${process.env.NEXT_PUBLIC_API_BASE_URL}/events`,
-  //           JSON.stringify({
-  //             ...data,
-  //             clientId: data?.client?.id,
-  //             artistId: data?.artist?.id,
-  //             eventTypeId: data?.eventType?.id,
-  //           }),
-  //           {
-  //             headers: { "Content-Type": "application/json" },
-  //           }
-  //         );
+const EVENT_BUDGET_OPTIONS = [
+  {
+    id: "1.5-2",
+    label: "€1.500 - €2.000 (2 - 4 hours of Show Time)",
+  },
+  {
+    id: "2-5",
+    label: "€2.000 - €5.000 (All inclusive Service)",
+  },
+  {
+    id: "5-more",
+    label: "€5.000 - MORE (All day options, Special Packages)",
+  },
+];
 
-  //         setValues(response.data);
+const MARKETING_TYPE_OPTIONS = [
+  {
+    id: "weddingPlanner",
+    label: "Wedding Planner",
+  },
+  {
+    id: "instagramBrowsing",
+    label: "Instagram Browsing",
+  },
+  {
+    id: "googleSearch",
+    label: "Google Search",
+  },
+  {
+    id: "friendReferral",
+    label: "Friend Referral",
+  },
+  {
+    id: "other",
+    label: "Other",
+  },
+];
 
-  //         wizardProps?.handleNext();
-  //       }
-  //     } catch (err: any) {
-  //       setError(err.response.data);
-  //     }
-  //   },
-  // });
+const GetAQuoteForm = () => {
+  const [eventTypes, setEventTypes] =
+    useState<{ id: number; name: string }[]>();
+  const [error, setError] = useState<string | null>(null);
+  const [quoteId, setQuoteId] = useState<number | null>(null);
 
-  return (
+  useEffect(() => {
+    if (!eventTypes) {
+      getEventTypes(setEventTypes);
+    }
+  }, [eventTypes]);
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      eventTypeId: 1,
+      clientName: "",
+      eventDate: dayjs().add(1, "month"),
+      guestCount: null,
+      eventLocation: "",
+      eventBudget: EVENT_BUDGET_OPTIONS[0].id,
+      marketingType: MARKETING_TYPE_OPTIONS[0].id,
+      extraMusician: EXTRA_MUSICIAN_OPTIONS[0].id,
+      audioSupport: false,
+      naturalApproachInteractions: NATURAL_APPROACH_INTERACTION_OPTIONS[0].id,
+      referencePlaylistLink: "",
+      otherMarketingType: "",
+    },
+    validationSchema: yup.object({
+      email: yup
+        .string()
+        .email("Email must be valid")
+        .required("Email is required"),
+      eventTypeId: yup.number().required("Event type is required"),
+      eventDate: yup.date().required("Event date is required"),
+      clientName: yup.string().required("Name is required"),
+      guestCount: yup.number().positive().required("Guest Count is required"),
+      naturalApproachInteractions: yup
+        .string()
+        .required("This question is required"),
+    }),
+    onSubmit: async (data) => {
+      console.log(data);
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/quotes`,
+          JSON.stringify({
+            email: data.email,
+            eventTypeId: data.eventTypeId,
+            eventDate: data.eventDate,
+            clientName: data.clientName,
+            guestCount: data.guestCount,
+            eventLocation: data.eventLocation,
+            eventBudget: EVENT_BUDGET_OPTIONS.find(
+              (eventBudgetOption) => eventBudgetOption.id === data.eventBudget
+            )?.label,
+            marketingType:
+              data.marketingType === "other"
+                ? data.otherMarketingType
+                : MARKETING_TYPE_OPTIONS.find(
+                    (marketingTypeOption) =>
+                      marketingTypeOption.id === data.marketingType
+                  )?.label,
+            extraMusician: EXTRA_MUSICIAN_OPTIONS.find(
+              (extraMusicianOption) =>
+                extraMusicianOption.id === data.extraMusician
+            )?.label,
+            audioSupport: data.audioSupport,
+            naturalApproachInteractions:
+              NATURAL_APPROACH_INTERACTION_OPTIONS.find(
+                (naturalApproachInteractionOption) =>
+                  naturalApproachInteractionOption.id ===
+                  data.naturalApproachInteractions
+              )?.label,
+            referencePlaylistLink: data.referencePlaylistLink,
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        setQuoteId(response.data.id);
+      } catch (err: any) {
+        setError(err.response.data);
+      }
+    },
+  });
+
+  if (quoteId) {
+    return (
+      <Box textAlign="center" mb={3}>
+        <IconCircleCheck style={{ height: "100px", width: "100px" }} />
+        <Typography variant="h3" mb={2}>
+          Thank you for taking the time to fill out this form, we will get back
+          to you as soon as possible.
+        </Typography>
+        <Button
+          // component={Link}
+          // href="/apps/ecommerce/shop"
+          variant="contained"
+        >
+          Go back to Homepage
+        </Button>
+      </Box>
+    );
+  }
+
+  return formik.isSubmitting ? (
+    <CircularProgress />
+  ) : (
     <>
       <Typography fontWeight="700" variant="h3" mb={1}>
         EVENT QUESTIONARY
       </Typography>
       Please fill out this form to get as much understanding of how you envision
       your special day.
-      <Stack>
-        <Box>
-          <CustomFormLabel htmlFor="email">Email</CustomFormLabel>
-          <CustomTextField id="email" variant="outlined" fullWidth />
-        </Box>
-        <Box>
-          <CustomFormLabel htmlFor="eventType">Type of Event</CustomFormLabel>
-          <RadioGroup
-            row
-            aria-label="eventType"
-            name="eventType"
-            defaultValue="wedding"
-          >
-            <FormControlLabel
-              value="wedding"
-              control={<CustomRadio color="primary" />}
-              label="Wedding"
-              labelPlacement="end"
+      <form onSubmit={formik.handleSubmit}>
+        <Stack>
+          <Box>
+            <CustomFormLabel htmlFor="email">Email</CustomFormLabel>
+            <CustomTextField
+              id="email"
+              variant="outlined"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
+              fullWidth
             />
-            <FormControlLabel
-              value="birthday"
-              control={<CustomRadio color="primary" />}
-              label="Birthday"
-              labelPlacement="end"
-            />
-            <FormControlLabel
-              value="corporateEvent"
-              control={<CustomRadio color="primary" />}
-              label="Corporate Event"
-              labelPlacement="end"
-            />
-            <FormControlLabel
-              value="other"
-              control={<CustomRadio color="primary" />}
-              label="Other"
-              labelPlacement="end"
-            />
-          </RadioGroup>
-        </Box>
-        <Box>
-          <CustomFormLabel htmlFor="eventDate">
-            Planned event date
-          </CustomFormLabel>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <MobileDatePicker
-              onChange={(newValue) => {
-                //   setValue3(newValue);
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="eventType">Type of Event</CustomFormLabel>
+            <RadioGroup
+              row
+              aria-label="eventType"
+              name="eventType"
+              onChange={(e, newValue) => {
+                formik.setFieldValue("eventTypeId", newValue);
               }}
-              renderInput={(inputProps) => (
-                <CustomTextField
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                  inputProps={{ "aria-label": "basic date picker" }}
-                  {...inputProps}
+              value={formik.values.eventTypeId}
+            >
+              {eventTypes?.map((eventType) => (
+                <FormControlLabel
+                  key={eventType.id}
+                  value={eventType.id}
+                  control={<CustomRadio color="primary" />}
+                  label={eventType.name}
+                  labelPlacement="end"
                 />
+              ))}
+            </RadioGroup>
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="eventDate">
+              Planned event date
+            </CustomFormLabel>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <MobileDatePicker
+                onChange={(newValue) => {
+                  formik.setFieldValue("eventDate", newValue);
+                }}
+                renderInput={(inputProps) => (
+                  <CustomTextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    error={
+                      formik.touched.eventDate &&
+                      Boolean(formik.errors.eventDate)
+                    }
+                    helperText={
+                      formik.touched.eventDate && formik.errors.eventDate
+                    }
+                    inputProps={{ "aria-label": "basic date picker" }}
+                    {...inputProps}
+                  />
+                )}
+                value={formik.values.eventDate}
+              />
+            </LocalizationProvider>
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="clientName">Client name</CustomFormLabel>
+            <CustomTextField
+              id="clientName"
+              variant="outlined"
+              fullWidth
+              value={formik.values.clientName}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.clientName && Boolean(formik.errors.clientName)
+              }
+              helperText={formik.touched.clientName && formik.errors.clientName}
+            />
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="guestCount">
+              Estimated guest count (number of guests)
+            </CustomFormLabel>
+            <CustomTextField
+              id="guestCount"
+              variant="outlined"
+              fullWidth
+              type="number"
+              value={formik.values.guestCount}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.guestCount && Boolean(formik.errors.guestCount)
+              }
+              helperText={formik.touched.guestCount && formik.errors.guestCount}
+            />
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="eventLocation">
+              Event location (venue)
+            </CustomFormLabel>
+            <CustomTextField
+              id="eventLocation"
+              variant="outlined"
+              fullWidth
+              onChange={formik.handleChange}
+              value={formik.values.eventLocation}
+            />
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="extraMusician">
+              Did you consider booking extra musicians?
+            </CustomFormLabel>
+            <RadioGroup
+              row
+              aria-label="extraMusician"
+              name="extraMusician"
+              onChange={(e, newValue) => {
+                formik.setFieldValue("extraMusician", newValue);
+              }}
+              value={formik.values.extraMusician}
+            >
+              {EXTRA_MUSICIAN_OPTIONS.map((extraMusicianOption) => (
+                <FormControlLabel
+                  key={extraMusicianOption.id}
+                  value={extraMusicianOption.id}
+                  control={<CustomRadio color="primary" />}
+                  label={extraMusicianOption.label}
+                  labelPlacement="end"
+                />
+              ))}
+            </RadioGroup>
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="audioSupport">
+              Do you require our ceremony audio support? (speakers, microphones
+              and prelude music for ceremony with support)
+            </CustomFormLabel>
+            <RadioGroup
+              row
+              aria-label="audioSupport"
+              name="audioSupport"
+              onChange={(e, newValue) => {
+                formik.setFieldValue("audioSupport", newValue);
+              }}
+              value={formik.values.audioSupport}
+            >
+              <FormControlLabel
+                value={false}
+                control={<CustomRadio color="primary" />}
+                label="No"
+                labelPlacement="end"
+              />
+              <FormControlLabel
+                value={true}
+                control={<CustomRadio color="primary" />}
+                label="Yes"
+                labelPlacement="end"
+              />
+            </RadioGroup>
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="audioSupport">
+              Which of these descriptions resonates most with your natural
+              approach in interactions?
+            </CustomFormLabel>
+            <RadioGroup
+              row
+              aria-label="naturalApproachInteractions"
+              name="naturalApproachInteractions"
+              onChange={(e, newValue) => {
+                formik.setFieldValue("naturalApproachInteractions", newValue);
+              }}
+              value={formik.values.naturalApproachInteractions}
+            >
+              {NATURAL_APPROACH_INTERACTION_OPTIONS.map(
+                (naturalApproachInteractionOption) => (
+                  <FormControlLabel
+                    key={naturalApproachInteractionOption.id}
+                    value={naturalApproachInteractionOption.id}
+                    control={<CustomRadio color="primary" />}
+                    label={naturalApproachInteractionOption.label}
+                    labelPlacement="end"
+                  />
+                )
               )}
-              value={value3}
+            </RadioGroup>
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="eventBudget">
+              Planned budget for entertainment
+            </CustomFormLabel>
+            <RadioGroup
+              row
+              aria-label="eventBudget"
+              name="eventBudget"
+              onChange={(e, newValue) => {
+                formik.setFieldValue("eventBudget", newValue);
+              }}
+              value={formik.values.eventBudget}
+            >
+              {EVENT_BUDGET_OPTIONS.map((eventBudgetOption) => (
+                <FormControlLabel
+                  key={eventBudgetOption.id}
+                  value={eventBudgetOption.id}
+                  control={<CustomRadio color="primary" />}
+                  label={eventBudgetOption.label}
+                  labelPlacement="end"
+                />
+              ))}
+            </RadioGroup>
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="referencePlaylistLink">
+              Link to your reference playlist (to determine which DJ fits your
+              event best)
+            </CustomFormLabel>
+            <CustomTextField
+              id="referencePlaylistLink"
+              variant="outlined"
+              fullWidth
+              value={formik.values.referencePlaylistLink}
+              onChange={formik.handleChange}
             />
-          </LocalizationProvider>
-        </Box>
-        <Box>
-          <CustomFormLabel htmlFor="clientName">
-            Client name or bride and groom names
-          </CustomFormLabel>
-          <CustomTextField id="clientName" variant="outlined" fullWidth />
-        </Box>
-        <Box>
-          <CustomFormLabel htmlFor="guestCount">
-            Estimated guest count (number of guests)
-          </CustomFormLabel>
-          <CustomTextField id="guestCount" variant="outlined" fullWidth />
-        </Box>
-        <Box>
-          <CustomFormLabel htmlFor="eventLocation">
-            Event location (venue)
-          </CustomFormLabel>
-          <CustomTextField id="eventLocation" variant="outlined" fullWidth />
-        </Box>
-        <Box>
-          <CustomFormLabel htmlFor="eventDuration">
-            Duration of event
-          </CustomFormLabel>
-          <RadioGroup
-            row
-            aria-label="eventDuration"
-            name="eventDuration"
-            defaultValue="3hours"
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="marketingType">
+              How did you hear about us?
+            </CustomFormLabel>
+            <RadioGroup
+              row
+              aria-label="marketingType"
+              name="marketingType"
+              onChange={(e, newValue) => {
+                formik.setFieldValue("marketingType", newValue);
+              }}
+              value={formik.values.marketingType}
+            >
+              {MARKETING_TYPE_OPTIONS.map((marketingTypeOption) => (
+                <FormControlLabel
+                  key={marketingTypeOption.id}
+                  value={marketingTypeOption.id}
+                  control={<CustomRadio color="primary" />}
+                  label={marketingTypeOption.label}
+                  labelPlacement="end"
+                />
+              ))}
+            </RadioGroup>
+            {formik.values.marketingType === "other" && (
+              <CustomTextField
+                id="otherMarketingType"
+                variant="outlined"
+                fullWidth
+                value={formik.values.otherMarketingType}
+                onChange={formik.handleChange}
+              />
+            )}
+          </Box>
+        </Stack>
+        <Box mt={3} mb={1}>
+          <Button
+            color="primary"
+            variant="outlined"
+            size="large"
+            fullWidth
+            type="submit"
           >
-            <FormControlLabel
-              value="3hours"
-              control={<CustomRadio color="primary" />}
-              label="Up to 3 hours"
-              labelPlacement="end"
-            />
-            <FormControlLabel
-              value="6hours"
-              control={<CustomRadio color="primary" />}
-              label="Up to 6 hours"
-              labelPlacement="end"
-            />
-            <FormControlLabel
-              value="other"
-              control={<CustomRadio color="primary" />}
-              label="Other"
-              labelPlacement="end"
-            />
-          </RadioGroup>
-          <CustomTextField id="otherDuration" variant="outlined" fullWidth />
+            Submit
+          </Button>
+          <ErrorSnackbar error={error} setError={setError} />
         </Box>
-        <Box>
-          <CustomFormLabel htmlFor="budget">
-            Planned budget for entertainment
-          </CustomFormLabel>
-          <RadioGroup
-            row
-            aria-label="budget"
-            name="budget"
-            defaultValue="cheapest"
-          >
-            <FormControlLabel
-              value="cheapest"
-              control={<CustomRadio color="primary" />}
-              label="Cheapest option possible (Entertainment is not a priority for us)"
-              labelPlacement="end"
-            />
-            <FormControlLabel
-              value="2-3"
-              control={<CustomRadio color="primary" />}
-              label="€2.000 - €3.000"
-              labelPlacement="end"
-            />
-            <FormControlLabel
-              value="3-6"
-              control={<CustomRadio color="primary" />}
-              label="€3.000 - €6.000"
-              labelPlacement="end"
-            />
-            <FormControlLabel
-              value="6-more"
-              control={<CustomRadio color="primary" />}
-              label="€6.000 - MORE"
-              labelPlacement="end"
-            />
-          </RadioGroup>
-        </Box>
-        <Box>
-          <CustomFormLabel htmlFor="marketingType">
-            How did you hear about us?
-          </CustomFormLabel>
-          <CustomTextField id="marketingType" variant="outlined" fullWidth />
-        </Box>
-      </Stack>
-      <Box mt={3} mb={1}>
-        <Button
-          color="primary"
-          variant="outlined"
-          size="large"
-          fullWidth
-          type="submit"
-        >
-          Submit
-        </Button>
-      </Box>
+      </form>
       Thank you for taking the time to fill out this form.
     </>
   );

@@ -16,6 +16,7 @@ export interface HeadCell {
   label: string;
   sqlColumn?: string;
   render?: (value: any, row: any) => any;
+  customCellStyle?: any;
 }
 
 interface EnhancedTableProps {

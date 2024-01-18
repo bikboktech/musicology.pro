@@ -32,6 +32,8 @@ const EventInfo = ({
 }) => {
   const router = useRouter();
 
+  console.log(values);
+
   return values ? (
     <Grid container spacing={3}>
       {/* Edit Details */}

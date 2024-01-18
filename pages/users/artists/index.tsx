@@ -1,8 +1,40 @@
-import { Box, Card, Grid, Paper, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 
 import Breadcrumb from "../../../src/layouts/full/shared/breadcrumb/Breadcrumb";
 import PageContainer from "../../../src/components/container/PageContainer";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import SmartTable from "../../../src/components/smart-table";
+import { HeadCell } from "../../../src/components/smart-table/EnhancedTableHead";
+import axios from "axios";
+import buildQueryParams, {
+  QueryParams,
+} from "../../../src/components/smart-table/utils/buildQueryParams";
+import { useRouter } from "next/router";
+import CustomFormLabel from "../../../src/components/forms/theme-elements/CustomFormLabel";
+import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
+import { useFormik } from "formik";
+import * as yup from "yup";
+
+type Artist = {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+};
+
+type Artists = {
+  data: Artist[];
+  count: number;
+};
 
 const BCrumb = [
   {
@@ -14,60 +46,196 @@ const BCrumb = [
   },
 ];
 
-// const TABS = [
-//   {
-//     value: "verified",
-//     label: "Verified",
-//   },
-//   {
-//     value: "unverified",
-//     label: "Unverified",
-//   },
-// ];
+const getArtists = async (
+  setArtists: Dispatch<SetStateAction<Artists | undefined>>,
+  params: QueryParams
+) => {
+  const queryParams = buildQueryParams(params);
+
+  // const events = await axios.get(
+  //   `${process.env.NEXT_PUBLIC_API_BASE_URL}/events?${queryParams}`
+  // );
+
+  setArtists({
+    data: [
+      {
+        id: 1,
+        fullName: "test",
+        email: "test@test.com",
+        phone: "56868",
+      },
+      {
+        id: 1,
+        fullName: "test 2",
+        email: "test@test.com",
+        phone: "72697269",
+      },
+    ],
+    count: 2,
+  });
+};
+
+const handleDeleteRows = async (
+  setArtists: Dispatch<SetStateAction<Artists | undefined>>,
+  ids: number[],
+  setSelected: Dispatch<SetStateAction<number[]>>
+) => {
+  // await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`, {
+  //   data: JSON.stringify({
+  //     ids,
+  //   }),
+  //   headers: { "Content-Type": "application/json" },
+  // });
+
+  setSelected([]);
+  await getArtists(setArtists, {});
+};
 
 const Artists = () => {
-  const [openTab, setOpenTab] = useState("verified");
+  const [open, setOpen] = useState<boolean>(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const [artists, setArtists] = useState<Artists>();
+  const router = useRouter();
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setOpenTab(newValue);
+  const columns: HeadCell[] = [
+    {
+      id: "fullName",
+      label: "Name",
+      sqlColumn: "full_name",
+    },
+    {
+      id: "email",
+      label: "Email",
+      sqlColumn: "email",
+    },
+    {
+      id: "phone",
+      label: "Phone",
+      sqlColumn: "phone",
+    },
+  ];
+
+  const formik = useFormik({
+    initialValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+    },
+    validationSchema: yup.object({
+      fullName: yup.string().required("Name is required"),
+      email: yup
+        .string()
+        .email("Email must be valid")
+        .required("Email is required"),
+      phone: yup.string().required("Phone is required"),
+    }),
+    onSubmit: async (data, { resetForm }) => {
+      setOpen(false);
+    },
+  });
+
+  const handleClose = () => {
+    formik.setFieldValue("fullName", "");
+    formik.setFieldValue("email", "");
+    formik.setFieldValue("phone", "");
+
+    setOpen(false);
   };
 
   return (
-    <PageContainer>
-      {/* breadcrumb */}
-      <Breadcrumb title="Artists" items={BCrumb} />
-      {/* end breadcrumb */}
-      <Card>
-        {/* <TabContext value={openTab}>
-          <Tabs
-            value={openTab}
-            onChange={handleTabChange}
-            aria-label="customers"
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            {TABS.map((tab) => (
-              <Tab
-                key={tab.value}
-                // icon={tab.icon}
-                label={tab.label}
-                iconPosition="top"
-                value={tab.value}
+    <>
+      <PageContainer>
+        {/* breadcrumb */}
+        <Breadcrumb title="Artists" items={BCrumb} />
+        {/* end breadcrumb */}
+        <Card>
+          <SmartTable
+            tableName="Artists"
+            getData={getArtists}
+            handleDeleteRows={handleDeleteRows}
+            handleRowClick={(data) => {
+              formik.setFieldValue("fullName", data.fullName);
+              formik.setFieldValue("email", data.email);
+              formik.setFieldValue("phone", data.phone);
+
+              setOpen(true);
+            }}
+            data={artists?.data}
+            count={artists?.count || 0}
+            setData={setArtists}
+            structureTable={(data) => {
+              return data;
+            }}
+            onCreateClick={() => {
+              setOpen(true);
+            }}
+            columns={columns}
+          />
+        </Card>
+      </PageContainer>
+      <Dialog
+        fullScreen={fullScreen}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="responsive-dialog-title"
+        sx={{
+          "& .MuiPaper-root": {
+            width: "100%",
+          },
+        }}
+      >
+        <form onSubmit={formik.handleSubmit}>
+          <DialogContent>
+            <Box>
+              <CustomFormLabel htmlFor="fullName">Full Name</CustomFormLabel>
+              <CustomTextField
+                id="fullName"
+                variant="outlined"
+                name="fullName"
+                value={formik.values.fullName}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.fullName && Boolean(formik.errors.fullName)
+                }
+                helperText={formik.touched.fullName && formik.errors.fullName}
+                fullWidth
               />
-            ))}
-          </Tabs> */}
-        {/* {TABS.map((panel) => ( */}
-        {/* <TabPanel key={panel.value} value={panel.value}> */}
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Box>{/* <Table5 /> */}</Box>
-          </Grid>
-        </Grid>
-        {/* </TabPanel> */}
-        {/* ))} */}
-        {/* </TabContext> */}
-      </Card>
-    </PageContainer>
+              <CustomFormLabel htmlFor="email">Email</CustomFormLabel>
+              <CustomTextField
+                id="email"
+                variant="outlined"
+                name="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+                fullWidth
+              />
+              <CustomFormLabel htmlFor="phone">Phone</CustomFormLabel>
+              <CustomTextField
+                id="phone"
+                variant="outlined"
+                name="phone"
+                value={formik.values.phone}
+                onChange={formik.handleChange}
+                error={formik.touched.phone && Boolean(formik.errors.phone)}
+                helperText={formik.touched.phone && formik.errors.phone}
+                fullWidth
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type="submit" autoFocus>
+              Confirm
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </>
   );
 };
 

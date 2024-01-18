@@ -45,7 +45,6 @@ const GetAQuote = () => {
                 p: 4,
                 zIndex: 1,
                 width: "100%",
-                maxWidth: "450px",
                 boxShadow: "none",
               }}
             >

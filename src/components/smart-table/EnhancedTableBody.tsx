@@ -75,7 +75,7 @@ export default function EnhancedTableBody(props: EnhancedTableBodyProps) {
               </TableCell>
               {columns.map((column) => {
                 return (
-                  <TableCell>
+                  <TableCell style={column.customCellStyle}>
                     {column.render ? (
                       column.render(row[column.id], row)
                     ) : (

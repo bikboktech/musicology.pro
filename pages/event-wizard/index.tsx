@@ -122,6 +122,7 @@ const EventWizard = () => {
             eventPlaylist={playlistValues}
             values={timelineValues}
             setValues={setTimelineValues}
+            eventId={eventInfoValues?.id as number | undefined}
           />
         );
       default:

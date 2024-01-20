@@ -73,12 +73,14 @@ const TimelineEdit = ({
   setValues,
   setEdit,
   eventPlaylist,
+  eventId,
 }: {
   wizardProps?: EventWizardProps;
   values: TimelineData[] | undefined;
   setValues: Dispatch<SetStateAction<TimelineData[] | undefined>>;
   setEdit?: Dispatch<SetStateAction<boolean>>;
   eventPlaylist: PlaylistInfoData | undefined;
+  eventId?: number;
 }) => {
   const [open, setOpen] = useState<{ state: boolean; index?: number }>({
     state: false,
@@ -205,10 +207,20 @@ const TimelineEdit = ({
 
     try {
       if (values?.length) {
+        console.log({
+          eventId,
+          timelines: values.map((timeline) => ({
+            id: timeline.id,
+            time: timeline.time,
+            description: timeline.instructions,
+            trackId: timeline.track.id,
+            // notes: string().nullable(),
+          })),
+        });
         await axios.put(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/timelines`,
           JSON.stringify({
-            eventId: eventPlaylist?.eventId,
+            eventId,
             timelines: values.map((timeline) => ({
               id: timeline.id,
               time: timeline.time,

@@ -3,16 +3,11 @@ import {
   Button,
   Typography,
   useTheme,
-  IconButton,
-  Tooltip,
   Stack,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   useMediaQuery,
-  Autocomplete,
-  Paper,
   ListItem,
   ListItemAvatar,
   Avatar,
@@ -31,39 +26,76 @@ import {
   TimelineContent,
   timelineOppositeContentClasses,
 } from "@mui/lab";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
-import {
-  LocalizationProvider,
-  MobileDateTimePicker,
-} from "@mui/x-date-pickers";
-import { useFormik } from "formik";
 import dayjs, { Dayjs } from "dayjs";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 import Scrollbar from "../custom-scroll/Scrollbar";
 import { Dispatch, SetStateAction, useState } from "react";
 import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
-import CustomTextField from "../forms/theme-elements/CustomTextField";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import buildQueryParams, {
-  QueryParams,
-} from "../smart-table/utils/buildQueryParams";
-import { TrackInfo } from "../../types/playlist/TrackInfo";
-import axios from "axios";
 import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
 import { TimelineData } from "../../types/timeline/TimelineData";
 import { useRouter } from "next/router";
 import BlankCard from "../shared/BlankCard";
+import {
+  Alignment,
+  ContentAnchor,
+  ContentText,
+  ContentTocItem,
+} from "pdfmake/interfaces";
+
+type ContentType = string | { text: string; style?: string };
+
+const generatePDF = (timelineData: TimelineData[], eventName: string) => {
+  const docDefinition = {
+    content: [
+      {
+        text: `${eventName} - Timeline`,
+        style: "titleStyle",
+      },
+    ] as ContentType[],
+    styles: {
+      titleStyle: {
+        alignment: "center" as Alignment,
+        fontSize: 20,
+        bold: true,
+        margin: [0, 0, 0, 30] as [number, number, number, number],
+      },
+      important: {
+        bold: true,
+      },
+    },
+  };
+
+  timelineData.forEach((item) => {
+    docDefinition.content.push(
+      {
+        text: `Time: ${dayjs(item.time).format("YY/MM/DD HH:mm")}`,
+        style: "important",
+      },
+      (item.name ? { text: `Name: ${item.name}` } : {}) as ContentType,
+      {
+        text: `Track Name: ${item.track.name} - ${item.track.artists}`,
+        style: "important",
+      },
+      (item.instructions
+        ? { text: `Instructions: ${item.instructions || ""}` }
+        : {}) as ContentType,
+      "\n"
+    );
+  });
+
+  pdfMake.createPdf(docDefinition).open();
+};
 
 const TimelineInfo = ({
-  wizardProps,
   values,
-  setValues,
   setEdit,
   eventName,
 }: {
-  wizardProps?: EventWizardProps;
   values: TimelineData[] | undefined;
-  setValues: Dispatch<SetStateAction<TimelineData[] | undefined>>;
   setEdit: Dispatch<SetStateAction<boolean>>;
   eventName?: string;
 }) => {
@@ -76,9 +108,6 @@ const TimelineInfo = ({
   const theme = useTheme();
   const router = useRouter();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [tracks, setTracks] = useState<TrackInfo[]>([]);
-  const [timeline, setTimeline] = useState<TimelineData[]>();
-  const [error, setError] = useState<string | null>(null);
 
   const handleClickOpen = (data?: TimelineData) => {
     if (data) {
@@ -141,7 +170,7 @@ const TimelineInfo = ({
             <BlankCard>
               <CardContent>
                 <Grid container spacing={3}>
-                  <Grid item xs={8} sm={10}>
+                  <Grid item xs={6} sm={6}>
                     <Typography variant="h5" mb={1}>
                       {`${eventName} Timeline`}
                     </Typography>
@@ -149,15 +178,38 @@ const TimelineInfo = ({
                       To change your timeline, click on Edit
                     </Typography>
                   </Grid>
-                  <Grid item xs={4} sm={2}>
-                    <Button
-                      size="large"
-                      variant="contained"
-                      color="primary"
-                      onClick={() => setEdit(true)}
+                  <Grid item xs={6} sm={6}>
+                    <Box
+                      display="flex"
+                      flexDirection={{ xs: "column", sm: "row" }}
+                      alignItems={{ sm: "flex-end" }}
+                      justifyContent={{ sm: "flex-end" }}
                     >
-                      Edit
-                    </Button>
+                      <Button
+                        size="large"
+                        variant="contained"
+                        color="primary"
+                        style={{
+                          marginRight: "8px",
+                          marginBottom: "8px",
+                        }}
+                        onClick={() => setEdit(true)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="large"
+                        variant="outlined"
+                        color="primary"
+                        style={{
+                          marginBottom: "8px",
+                          maxHeight: "50px",
+                        }}
+                        onClick={() => generatePDF(values, eventName as string)}
+                      >
+                        Export PDF
+                      </Button>
+                    </Box>
                   </Grid>
                 </Grid>
                 <Stack

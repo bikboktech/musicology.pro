@@ -66,6 +66,7 @@ import {
   IconUsers,
   IconCalendarEvent,
   IconMusic,
+  IconReceipt,
 } from "@tabler/icons-react";
 
 const Menuitems: MenuitemsType[] = [
@@ -104,6 +105,12 @@ const Menuitems: MenuitemsType[] = [
     title: "Playlists",
     icon: IconMusic,
     href: "/playlists",
+  },
+  {
+    id: uniqueId(),
+    title: "Quotes",
+    icon: IconReceipt,
+    href: "/quotes",
   },
   // {
   //   navlabel: true,

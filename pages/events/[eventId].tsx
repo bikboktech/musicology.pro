@@ -228,12 +228,12 @@ const Event = () => {
                     setValues={setTimelineInfo}
                     setEdit={setEdit}
                     eventPlaylist={playlistInfo}
+                    eventId={eventInfo?.id as number | undefined}
                   />
                 ) : (
                   <TimelineInfo
                     setEdit={setEdit}
                     values={timelineInfo}
-                    setValues={setTimelineInfo}
                     eventName={eventInfo?.eventName}
                   />
                 )}

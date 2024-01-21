@@ -18,6 +18,8 @@ import {
   Avatar,
   ListItemText,
   CircularProgress,
+  FormControlLabel,
+  RadioGroup,
 } from "@mui/material";
 import {
   Timeline,
@@ -53,6 +55,7 @@ import { PlaylistInfoData } from "../../types/playlist/PlaylistInfoData";
 import * as yup from "yup";
 import { CardMembership } from "@mui/icons-material";
 import ErrorSnackbar from "../error/ErrorSnackbar";
+import CustomRadio from "../forms/theme-elements/CustomRadio";
 
 const getTracks = async (
   setTracks: Dispatch<SetStateAction<TrackInfo[]>>,
@@ -66,6 +69,20 @@ const getTracks = async (
 
   setTracks(tracks.data);
 };
+
+const TIMELINE_NAME_RECOMMENDATIONS = [
+  "Ceremony Begins",
+  "Ceremony Ends",
+  "Cake Cutting",
+  "Introduction",
+  "First Dance",
+  "Father/Daughter Dance",
+  "Mother/Son Dance",
+  "Anniversary Dance",
+  "Bouquet Toss",
+  "Garter Toss",
+  "Last Dance/Song",
+];
 
 const TimelineEdit = ({
   wizardProps,
@@ -87,6 +104,8 @@ const TimelineEdit = ({
   });
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const [timelineNameInput, setTimelineNameInput] =
+    useState<string>("recommended");
   const [tracks, setTracks] = useState<TrackInfo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -202,38 +221,27 @@ const TimelineEdit = ({
     return Boolean(isAlreadySelected);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (values: TimelineData[] | undefined) => {
     setLoading(true);
 
     try {
-      if (values?.length) {
-        console.log({
+      await axios.put(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/timelines`,
+        JSON.stringify({
           eventId,
-          timelines: values.map((timeline) => ({
+          timelines: values?.map((timeline) => ({
             id: timeline.id,
             time: timeline.time,
+            name: timeline.name,
             description: timeline.instructions,
             trackId: timeline.track.id,
             // notes: string().nullable(),
           })),
-        });
-        await axios.put(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/timelines`,
-          JSON.stringify({
-            eventId,
-            timelines: values.map((timeline) => ({
-              id: timeline.id,
-              time: timeline.time,
-              description: timeline.instructions,
-              trackId: timeline.track.id,
-              // notes: string().nullable(),
-            })),
-          }),
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      }
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       if (setEdit) {
         setEdit(false);
@@ -268,7 +276,14 @@ const TimelineEdit = ({
           </Button>
           <Button
             variant="outlined"
-            onClick={() => setValues([])}
+            onClick={() => {
+              if (values?.some((timeline) => timeline.id)) {
+                setValues([]);
+                handleSave([]);
+              } else {
+                setValues([]);
+              }
+            }}
             startIcon={<IconTrash width={18} />}
           >
             Clear
@@ -403,13 +418,13 @@ const TimelineEdit = ({
           {loading ? (
             <CircularProgress />
           ) : wizardProps ? (
-            <Button variant="contained" onClick={handleSave}>
+            <Button variant="contained" onClick={() => handleSave(values)}>
               {wizardProps.activeStep === wizardProps.steps.length - 1
                 ? "Finish"
                 : "Next"}
             </Button>
           ) : (
-            <Button variant="contained" onClick={handleSave}>
+            <Button variant="contained" onClick={() => handleSave(values)}>
               Save
             </Button>
           )}
@@ -431,16 +446,62 @@ const TimelineEdit = ({
           <DialogContent>
             <Box>
               <CustomFormLabel htmlFor="name">Name</CustomFormLabel>
-              <CustomTextField
-                id="name"
-                variant="outlined"
-                name="name"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
-                fullWidth
-              />
+              <RadioGroup
+                row
+                aria-label="timelineNameInput"
+                name="timelineNameInput"
+                sx={{ paddingBottom: "5px" }}
+                onChange={(e, newValue) => {
+                  formik.setFieldValue("name", "");
+                  setTimelineNameInput(newValue);
+                }}
+                value={timelineNameInput}
+              >
+                <FormControlLabel
+                  value={"recommended"}
+                  control={<CustomRadio color="primary" />}
+                  label="Recommended"
+                  labelPlacement="end"
+                />
+                <FormControlLabel
+                  value={"custom"}
+                  control={<CustomRadio color="primary" />}
+                  label="Custom"
+                  labelPlacement="end"
+                />
+              </RadioGroup>
+              {timelineNameInput === "recommended" ? (
+                <Autocomplete
+                  disablePortal
+                  id="name"
+                  options={TIMELINE_NAME_RECOMMENDATIONS}
+                  value={formik.values.name}
+                  onChange={(e, newValue) => {
+                    formik.setFieldValue("name", newValue);
+                  }}
+                  fullWidth
+                  renderInput={(params) => (
+                    <CustomTextField
+                      {...params}
+                      placeholder="Select name"
+                      aria-label="Select name"
+                      error={formik.touched.name && Boolean(formik.errors.name)}
+                      helperText={formik.touched.name && formik.errors.name}
+                    />
+                  )}
+                />
+              ) : (
+                <CustomTextField
+                  id="name"
+                  variant="outlined"
+                  name="name"
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  error={formik.touched.name && Boolean(formik.errors.name)}
+                  helperText={formik.touched.name && formik.errors.name}
+                  fullWidth
+                />
+              )}
               <CustomFormLabel htmlFor="eventDate">Time</CustomFormLabel>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <MobileDateTimePicker

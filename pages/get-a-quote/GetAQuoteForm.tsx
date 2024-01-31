@@ -153,6 +153,7 @@ const GetAQuoteForm = () => {
         .required("Email is required"),
       eventTypeId: yup.number().required("Event type is required"),
       eventDate: yup.date().required("Event date is required"),
+      eventLocation: yup.string().required("Location is required"),
       clientName: yup.string().required("Name is required"),
       guestCount: yup.number().positive().required("Guest Count is required"),
       naturalApproachInteractions: yup
@@ -339,6 +340,13 @@ const GetAQuoteForm = () => {
               fullWidth
               onChange={formik.handleChange}
               value={formik.values.eventLocation}
+              error={
+                formik.touched.eventLocation &&
+                Boolean(formik.errors.eventLocation)
+              }
+              helperText={
+                formik.touched.eventLocation && formik.errors.eventLocation
+              }
             />
           </Box>
           <Box>

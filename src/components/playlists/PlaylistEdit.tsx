@@ -34,7 +34,13 @@ import {
 } from "@tabler/icons-react";
 import { IconXboxX, IconCircleCheck } from "@tabler/icons-react";
 import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import ErrorSnackbar from "../../components/error/ErrorSnackbar";
 import CustomCheckbox from "../../components/forms/theme-elements/CustomCheckbox";
 import axios from "axios";
@@ -46,6 +52,7 @@ import { TrackInfo } from "../../types/playlist/TrackInfo";
 import { PlaylistInfoData } from "../../types/playlist/PlaylistInfoData";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
+import { debounce } from "lodash";
 
 const TABS = [
   {
@@ -347,6 +354,13 @@ const PlaylistEdit = ({
     (el?.parentElement ?? el)?.scrollIntoView();
   }, [formik.isSubmitting]);
 
+  const debouncedGetTracks = useCallback(
+    debounce(async (data) => {
+      await getTracks(setTracks, { search: data });
+    }, 500),
+    []
+  );
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setOpenTab(newValue);
   };
@@ -528,8 +542,6 @@ const PlaylistEdit = ({
     );
   };
 
-  console.log(values, "values");
-
   return (
     <Box>
       <form onSubmit={formik.handleSubmit}>
@@ -624,9 +636,7 @@ const PlaylistEdit = ({
                 mb: 2,
               }}
               onInputChange={async (_, data) => {
-                await getTracks(setTracks, {
-                  search: data,
-                });
+                debouncedGetTracks(data);
               }}
               onChange={(_, data) => {
                 if (data) {
@@ -637,7 +647,9 @@ const PlaylistEdit = ({
                 }
               }}
               getOptionLabel={(option: string | TrackInfo) =>
-                typeof option === "object" ? option.name : ""
+                typeof option === "object"
+                  ? `${option.artists} ${option.name}`
+                  : ""
               }
               getOptionDisabled={(option) => compareSelected(option, values)}
               options={

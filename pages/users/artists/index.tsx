@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Card,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -23,6 +24,7 @@ import CustomFormLabel from "../../../src/components/forms/theme-elements/Custom
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import ErrorSnackbar from "../../../src/components/error/ErrorSnackbar";
 
 type Artist = {
   id: number;
@@ -46,33 +48,19 @@ const BCrumb = [
   },
 ];
 
+const ARTIST_ID = 2;
+
 const getArtists = async (
   setArtists: Dispatch<SetStateAction<Artists | undefined>>,
   params: QueryParams
 ) => {
   const queryParams = buildQueryParams(params);
 
-  // const events = await axios.get(
-  //   `${process.env.NEXT_PUBLIC_API_BASE_URL}/events?${queryParams}`
-  // );
+  const artists = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts?accountTypeId=${ARTIST_ID}&${queryParams}`
+  );
 
-  setArtists({
-    data: [
-      {
-        id: 1,
-        fullName: "test",
-        email: "test@test.com",
-        phone: "56868",
-      },
-      {
-        id: 1,
-        fullName: "test 2",
-        email: "test@test.com",
-        phone: "72697269",
-      },
-    ],
-    count: 2,
-  });
+  setArtists(artists.data);
 };
 
 const handleDeleteRows = async (
@@ -80,14 +68,15 @@ const handleDeleteRows = async (
   ids: number[],
   setSelected: Dispatch<SetStateAction<number[]>>
 ) => {
-  // await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`, {
-  //   data: JSON.stringify({
-  //     ids,
-  //   }),
-  //   headers: { "Content-Type": "application/json" },
-  // });
+  await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts`, {
+    data: JSON.stringify({
+      ids,
+    }),
+    headers: { "Content-Type": "application/json" },
+  });
 
   setSelected([]);
+
   await getArtists(setArtists, {});
 };
 
@@ -96,7 +85,58 @@ const Artists = () => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [artists, setArtists] = useState<Artists>();
-  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+
+  const formik = useFormik({
+    initialValues: {
+      id: null,
+      fullName: "",
+      email: "",
+      phone: "",
+    },
+    validationSchema: yup.object({
+      fullName: yup.string().required("Name is required"),
+      email: yup
+        .string()
+        .email("Email must be valid")
+        .required("Email is required"),
+    }),
+    onSubmit: async (data) => {
+      try {
+        if (data.id) {
+          await axios.put(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/${data.id}`,
+            JSON.stringify({
+              ...data,
+              accountTypeId: ARTIST_ID,
+              active: true,
+            }),
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        } else {
+          await axios.post(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts`,
+            JSON.stringify({
+              ...data,
+              accountTypeId: ARTIST_ID,
+              active: true,
+            }),
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        }
+
+        await getArtists(setArtists, {});
+
+        handleClose();
+      } catch (err: any) {
+        setError(err.response.data);
+      }
+    },
+  });
 
   const columns: HeadCell[] = [
     {
@@ -116,26 +156,8 @@ const Artists = () => {
     },
   ];
 
-  const formik = useFormik({
-    initialValues: {
-      fullName: "",
-      email: "",
-      phone: "",
-    },
-    validationSchema: yup.object({
-      fullName: yup.string().required("Name is required"),
-      email: yup
-        .string()
-        .email("Email must be valid")
-        .required("Email is required"),
-      phone: yup.string().required("Phone is required"),
-    }),
-    onSubmit: async (data, { resetForm }) => {
-      setOpen(false);
-    },
-  });
-
   const handleClose = () => {
+    formik.setFieldValue("id", null);
     formik.setFieldValue("fullName", "");
     formik.setFieldValue("email", "");
     formik.setFieldValue("phone", "");
@@ -155,6 +177,7 @@ const Artists = () => {
             getData={getArtists}
             handleDeleteRows={handleDeleteRows}
             handleRowClick={(data) => {
+              formik.setFieldValue("id", data.id);
               formik.setFieldValue("fullName", data.fullName);
               formik.setFieldValue("email", data.email);
               formik.setFieldValue("phone", data.phone);
@@ -219,8 +242,6 @@ const Artists = () => {
                 name="phone"
                 value={formik.values.phone}
                 onChange={formik.handleChange}
-                error={formik.touched.phone && Boolean(formik.errors.phone)}
-                helperText={formik.touched.phone && formik.errors.phone}
                 fullWidth
               />
             </Box>
@@ -229,9 +250,14 @@ const Artists = () => {
             <Button autoFocus onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" autoFocus>
-              Confirm
-            </Button>
+            {formik.isSubmitting ? (
+              <CircularProgress />
+            ) : (
+              <Button type="submit" autoFocus>
+                Confirm
+              </Button>
+            )}
+            <ErrorSnackbar error={error} setError={setError} />
           </DialogActions>
         </form>
       </Dialog>

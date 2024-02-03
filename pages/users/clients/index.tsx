@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -31,6 +32,8 @@ import CustomFormLabel from "../../../src/components/forms/theme-elements/Custom
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import axios from "axios";
+import ErrorSnackbar from "../../../src/components/error/ErrorSnackbar";
 
 type Clients = {
   data: {
@@ -63,50 +66,7 @@ const TABS = [
   },
 ];
 
-const getClients = async (
-  setClients: Dispatch<SetStateAction<Clients | undefined>>,
-  params: QueryParams
-) => {
-  const queryParams = buildQueryParams(params);
-
-  // const events = await axios.get(
-  //   `${process.env.NEXT_PUBLIC_API_BASE_URL}/events?${queryParams}`
-  // );
-
-  setClients({
-    data: [
-      {
-        id: 1,
-        fullName: "test",
-        email: "test@test.com",
-        verified: true,
-      },
-      {
-        id: 1,
-        fullName: "test 2",
-        email: "test@test.com",
-        verified: false,
-      },
-    ],
-    count: 2,
-  });
-};
-
-const handleDeleteRows = async (
-  setClients: Dispatch<SetStateAction<Clients | undefined>>,
-  ids: number[],
-  setSelected: Dispatch<SetStateAction<number[]>>
-) => {
-  // await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`, {
-  //   data: JSON.stringify({
-  //     ids,
-  //   }),
-  //   headers: { "Content-Type": "application/json" },
-  // });
-
-  setSelected([]);
-  await getClients(setClients, {});
-};
+const CLIENT_ID = 3;
 
 const Customers = () => {
   const [openTab, setOpenTab] = useState("verified");
@@ -114,7 +74,7 @@ const Customers = () => {
   const [open, setOpen] = useState<boolean>(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setOpenTab(newValue);
@@ -131,10 +91,16 @@ const Customers = () => {
       label: "Email",
       sqlColumn: "email",
     },
+    {
+      id: "phone",
+      label: "Phone",
+      sqlColumn: "phone",
+    },
   ];
 
   const formik = useFormik({
     initialValues: {
+      id: null,
       fullName: "",
       email: "",
       phone: "",
@@ -145,19 +111,84 @@ const Customers = () => {
         .string()
         .email("Email must be valid")
         .required("Email is required"),
-      phone: yup.string().required("Phone is required"),
     }),
-    onSubmit: async (data, { resetForm }) => {
-      setOpen(false);
+    onSubmit: async (data) => {
+      try {
+        if (data.id) {
+          await axios.put(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/${data.id}`,
+            JSON.stringify({
+              ...data,
+              accountTypeId: CLIENT_ID,
+              active: true,
+            }),
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        } else {
+          await axios.post(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts`,
+            JSON.stringify({
+              ...data,
+              accountTypeId: CLIENT_ID,
+              active: true,
+            }),
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        }
+
+        await getClients(setClients, {});
+
+        handleClose();
+      } catch (err: any) {
+        setError(err.response.data);
+      }
     },
   });
 
   const handleClose = () => {
+    formik.setFieldValue("id", null);
     formik.setFieldValue("fullName", "");
     formik.setFieldValue("email", "");
     formik.setFieldValue("phone", "");
 
     setOpen(false);
+  };
+
+  const getClients = async (
+    setClients: Dispatch<SetStateAction<Clients | undefined>>,
+    params: QueryParams
+  ) => {
+    const queryParams = buildQueryParams(params);
+
+    const clients = await axios.get(
+      `${
+        process.env.NEXT_PUBLIC_API_BASE_URL
+      }/accounts?accountTypeId=${CLIENT_ID}&active=${
+        openTab === "verified" ? "true" : "false"
+      }&${queryParams}`
+    );
+
+    setClients(clients.data);
+  };
+
+  const handleDeleteRows = async (
+    setClients: Dispatch<SetStateAction<Clients | undefined>>,
+    ids: number[],
+    setSelected: Dispatch<SetStateAction<number[]>>
+  ) => {
+    await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts`, {
+      data: JSON.stringify({
+        ids,
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    setSelected([]);
+    await getClients(setClients, {});
   };
 
   return (
@@ -192,6 +223,7 @@ const Customers = () => {
                   getData={getClients}
                   handleDeleteRows={handleDeleteRows}
                   handleRowClick={(data) => {
+                    formik.setFieldValue("id", data.id);
                     formik.setFieldValue("fullName", data.fullName);
                     formik.setFieldValue("email", data.email);
                     formik.setFieldValue("phone", data.phone);
@@ -238,6 +270,7 @@ const Customers = () => {
                 error={
                   formik.touched.fullName && Boolean(formik.errors.fullName)
                 }
+                disabled={openTab === "unverified"}
                 helperText={formik.touched.fullName && formik.errors.fullName}
                 fullWidth
               />
@@ -249,6 +282,7 @@ const Customers = () => {
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 error={formik.touched.email && Boolean(formik.errors.email)}
+                disabled={openTab === "unverified"}
                 helperText={formik.touched.email && formik.errors.email}
                 fullWidth
               />
@@ -259,8 +293,7 @@ const Customers = () => {
                 name="phone"
                 value={formik.values.phone}
                 onChange={formik.handleChange}
-                error={formik.touched.phone && Boolean(formik.errors.phone)}
-                helperText={formik.touched.phone && formik.errors.phone}
+                disabled={openTab === "unverified"}
                 fullWidth
               />
             </Box>
@@ -269,9 +302,18 @@ const Customers = () => {
             <Button autoFocus onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" autoFocus>
-              Confirm
-            </Button>
+            {formik.isSubmitting ? (
+              <CircularProgress />
+            ) : openTab === "unverified" ? (
+              <Button type="submit" autoFocus>
+                Approve
+              </Button>
+            ) : (
+              <Button type="submit" autoFocus>
+                Confirm
+              </Button>
+            )}
+            <ErrorSnackbar error={error} setError={setError} />
           </DialogActions>
         </form>
       </Dialog>

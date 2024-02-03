@@ -61,13 +61,15 @@ const getTracks = async (
   setTracks: Dispatch<SetStateAction<TrackInfo[]>>,
   params: QueryParams
 ) => {
-  const queryParams = buildQueryParams(params);
+  if (params.search) {
+    const queryParams = buildQueryParams(params);
 
-  const tracks = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/spotify/tracks?${queryParams}`
-  );
+    const tracks = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/spotify/tracks?${queryParams}`
+    );
 
-  setTracks(tracks.data);
+    setTracks(tracks.data);
+  }
 };
 
 const TIMELINE_NAME_RECOMMENDATIONS = [

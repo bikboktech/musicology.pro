@@ -11,13 +11,24 @@ import { useSelector } from "../../../../../store/Store";
 import { IconPower } from "@tabler/icons-react";
 import { AppState } from "../../../../../store/Store";
 import Link from "next/link";
+import { useAuth } from "../../../../../../context/AuthContext";
+import { useRouter } from "next/router";
 
 export const Profile = () => {
   const customizer = useSelector((state: AppState) => state.customizer);
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
   const hideMenu = lgUp
     ? customizer.isCollapse && !customizer.isSidebarHover
     : "";
+
+  const handleLogout = () => {
+    router.push("/login");
+
+    logout();
+  };
 
   return (
     <Box
@@ -28,19 +39,16 @@ export const Profile = () => {
     >
       {!hideMenu ? (
         <>
-          <Avatar alt="Remy Sharp" src={"/images/profile/user-1.jpg"} />
-
           <Box>
-            <Typography variant="h6">Matej</Typography>
-            <Typography variant="caption">Artist</Typography>
+            <Typography variant="h6">{user?.fullName}</Typography>
+            <Typography variant="caption">{user?.accountType.name}</Typography>
           </Box>
           <Box sx={{ ml: "auto" }}>
             <Tooltip title="Logout" placement="top">
               <IconButton
                 color="primary"
-                component={Link}
-                href="auth/auth1/login"
                 aria-label="logout"
+                onClick={handleLogout}
                 size="small"
               >
                 <IconPower size="20" />

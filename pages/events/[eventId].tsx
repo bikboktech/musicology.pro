@@ -1,7 +1,15 @@
 import * as React from "react";
 import PageContainer from "../../src/components/container/PageContainer";
 import Breadcrumb from "../../src/layouts/full/shared/breadcrumb/Breadcrumb";
-import { Grid, Tabs, Tab, Box, CardContent, Divider } from "@mui/material";
+import {
+  Grid,
+  Tabs,
+  Tab,
+  Box,
+  CardContent,
+  Divider,
+  CircularProgress,
+} from "@mui/material";
 import dayjs from "dayjs";
 
 // components
@@ -15,7 +23,7 @@ import {
 import BlankCard from "../../src/components/shared/BlankCard";
 import EventInfoEdit from "../../src/components/events/EventInfoEdit";
 import { EventInfoData } from "../../src/types/events/EventInfoData";
-import axios from "axios";
+import axios from "../../src/utils/axios";
 import { useRouter } from "next/router";
 import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
 import PlaylistEdit from "../../src/components/playlists/PlaylistEdit";
@@ -23,6 +31,7 @@ import PlaylistInfo from "../../src/components/playlists/PlaylistInfo";
 import TimelineEdit from "../../src/components/timeline/TimelineEdit";
 import TimelineInfo from "../../src/components/timeline/TimelineInfo";
 import { TimelineData } from "../../src/types/timeline/TimelineData";
+import { useAuth } from "../../context/AuthContext";
 
 const BCrumb = [
   {
@@ -122,24 +131,35 @@ const Event = () => {
   const [playlistInfo, setPlaylistInfo] = React.useState<PlaylistInfoData>();
   const [timelineInfo, setTimelineInfo] = React.useState<TimelineData[]>();
   const router = useRouter();
+  const { user, isLoading } = useAuth();
 
   React.useEffect(() => {
-    if (!eventInfo && router.query.eventId) {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [isLoading, user, router]);
+
+  React.useEffect(() => {
+    if (user && !eventInfo && router.query.eventId) {
       getEventInfo(router.query.eventId as string, setEventInfo);
     }
-  }, [eventInfo, router.query.eventId]);
+  }, [user, eventInfo, router.query.eventId]);
 
   React.useEffect(() => {
-    if (!playlistInfo && eventInfo?.id) {
+    if (user && !playlistInfo && eventInfo?.id) {
       getPlaylist(router.query.eventId as string, setPlaylistInfo);
     }
-  }, [eventInfo, value]);
+  }, [user, eventInfo, value]);
 
   React.useEffect(() => {
-    if (!timelineInfo && eventInfo?.id) {
+    if (user && !timelineInfo && eventInfo?.id) {
       getTimeline(router.query.eventId as string, setTimelineInfo);
     }
-  }, [timelineInfo, value]);
+  }, [user, timelineInfo, value]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

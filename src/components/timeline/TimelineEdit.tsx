@@ -48,7 +48,7 @@ import buildQueryParams, {
   QueryParams,
 } from "../smart-table/utils/buildQueryParams";
 import { TrackInfo } from "../../types/playlist/TrackInfo";
-import axios from "axios";
+import axios from "../../utils/axios";
 import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
 import { TimelineData } from "../../types/timeline/TimelineData";
 import { PlaylistInfoData } from "../../types/playlist/PlaylistInfoData";

@@ -1,15 +1,16 @@
-import { Card } from "@mui/material";
+import { Card, CircularProgress } from "@mui/material";
 
 import Breadcrumb from "../../src/layouts/full/shared/breadcrumb/Breadcrumb";
 import PageContainer from "../../src/components/container/PageContainer";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import SmartTable from "../../src/components/smart-table";
 import { HeadCell } from "../../src/components/smart-table/EnhancedTableHead";
-import axios from "axios";
+import axios from "../../src/utils/axios";
 import buildQueryParams, {
   QueryParams,
 } from "../../src/components/smart-table/utils/buildQueryParams";
 import { useRouter } from "next/router";
+import { useAuth } from "../../context/AuthContext";
 
 type Playlists = {
   data: {
@@ -65,6 +66,17 @@ const handleDeleteRows = async (
 const Playlists = () => {
   const [playlists, setPlaylists] = useState<Playlists>();
   const router = useRouter();
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   const columns: HeadCell[] = [
     {

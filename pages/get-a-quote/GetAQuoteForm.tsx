@@ -24,7 +24,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import axios from "axios";
+import axios from "../../src/utils/axios";
 import ErrorSnackbar from "../../src/components/error/ErrorSnackbar";
 import Image from "next/image";
 import { IconCircleCheck } from "@tabler/icons-react";

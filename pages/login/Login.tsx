@@ -15,12 +15,17 @@ import CustomTextField from "../../src/components/forms/theme-elements/CustomTex
 import CustomFormLabel from "../../src/components/forms/theme-elements/CustomFormLabel";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import axios from "axios";
+import axios from "../../src/utils/axios";
 import { useState } from "react";
 import ErrorSnackbar from "../../src/components/error/ErrorSnackbar";
+import { setCookie } from "cookies-next";
+import { useRouter } from "next/router";
+import { useAuth } from "../../context/AuthContext";
 
 const AuthLogin = ({ title, subtext }: loginType) => {
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { login } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -36,17 +41,9 @@ const AuthLogin = ({ title, subtext }: loginType) => {
     }),
     onSubmit: async (data) => {
       try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
-          JSON.stringify({
-            ...data,
-          }),
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        await login(data.email, data.password);
 
-        console.log(response);
+        router.push(`/`);
       } catch (err: any) {
         setError(err.response.data);
       }

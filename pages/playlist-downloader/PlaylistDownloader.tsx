@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Box, Typography, Button, LinearProgress } from "@mui/material";
-// import { Controller, FieldValues, useForm } from "react-hook-form";
+import { useFormik } from "formik";
 import axios from "axios";
+import * as yup from "yup";
 
 import CustomTextField from "../../src/components/forms/theme-elements/CustomTextField";
+import ErrorSnackbar from "../../src/components/error/ErrorSnackbar";
+import downloadPlaylist from "../../src/utils/downloadPlaylist";
 
 interface downloaderType {
   title?: string;
@@ -12,49 +15,27 @@ interface downloaderType {
 
 const PlaylistDownloader = ({ title, subtext }: downloaderType) => {
   const [loading, setLoading] = useState(false);
-  // const {
-  //   register,
-  //   control,
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm();
+  const [error, setError] = useState<string | null>(null);
 
-  // const onSubmit = async (data: FieldValues) => {
-  //   setLoading(true);
-  //   try {
-  //     const response = (await axios.post(
-  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/playlist-management/download`,
-  //       {
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ playlistLink: data.spotifyPlaylistLink }),
-  //       }
-  //     )) as Response;
+  const formik = useFormik({
+    initialValues: {
+      spotifyLink: "",
+    },
+    validationSchema: yup.object({
+      spotifyLink: yup.string().required("Spotify Link is required"),
+    }),
+    onSubmit: async (data) => {
+      setLoading(true);
+      try {
+        await downloadPlaylist(data.spotifyLink);
 
-  //     const contentDisposition = response.headers.get("Content-Disposition");
-
-  //     const filenameMatch =
-  //       contentDisposition && contentDisposition.match(/filename="(.+)"/);
-  //     const filename = filenameMatch ? filenameMatch[1] : "playlist.zip";
-
-  //     const blob = await response.blob();
-
-  //     const downloadUrl = window.URL.createObjectURL(blob);
-
-  //     const link = document.createElement("a") as HTMLAnchorElement;
-  //     link.href = downloadUrl;
-  //     link.setAttribute("download", filename);
-
-  //     document.body.appendChild(link);
-
-  //     link.click();
-
-  //     link.parentNode?.removeChild(link);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     setLoading(false);
-  //     console.error("Error downloading playlist:", error);
-  //   }
-  // };
+        setLoading(false);
+      } catch (err: any) {
+        setLoading(false);
+        setError(err.response.data);
+      }
+    },
+  });
 
   return (
     <>
@@ -66,24 +47,22 @@ const PlaylistDownloader = ({ title, subtext }: downloaderType) => {
 
       {subtext}
 
-      {/* <form onSubmit={handleSubmit(onSubmit)}>
-        <Box my={2}> */}
-      {/* <Controller
-            name="spotifyPlaylistLink"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                variant="outlined"
-                label="Spotify Playlist Link"
-                placeholder="ex. https://open.spotify.com/playlist/0S3oyFxQ3iglOGVxFTF79K?si=ea7e596097014917"
-                fullWidth
-              />
-            )}
+      <form onSubmit={formik.handleSubmit}>
+        <Box my={2}>
+          <CustomTextField
+            id="spotifyLink"
+            variant="outlined"
+            name="spotifyLink"
+            label="Spotify Playlist Link"
+            placeholder="ex. https://open.spotify.com/playlist/0S3oyFxQ3iglOGVxFTF79K?si=ea7e596097014917"
+            value={formik.values.spotifyLink}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.spotifyLink && Boolean(formik.errors.spotifyLink)
+            }
+            helperText={formik.touched.spotifyLink && formik.errors.spotifyLink}
+            fullWidth
           />
-
-          {errors.spotifyPlaylistLink && <span>This field is required</span>}
         </Box>
         <Box>
           {loading ? (
@@ -103,8 +82,9 @@ const PlaylistDownloader = ({ title, subtext }: downloaderType) => {
               Download
             </Button>
           )}
-        </Box> */}
-      {/* </form> */}
+        </Box>
+        <ErrorSnackbar error={error} setError={setError} />
+      </form>
     </>
   );
 };

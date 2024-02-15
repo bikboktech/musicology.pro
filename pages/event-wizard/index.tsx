@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Stepper,
@@ -9,6 +9,7 @@ import {
   FormControlLabel,
   Grid,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import PageContainer from "../../src/components/container/PageContainer";
 import Breadcrumb from "../../src/layouts/full/shared/breadcrumb/Breadcrumb";
@@ -20,6 +21,8 @@ import EventInfoEdit from "../../src/components/events/EventInfoEdit";
 import { EventInfoData } from "../../src/types/events/EventInfoData";
 import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
 import { TimelineData } from "../../src/types/timeline/TimelineData";
+import { useAuth } from "../../context/AuthContext";
+import { useRouter } from "next/router";
 
 const steps = ["Event info", "Your playlist", "Timeline"];
 
@@ -30,14 +33,18 @@ const EventWizard = () => {
   const [playlistValues, setPlaylistValues] =
     React.useState<PlaylistInfoData>();
   const [timelineValues, setTimelineValues] = React.useState<TimelineData[]>();
-  // const [playlistTracks, setPlaylistTracks] = React.useState<TrackInfo[]>([]);
-  const [playlistLink, setPlaylistLink] = React.useState<string>();
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
 
-  // const handleCheckedDown = () => {
-  //   setLeft(left.concat(rightChecked));
-  //   setRight(not(right, rightChecked));
-  //   setChecked(not(checked, rightChecked));
-  // };
+  React.useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   const isStepOptional = (step: any) => step === 1 || step == 2;
 

@@ -43,7 +43,7 @@ import {
 } from "react";
 import ErrorSnackbar from "../../components/error/ErrorSnackbar";
 import CustomCheckbox from "../../components/forms/theme-elements/CustomCheckbox";
-import axios from "axios";
+import axios from "../../utils/axios";
 import buildQueryParams, {
   QueryParams,
 } from "../../components/smart-table/utils/buildQueryParams";

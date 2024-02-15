@@ -8,6 +8,7 @@ import { ThemeSettings } from "../src/theme/Theme";
 import createEmotionCache from "../src/createEmotionCache";
 import { Provider } from "react-redux";
 import Store from "../src/store/Store";
+import { AuthProvider } from "../context/AuthContext";
 
 import BlankLayout from "../src/layouts/blank/BlankLayout";
 import FullLayout from "../src/layouts/full/FullLayout";
@@ -57,6 +58,8 @@ const MyApp = (props: MyAppProps) => {
 
 export default (props: MyAppProps) => (
   <Provider store={Store}>
-    <MyApp {...props} />
+    <AuthProvider>
+      <MyApp {...props} />
+    </AuthProvider>
   </Provider>
 );

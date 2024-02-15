@@ -17,8 +17,9 @@ import BlankCard from "../../src/components/shared/BlankCard";
 
 import { useRouter } from "next/router";
 import CustomFormLabel from "../../src/components/forms/theme-elements/CustomFormLabel";
-import axios from "axios";
+import axios from "../../src/utils/axios";
 import ErrorSnackbar from "../../src/components/error/ErrorSnackbar";
+import { useAuth } from "../../context/AuthContext";
 
 type QuoteInfoData = {
   id: number;
@@ -71,12 +72,23 @@ const Quote = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const router = useRouter();
+  const { user, isLoading } = useAuth();
 
   React.useEffect(() => {
-    if (!quoteInfo && router.query.quoteId) {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
+  React.useEffect(() => {
+    if (user && !quoteInfo && router.query.quoteId) {
       getQuoteInfo(router.query.quoteId as string, setQuoteInfo);
     }
-  }, [quoteInfo, router.query.quoteId]);
+  }, [user, quoteInfo, router.query.quoteId]);
 
   const approveQuote = async () => {
     if (quoteInfo) {

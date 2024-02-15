@@ -1,18 +1,35 @@
 "use client";
 import Link from "next/link";
-import { Grid, Box, Card, Stack, Typography } from "@mui/material";
+import {
+  Grid,
+  Box,
+  Card,
+  Stack,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 // components
 import PageContainer from "../../src/components/container/PageContainer";
 import PlaylistDownloader from "./PlaylistDownloader";
 import Image from "next/image";
-
-// export const getStaticProps: GetStaticProps<{
-//   apiUrl: string | undefined;
-// }> = async () => {
-//   return { props: { apiUrl: process.env.API_URL } };
-// };
+import { useRouter } from "next/router";
+import { useAuth } from "../../context/AuthContext";
+import { useEffect } from "react";
 
 const PlaylistDownloaderPage = () => {
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
   return (
     <PageContainer>
       <Box

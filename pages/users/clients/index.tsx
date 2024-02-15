@@ -20,11 +20,10 @@ import {
 import Breadcrumb from "../../../src/layouts/full/shared/breadcrumb/Breadcrumb";
 import PageContainer from "../../../src/components/container/PageContainer";
 import { TabContext, TabPanel } from "@mui/lab";
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 // import { getProducts } from "../../../src/store/apps/eCommerce/ECommerceSlice";
 import { HeadCell } from "../../../src/components/smart-table/EnhancedTableHead";
 import SmartTable from "../../../src/components/smart-table";
-import { useRouter } from "next/router";
 import buildQueryParams, {
   QueryParams,
 } from "../../../src/components/smart-table/utils/buildQueryParams";
@@ -32,8 +31,10 @@ import CustomFormLabel from "../../../src/components/forms/theme-elements/Custom
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import axios from "axios";
+import axios from "../../../src/utils/axios";
 import ErrorSnackbar from "../../../src/components/error/ErrorSnackbar";
+import { useRouter } from "next/router";
+import { useAuth } from "../../../context/AuthContext";
 
 type Clients = {
   data: {
@@ -75,6 +76,14 @@ const Customers = () => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+
+  React.useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [isLoading, user, router]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setOpenTab(newValue);
@@ -148,6 +157,10 @@ const Customers = () => {
       }
     },
   });
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   const handleClose = () => {
     formik.setFieldValue("id", null);

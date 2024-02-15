@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 
 import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
 import CustomTextField from "../forms/theme-elements/CustomTextField";
-import axios from "axios";
+import axios from "../../utils/axios";
 import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
 import { EventInfoData } from "../../types/events/EventInfoData";
 import ErrorSnackbar from "../../components/error/ErrorSnackbar";
@@ -173,9 +173,6 @@ const EventInfoEdit = ({
     const el = document.querySelector(".Mui-error, [data-error]");
     (el?.parentElement ?? el)?.scrollIntoView();
   }, [formik.isSubmitting]);
-
-  console.log(values, "event info values");
-  console.log(values, "event info formik values");
 
   return (
     <Box>

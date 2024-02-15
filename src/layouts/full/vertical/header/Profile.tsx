@@ -12,16 +12,27 @@ import {
 } from "@mui/material";
 import * as dropdownData from "./data";
 
-import { IconMail, IconSettings } from "@tabler/icons-react";
+import { IconMail, IconSettings, IconUserCircle } from "@tabler/icons-react";
 import { Stack } from "@mui/system";
+import { useAuth } from "../../../../../context/AuthContext";
+import { useRouter } from "next/router";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = () => {
     setAnchorEl2(null);
+  };
+
+  const handleLogout = () => {
+    router.push("/login");
+
+    logout();
   };
 
   return (
@@ -39,14 +50,7 @@ const Profile = () => {
         }}
         onClick={handleClick2}
       >
-        <Avatar
-          src={"/images/profile/user-1.jpg"}
-          alt={"ProfileImg"}
-          sx={{
-            width: 35,
-            height: 35,
-          }}
-        />
+        <IconUserCircle width={35} height={35} />
       </IconButton>
       {/* ------------------------------------------- */}
       {/* Message Dropdown */}
@@ -68,21 +72,16 @@ const Profile = () => {
       >
         <Typography variant="h5">User Profile</Typography>
         <Stack direction="row" py={3} spacing={2} alignItems="center">
-          <Avatar
-            src={"/images/profile/user-1.jpg"}
-            alt={"ProfileImg"}
-            sx={{ width: 95, height: 95 }}
-          />
           <Box>
             <Typography
               variant="subtitle2"
               color="textPrimary"
               fontWeight={600}
             >
-              Matej Paus
+              {user?.fullName}
             </Typography>
             <Typography variant="subtitle2" color="textSecondary">
-              Artist
+              {user?.accountType.name}
             </Typography>
             <Typography
               variant="subtitle2"
@@ -92,7 +91,7 @@ const Profile = () => {
               gap={1}
             >
               <IconMail width={15} height={15} />
-              matpaus@hotmail.com
+              {user?.email}
             </Typography>
           </Box>
         </Stack>
@@ -145,10 +144,9 @@ const Profile = () => {
         ))}
         <Box mt={2}>
           <Button
-            href="/auth/login"
             variant="outlined"
             color="primary"
-            component={Link}
+            onClick={handleLogout}
             fullWidth
           >
             Logout

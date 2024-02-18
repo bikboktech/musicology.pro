@@ -35,8 +35,8 @@ jobs:
           NEXT_PUBLIC_AUTH_COOKIE_KEY: authKey
         run: |
           # Build a docker container and push it to ECR so that it can be deployed to ECS.
-          echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}" > .env.local
-          echo "NEXT_PUBLIC_AUTH_COOKIE_KEY=${NEXT_PUBLIC_AUTH_COOKIE_KEY}" > .env.local
+          echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}" >> .env.local
+          echo "NEXT_PUBLIC_AUTH_COOKIE_KEY=${NEXT_PUBLIC_AUTH_COOKIE_KEY}" >> .env.local
 
           docker build \
             --file ${DOCKERFILE} \

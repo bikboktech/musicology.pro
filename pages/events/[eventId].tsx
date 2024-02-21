@@ -32,6 +32,7 @@ import TimelineEdit from "../../src/components/timeline/TimelineEdit";
 import TimelineInfo from "../../src/components/timeline/TimelineInfo";
 import { TimelineData } from "../../src/types/timeline/TimelineData";
 import { useAuth } from "../../context/AuthContext";
+import ContractInfo from "../../src/components/contract/ContractInfo";
 
 const BCrumb = [
   {
@@ -180,6 +181,7 @@ const Event = () => {
                 onChange={handleChange}
                 scrollButtons="auto"
                 aria-label="basic tabs example"
+                variant="scrollable"
               >
                 <Tab
                   iconPosition="start"
@@ -259,7 +261,7 @@ const Event = () => {
                 )}
               </TabPanel>
               <TabPanel value={value} index={3}>
-                {/* <SecurityTab /> */}
+                <ContractInfo values={eventInfo} setValues={setEventInfo} />
               </TabPanel>
             </CardContent>
           </BlankCard>

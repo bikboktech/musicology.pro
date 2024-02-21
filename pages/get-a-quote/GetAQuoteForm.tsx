@@ -161,7 +161,6 @@ const GetAQuoteForm = () => {
         .required("This question is required"),
     }),
     onSubmit: async (data) => {
-      console.log(data);
       try {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/quotes`,

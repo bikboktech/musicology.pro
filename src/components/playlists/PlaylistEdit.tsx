@@ -666,7 +666,6 @@ const PlaylistEdit = ({
                   placeholder="Powered by Spotify"
                   aria-label="PoweredBySpotify"
                   onKeyDown={(event: any) => {
-                    console.log("tu san");
                     if (event.key === "Enter") {
                       event.preventDefault();
                       event.stopPropagation();
@@ -832,7 +831,7 @@ const PlaylistEdit = ({
             <CircularProgress />
           ) : wizardProps ? (
             <Button variant="contained" type="submit">
-              {wizardProps.activeStep === wizardProps.steps.length - 1
+              {wizardProps.activeStep === wizardProps.steps.length
                 ? "Finish"
                 : "Next"}
             </Button>

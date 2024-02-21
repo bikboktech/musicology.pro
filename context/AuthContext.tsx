@@ -37,7 +37,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = getCookie(process.env.NEXT_PUBLIC_AUTH_COOKIE_KEY as string);
     if (token) {
       const userData = decode(token) as User;
-      console.log(userData, "tu san");
 
       setUser(userData);
     }

@@ -21,4 +21,9 @@ export type EventInfoData = {
   venueName: string | null;
   venueContact: string | null;
   additionalInfo: string | null;
+  contract?: {
+    id: string;
+    url: string;
+    signed: boolean;
+  };
 };

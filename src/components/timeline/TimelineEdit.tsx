@@ -421,7 +421,7 @@ const TimelineEdit = ({
             <CircularProgress />
           ) : wizardProps ? (
             <Button variant="contained" onClick={() => handleSave(values)}>
-              {wizardProps.activeStep === wizardProps.steps.length - 1
+              {wizardProps.activeStep === wizardProps.steps.length
                 ? "Finish"
                 : "Next"}
             </Button>

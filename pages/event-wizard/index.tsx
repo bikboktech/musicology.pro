@@ -23,6 +23,7 @@ import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
 import { TimelineData } from "../../src/types/timeline/TimelineData";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/router";
+import ContractInfo from "../../src/components/contract/ContractInfo";
 
 const steps = ["Event info", "Your playlist", "Timeline"];
 
@@ -57,7 +58,11 @@ const EventWizard = () => {
       newSkipped.delete(activeStep);
     }
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep !== steps.length) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else {
+      router.push("/");
+    }
     setSkipped(newSkipped);
   };
 
@@ -72,7 +77,11 @@ const EventWizard = () => {
       throw new Error("You can't skip a step that isn't optional.");
     }
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep !== steps.length) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else {
+      router.push("/");
+    }
     setSkipped((prevSkipped) => {
       const newSkipped = new Set(prevSkipped.values());
       newSkipped.add(activeStep);
@@ -183,27 +192,20 @@ const EventWizard = () => {
                 })}
               </Stepper>
               {activeStep === steps.length ? (
-                <>
-                  <Box pt={3}>
-                    <Typography variant="h5">Terms and condition</Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      Sard about this site or you have been to it, but you
-                      cannot figure out what it is or what it can do. MTA web
-                      directory isSard about this site or you have been to it,
-                      but you cannot figure out what it is or what it can do.
-                      MTA web directory is
-                    </Typography>
-                    <FormControlLabel
-                      control={<CustomCheckbox defaultChecked />}
-                      label="Agree with terms?"
-                    />
-                    <Box textAlign="right">
-                      <Button onClick={handleReset} variant="outlined">
-                        Accept
-                      </Button>
-                    </Box>
-                  </Box>
-                </>
+                <div style={{ paddingTop: "20px" }}>
+                  <ContractInfo
+                    wizardProps={{
+                      activeStep,
+                      handleBack,
+                      isStepOptional,
+                      handleSkip,
+                      handleNext,
+                      steps,
+                    }}
+                    values={eventInfoValues}
+                    setValues={setEventInfoValues}
+                  />
+                </div>
               ) : (
                 <>
                   <Box>{handleSteps(activeStep)}</Box>

@@ -375,7 +375,7 @@ const EventInfoEdit = ({
             <CircularProgress />
           ) : wizardProps ? (
             <Button variant="contained" type="submit">
-              {wizardProps.activeStep === wizardProps.steps.length - 1
+              {wizardProps.activeStep === wizardProps.steps.length
                 ? "Finish"
                 : "Next"}
             </Button>

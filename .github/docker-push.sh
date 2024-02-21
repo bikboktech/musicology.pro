@@ -1,1 +1,0 @@
-docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}

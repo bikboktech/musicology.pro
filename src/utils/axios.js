@@ -6,16 +6,17 @@ const axiosServices = axios.create();
 
 // interceptor for http
 axiosServices.interceptors.request.use(
-  (response) => {
+  (request) => {
     const token = getCookie(process.env.NEXT_PUBLIC_AUTH_COOKIE_KEY);
+
     if (token) {
-      response.headers.Authorization = `Bearer ${token}`;
+      request.headers.Authorization = `Bearer ${token}`;
     }
 
-    return response;
+    return request;
   },
   (error) =>
-    Promise.reject((error.response && error.response.data) || "Wrong Services")
+    Promise.reject((error.request && error.request.data) || "Wrong Services")
 );
 
 export default axiosServices;

@@ -53,7 +53,7 @@ const AuthLogin = ({ title, subtext }: loginType) => {
   return (
     <>
       {title ? (
-        <Typography fontWeight="700" variant="h3" mb={1}>
+        <Typography fontWeight="700" variant="h3" mb={1} textAlign="center">
           {title}
         </Typography>
       ) : null}

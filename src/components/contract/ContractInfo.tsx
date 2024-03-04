@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { useRouter } from "next/router";
 import { EventInfoData } from "../../types/events/EventInfoData";
 import axios from "../../utils/axios";
 import { Box, Button, CircularProgress, Grid } from "@mui/material";

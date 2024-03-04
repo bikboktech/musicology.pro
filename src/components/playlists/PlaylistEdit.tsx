@@ -277,6 +277,8 @@ const PlaylistEdit = ({
               if (setEdit) {
                 setEdit(false);
               }
+
+              router.push(`/playlists/${values.id}`);
             } else {
               const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists`,
@@ -295,6 +297,10 @@ const PlaylistEdit = ({
                 id: response.data.id,
                 name: response.data.playlistName,
               });
+
+              if (setEdit) {
+                setEdit(false);
+              }
 
               router.push(`/playlists/${response.data.id}`);
             }

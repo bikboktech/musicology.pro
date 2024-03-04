@@ -71,11 +71,11 @@ const Header = () => {
         {/* ------------------------------------------- */}
         {/* Search Dropdown */}
         {/* ------------------------------------------- */}
-        {lgUp ? (
+        {/* {lgUp ? (
           <>
             <Navigation />
           </>
-        ) : null}
+        ) : null} */}
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
           {/* ------------------------------------------- */}

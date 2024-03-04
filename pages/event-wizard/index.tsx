@@ -61,7 +61,11 @@ const EventWizard = () => {
     if (activeStep !== steps.length) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
-      router.push("/");
+      if (eventInfoValues?.id) {
+        router.push(`/events/${eventInfoValues.id}`);
+      } else {
+        router.push(`/`);
+      }
     }
     setSkipped(newSkipped);
   };
@@ -80,7 +84,11 @@ const EventWizard = () => {
     if (activeStep !== steps.length) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
-      router.push("/");
+      if (eventInfoValues?.id) {
+        router.push(`/events/${eventInfoValues.id}`);
+      } else {
+        router.push(`/`);
+      }
     }
     setSkipped((prevSkipped) => {
       const newSkipped = new Set(prevSkipped.values());

@@ -13,16 +13,19 @@ import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
 import { EventInfoData } from "../../types/events/EventInfoData";
 import ErrorSnackbar from "../../components/error/ErrorSnackbar";
 
+const ARTIST_ID = 2;
+const CLIENT_ID = 3;
+
 const getClients = async (
   setClients: Dispatch<
     SetStateAction<{ id: number; fullName: string }[] | undefined>
   >
 ) => {
   const clients = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/clients`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts?accountTypeId=${CLIENT_ID}`
   );
 
-  setClients(clients.data);
+  setClients(clients.data.data);
 };
 
 const getEventTypes = async (
@@ -43,10 +46,10 @@ const getArtists = async (
   >
 ) => {
   const artists = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/artists`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts?accountTypeId=${ARTIST_ID}`
   );
 
-  setArtists(artists.data);
+  setArtists(artists.data.data);
 };
 
 const EventInfoEdit = ({

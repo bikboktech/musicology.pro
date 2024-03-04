@@ -1,7 +1,7 @@
 import * as React from "react";
 import PageContainer from "../../src/components/container/PageContainer";
 import Breadcrumb from "../../src/layouts/full/shared/breadcrumb/Breadcrumb";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CardContent, CircularProgress } from "@mui/material";
 
 // components
 import { EventInfoData } from "../../src/types/events/EventInfoData";
@@ -11,6 +11,7 @@ import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
 import PlaylistEdit from "../../src/components/playlists/PlaylistEdit";
 import PlaylistInfo from "../../src/components/playlists/PlaylistInfo";
 import { useAuth } from "../../context/AuthContext";
+import BlankCard from "../../src/components/shared/BlankCard";
 
 const BCrumb = [
   {
@@ -21,28 +22,6 @@ const BCrumb = [
     title: "Playlists",
   },
 ];
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box>{children}</Box>}
-    </div>
-  );
-}
 
 const getPlaylist = async (
   playlistId: string,
@@ -58,9 +37,11 @@ const getPlaylist = async (
 };
 
 const TemplatePlaylist = () => {
-  const [edit, setEdit] = React.useState(false);
-  const [playlistInfo, setPlaylistInfo] = React.useState<PlaylistInfoData>();
   const router = useRouter();
+  const [edit, setEdit] = React.useState(
+    Boolean(router.query.playlistId === "new")
+  );
+  const [playlistInfo, setPlaylistInfo] = React.useState<PlaylistInfoData>();
   const { user, isLoading } = useAuth();
 
   React.useEffect(() => {
@@ -68,10 +49,6 @@ const TemplatePlaylist = () => {
       router.push("/login");
     }
   }, [isLoading, user, router]);
-
-  if (isLoading) {
-    return <CircularProgress />;
-  }
 
   React.useEffect(() => {
     if (
@@ -81,31 +58,37 @@ const TemplatePlaylist = () => {
       router.query.playlistId !== "new"
     ) {
       getPlaylist(router.query.playlistId as string, setPlaylistInfo);
-    } else if (router.query.playlistId && router.query.playlistId === "new") {
-      setEdit(true);
     }
   }, [user, playlistInfo, router.query.playlistId]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <PageContainer>
       {/* breadcrumb */}
       <Breadcrumb title="Playlists" items={BCrumb} />
       {/* end breadcrumb */}
-
-      {edit ? (
-        <PlaylistEdit
-          values={playlistInfo}
-          setValues={setPlaylistInfo}
-          setEdit={setEdit}
-          isTemplatePlaylist={true}
-        />
-      ) : (
-        <PlaylistInfo
-          setEdit={setEdit}
-          values={playlistInfo}
-          setValues={setPlaylistInfo}
-        />
-      )}
+      <BlankCard>
+        <CardContent>
+          {edit ? (
+            <PlaylistEdit
+              values={playlistInfo}
+              setValues={setPlaylistInfo}
+              setEdit={setEdit}
+              isTemplatePlaylist={true}
+            />
+          ) : (
+            <PlaylistInfo
+              setEdit={setEdit}
+              values={playlistInfo}
+              setValues={setPlaylistInfo}
+              isTemplatePlaylist={true}
+            />
+          )}
+        </CardContent>
+      </BlankCard>
     </PageContainer>
   );
 };

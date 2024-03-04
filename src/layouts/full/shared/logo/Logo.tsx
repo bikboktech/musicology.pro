@@ -11,20 +11,51 @@ const Logo = ({ width, height }: { width?: number; height?: number }) => {
     height: customizer.TopbarHeight,
     width: customizer.isCollapse ? "40px" : "180px",
     overflow: "hidden",
-    display: "block",
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
   }));
 
   if (customizer.activeDir === "ltr") {
     return (
-      <LinkStyled href="/">
+      <LinkStyled href="/" sx={{ width: "100%" }}>
         {customizer.activeMode === "dark" ? (
-          <Image
-            src="/images/logos/musicology-logo.webp"
-            alt="logo"
-            height={height ?? customizer.TopbarHeight}
-            width={width ?? 174}
-            priority
-          />
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            <div
+              style={{
+                width: "45px",
+                display: "block",
+                flexDirection: "row",
+              }}
+            >
+              <Image
+                src="/images/logos/musicology-logo.webp"
+                alt="logo"
+                height={height ?? 40}
+                width={width ?? 45}
+                priority
+              />{" "}
+            </div>
+            <div
+              style={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                color: "white",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                paddingLeft: "10px",
+              }}
+            >
+              {customizer.isCollapse ? "" : "MUSICOLOGY.PRO"}
+            </div>
+          </div>
         ) : (
           <Image
             src={"/images/logos/dark-logo.svg"}

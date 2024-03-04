@@ -83,7 +83,12 @@ const LoginPage = () => (
           <Login
             title="Welcome to Musicology.pro"
             subtext={
-              <Typography variant="subtitle1" color="textSecondary" mb={1}>
+              <Typography
+                variant="subtitle1"
+                color="textSecondary"
+                mb={1}
+                textAlign="center"
+              >
                 Your Event management dashboard
               </Typography>
             }

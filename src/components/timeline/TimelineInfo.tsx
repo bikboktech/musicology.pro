@@ -134,30 +134,26 @@ const TimelineInfo = ({
       <Grid container spacing={3}>
         {/* Edit Details */}
         <Grid item xs={12}>
-          <BlankCard>
-            <CardContent>
-              <Grid container spacing={3}>
-                <Grid item xs={8} sm={10}>
-                  <Typography variant="h5" mb={1}>
-                    Timeline not created
-                  </Typography>
-                  <Typography color="textSecondary" mb={3}>
-                    To create your timeline, click on Edit
-                  </Typography>
-                </Grid>
-                <Grid item xs={4} sm={2}>
-                  <Button
-                    size="large"
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setEdit(true)}
-                  >
-                    Edit
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </BlankCard>
+          <Grid container spacing={3}>
+            <Grid item xs={8} sm={10}>
+              <Typography variant="h5" mb={1}>
+                Timeline not created
+              </Typography>
+              <Typography color="textSecondary" mb={3}>
+                To create your timeline, click on Edit
+              </Typography>
+            </Grid>
+            <Grid item xs={4} sm={2}>
+              <Button
+                size="large"
+                variant="contained"
+                color="primary"
+                onClick={() => setEdit(true)}
+              >
+                Edit
+              </Button>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     );
@@ -167,144 +163,173 @@ const TimelineInfo = ({
         <Grid container spacing={3}>
           {/* Edit Details */}
           <Grid item xs={12}>
-            <BlankCard>
-              <CardContent>
-                <Grid container spacing={3}>
-                  <Grid item xs={6} sm={6}>
-                    <Typography variant="h5" mb={1}>
-                      {`${eventName} Timeline`}
-                    </Typography>
-                    <Typography color="textSecondary" mb={3}>
-                      To change your timeline, click on Edit
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6} sm={6}>
-                    <Box
-                      display="flex"
-                      flexDirection={{ xs: "column", sm: "row" }}
-                      alignItems={{ sm: "flex-end" }}
-                      justifyContent={{ sm: "flex-end" }}
-                    >
-                      <Button
-                        size="large"
-                        variant="contained"
-                        color="primary"
-                        style={{
-                          marginRight: "8px",
-                          marginBottom: "8px",
-                        }}
-                        onClick={() => setEdit(true)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="large"
-                        variant="outlined"
-                        color="primary"
-                        style={{
-                          marginBottom: "8px",
-                          maxHeight: "50px",
-                        }}
-                        onClick={() => generatePDF(values, eventName as string)}
-                      >
-                        Export PDF
-                      </Button>
-                    </Box>
-                  </Grid>
-                </Grid>
-                <Stack
-                  sx={{ border: "1px solid #FFFFFF", borderRadius: "7px" }}
+            <Grid container spacing={3}>
+              <Grid item xs={6} sm={6}>
+                <Typography variant="h5" mb={1}>
+                  {`${eventName} Timeline`}
+                </Typography>
+                <Typography color="textSecondary" mb={3}>
+                  To change your timeline, click on Edit
+                </Typography>
+              </Grid>
+              <Grid item xs={6} sm={6}>
+                <Box
+                  display="flex"
+                  flexDirection={{ xs: "column", sm: "row" }}
+                  alignItems={{ sm: "flex-end" }}
+                  justifyContent={{ sm: "flex-end" }}
                 >
-                  <Scrollbar
-                    sx={{
-                      // height: { lg: "calc(100vh - 300px)", sm: "100vh" },
-                      maxHeight: "700px",
+                  <Button
+                    size="large"
+                    variant="contained"
+                    color="primary"
+                    style={{
+                      marginRight: "8px",
+                      marginBottom: "8px",
                     }}
+                    onClick={() => setEdit(true)}
                   >
-                    <Timeline
-                      className="theme-timeline"
-                      nonce={undefined}
-                      onResize={undefined}
-                      onResizeCapture={undefined}
-                      sx={{
-                        p: 0,
-                        minHeight: "400px",
-                        mb: "-40px",
-                        [`& .${timelineOppositeContentClasses.root}`]: {
-                          flex: 0.5,
-                          paddingLeft: 0,
-                        },
-                      }}
-                    >
-                      {values?.map((card) => (
-                        <TimelineItem>
-                          <TimelineOppositeContent sx={{ m: "auto 0" }}>
+                    Edit
+                  </Button>
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    color="primary"
+                    style={{
+                      marginBottom: "8px",
+                      maxHeight: "50px",
+                    }}
+                    onClick={() => generatePDF(values, eventName as string)}
+                  >
+                    Export PDF
+                  </Button>
+                </Box>
+              </Grid>
+            </Grid>
+            <Stack sx={{ border: "1px solid #FFFFFF", borderRadius: "7px" }}>
+              <Scrollbar
+                sx={{
+                  // height: { lg: "calc(100vh - 300px)", sm: "100vh" },
+                  maxHeight: "700px",
+                }}
+              >
+                <Timeline
+                  className="theme-timeline"
+                  nonce={undefined}
+                  onResize={undefined}
+                  onResizeCapture={undefined}
+                  sx={{
+                    p: 0,
+                    minHeight: "400px",
+                    mb: "-40px",
+                    [`& .${timelineOppositeContentClasses.root}`]: {
+                      flex: 0.5,
+                      paddingLeft: 0,
+                    },
+                  }}
+                >
+                  {values?.map((card) => (
+                    <TimelineItem>
+                      <TimelineOppositeContent
+                        sx={{
+                          m: "auto 0",
+                          display: {
+                            xs: "none",
+                            sm: "block",
+                            md: "block",
+                            lg: "block",
+                          },
+                        }}
+                      >
+                        {dayjs(card.time).format("YY/MM/DD HH:mm")}
+                      </TimelineOppositeContent>
+                      <TimelineSeparator
+                        sx={{
+                          paddingLeft: {
+                            xs: "10%",
+                            sm: "0px",
+                            md: "0px",
+                            lg: "0px",
+                          },
+                        }}
+                      >
+                        <TimelineConnector />
+                        <TimelineDot color="primary" variant="outlined" />
+                        <TimelineConnector />
+                      </TimelineSeparator>
+                      <TimelineContent>
+                        <Box
+                          p={2}
+                          sx={{
+                            position: "relative",
+                            cursor: "pointer",
+                            mb: 1,
+                            transition: "0.1s ease-in",
+                            // transform:
+                            //   activeNote === note.id ? "scale(1)" : "scale(0.95)",
+                            transform: "scale(0.95)",
+                            backgroundColor: `primary.light`,
+                            maxWidth: "300px",
+                          }}
+                          onClick={() => handleClickOpen(card)}
+                        >
+                          <Typography
+                            variant="h6"
+                            noWrap
+                            color={"primary.main"}
+                            sx={{
+                              paddingBottom: "5px",
+                              display: {
+                                xs: "block",
+                                sm: "none",
+                                md: "none",
+                                lg: "none",
+                              },
+                            }}
+                          >
                             {dayjs(card.time).format("YY/MM/DD HH:mm")}
-                          </TimelineOppositeContent>
-                          <TimelineSeparator>
-                            <TimelineConnector />
-                            <TimelineDot color="primary" variant="outlined" />
-                            <TimelineConnector />
-                          </TimelineSeparator>
-                          <TimelineContent>
-                            <Box
-                              p={2}
-                              sx={{
-                                position: "relative",
-                                cursor: "pointer",
-                                mb: 1,
-                                transition: "0.1s ease-in",
-                                // transform:
-                                //   activeNote === note.id ? "scale(1)" : "scale(0.95)",
-                                transform: "scale(0.95)",
-                                backgroundColor: `primary.light`,
-                                maxWidth: "300px",
-                              }}
-                              onClick={() => handleClickOpen(card)}
+                          </Typography>
+                          <Typography
+                            variant="h6"
+                            noWrap
+                            color={"primary.main"}
+                            sx={{ paddingBottom: "5px" }}
+                          >
+                            {card.name}
+                          </Typography>
+                          {card.track && (
+                            <Stack
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="center"
                             >
-                              <Typography
-                                variant="h6"
-                                noWrap
-                                color={"primary.main"}
-                                sx={{ paddingBottom: "5px" }}
-                              >
-                                {card.name}
-                              </Typography>
-                              {card.track && (
-                                <Stack
-                                  direction="row"
-                                  justifyContent="space-between"
-                                  alignItems="center"
-                                >
-                                  <Typography variant="caption">
-                                    <ListItem
-                                      key={card.track.id}
-                                      sx={{ paddingLeft: 0 }}
-                                    >
-                                      <ListItemAvatar>
-                                        <Avatar src={card.track.imageUrl} />
-                                      </ListItemAvatar>
-                                      <ListItemText
-                                        id={card.track.id}
-                                        primary={card.track.name}
-                                        secondary={card.track.artists}
-                                      />
-                                    </ListItem>
-                                  </Typography>
-                                </Stack>
-                              )}
                               <Typography variant="caption">
-                                {`Instructions: ${card.instructions}`}
+                                <ListItem
+                                  key={card.track.id}
+                                  sx={{ paddingLeft: 0 }}
+                                >
+                                  <ListItemAvatar>
+                                    <Avatar src={card.track.imageUrl} />
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                    id={card.track.id}
+                                    primary={card.track.name}
+                                    secondary={card.track.artists}
+                                  />
+                                </ListItem>
                               </Typography>
-                            </Box>
-                          </TimelineContent>
-                        </TimelineItem>
-                      ))}
-                    </Timeline>
-                  </Scrollbar>
-                </Stack>
-              </CardContent>
-            </BlankCard>
+                            </Stack>
+                          )}
+                          <Typography variant="caption">
+                            {`Instructions: ${card.instructions || "/"}`}
+                          </Typography>
+                        </Box>
+                      </TimelineContent>
+                    </TimelineItem>
+                  ))}
+                </Timeline>
+              </Scrollbar>
+            </Stack>
             <Stack
               direction="row"
               spacing={2}

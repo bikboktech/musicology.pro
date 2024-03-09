@@ -56,7 +56,7 @@ const FullLayout: React.FC<Props> = ({ children }) => {
         {/* ------------------------------------------- */}
         {customizer.isHorizontal ? <HorizontalHeader /> : <Header />}
         {/* PageContent */}
-        {customizer.isHorizontal ? <Navigation /> : ""}
+
         <Container
           sx={{
             maxWidth: customizer.isLayout === "boxed" ? "lg" : "100%!important",

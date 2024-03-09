@@ -81,7 +81,7 @@ const Header = () => {
           {/* ------------------------------------------- */}
           {/* Toggle Right Sidebar for mobile */}
           {/* ------------------------------------------- */}
-          {lgDown ? <MobileRightSidebar /> : null}
+
           <Profile />
         </Stack>
       </ToolbarStyled>

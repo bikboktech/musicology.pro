@@ -150,7 +150,7 @@ const Event = () => {
     if (user && !playlistInfo && eventInfo?.id) {
       getPlaylist(router.query.eventId as string, setPlaylistInfo);
     }
-  }, [user, eventInfo, value]);
+  }, [user, playlistInfo, value]);
 
   React.useEffect(() => {
     if (user && !timelineInfo && eventInfo?.id) {
@@ -234,6 +234,7 @@ const Event = () => {
                     setValues={setPlaylistInfo}
                     setEdit={setEdit}
                     eventId={eventInfo?.id}
+                    eventTypeId={eventInfo?.eventType.id}
                   />
                 ) : (
                   <PlaylistInfo

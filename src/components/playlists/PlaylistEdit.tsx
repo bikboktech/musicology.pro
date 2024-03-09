@@ -53,6 +53,7 @@ import { PlaylistInfoData } from "../../types/playlist/PlaylistInfoData";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { debounce } from "lodash";
+import PlaylistTrack from "./PlaylistTrack";
 
 const TABS = [
   {
@@ -136,10 +137,11 @@ const getTemplatePlaylists = async (
   setTemplatePlaylists: Dispatch<
     SetStateAction<{ id: number; name: string }[] | undefined>
   >,
-  setOpenTab: Dispatch<SetStateAction<number | undefined>>
+  setOpenTab: Dispatch<SetStateAction<number | undefined>>,
+  eventTypeId: number | null | undefined
 ) => {
   const templatePlaylists = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists?eventTypeId=${eventTypeId}`
   );
 
   setTemplatePlaylists(
@@ -183,6 +185,7 @@ const PlaylistEdit = ({
   setValues,
   setEdit,
   eventId,
+  eventTypeId,
   isTemplatePlaylist,
 }: {
   wizardProps?: EventWizardProps;
@@ -190,6 +193,7 @@ const PlaylistEdit = ({
   setValues: Dispatch<SetStateAction<PlaylistInfoData | undefined>>;
   setEdit?: Dispatch<SetStateAction<boolean>>;
   eventId?: number | null;
+  eventTypeId?: number | null;
   isTemplatePlaylist?: boolean;
 }) => {
   const [tracks, setTracks] = useState<TrackInfo[]>([]);
@@ -198,6 +202,12 @@ const PlaylistEdit = ({
   const [openTab, setOpenTab] = useState<number>();
   const [playlistChecked, setPlaylistChecked] = useState<string[]>([]);
   const [valueTracksChecked, setValueTracksChecked] = useState<string[]>([]);
+  const [playingTrack, setPlayingTrack] = useState<
+    TrackInfo & { audio?: HTMLAudioElement }
+  >();
+  const [eventTypeSpecificity, setEventTypeSpecificity] =
+    useState<string>("allTypes");
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playlist, setPlaylist] = useState<SpotifyPlaylistInfo>();
   const [templatePlaylists, setTemplatePlaylists] =
     useState<{ id: number; name: string }[]>();
@@ -224,7 +234,7 @@ const PlaylistEdit = ({
 
   useEffect(() => {
     if (!templatePlaylists) {
-      getTemplatePlaylists(setTemplatePlaylists, setOpenTab);
+      getTemplatePlaylists(setTemplatePlaylists, setOpenTab, eventTypeId);
     }
   }, [templatePlaylists]);
 
@@ -241,10 +251,12 @@ const PlaylistEdit = ({
   const formik = useFormik({
     initialValues: {
       playlistName: values?.name || "",
-      eventType: values?.eventType || {
-        id: 0,
-        name: "",
-      },
+      eventType: values?.eventType?.id
+        ? values.eventType
+        : {
+            id: 0,
+            name: "",
+          },
     },
     validationSchema: yup.object({
       playlistName: yup.string().required("Playlist name is required"),
@@ -262,11 +274,14 @@ const PlaylistEdit = ({
         try {
           if (isTemplatePlaylist) {
             if (values?.id) {
-              await axios.put(
+              const response = await axios.put(
                 `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists/${values.id}`,
                 JSON.stringify({
                   playlistName: formData.playlistName,
-                  eventTypeId: formData.eventType.id,
+                  eventTypeId:
+                    eventTypeSpecificity === "allTypes"
+                      ? null
+                      : formData.eventType.id,
                   trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
                 }),
                 {
@@ -278,13 +293,23 @@ const PlaylistEdit = ({
                 setEdit(false);
               }
 
+              setValues({
+                ...values,
+                id: response.data.id,
+                name: response.data.playlistName,
+                eventType: response.data.eventType,
+              });
+
               router.push(`/playlists/${values.id}`);
             } else {
               const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists`,
                 JSON.stringify({
                   playlistName: formData.playlistName,
-                  eventTypeId: formData.eventType.id,
+                  eventTypeId:
+                    eventTypeSpecificity === "allTypes"
+                      ? null
+                      : formData.eventType.id,
                   trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
                 }),
                 {
@@ -532,13 +557,12 @@ const PlaylistEdit = ({
                       }}
                     />
                   </ListItemIcon>
-                  <ListItemAvatar>
-                    <Avatar src={item.imageUrl} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    id={labelId}
-                    primary={item.name}
-                    secondary={item.artists}
+                  <PlaylistTrack
+                    track={item}
+                    playingTrack={playingTrack}
+                    setPlayingTrack={setPlayingTrack}
+                    isPlaying={isPlaying}
+                    setIsPlaying={setIsPlaying}
                   />
                 </ListItemButton>
               </ListItem>
@@ -568,31 +592,55 @@ const PlaylistEdit = ({
         {isTemplatePlaylist && (
           <>
             <CustomFormLabel htmlFor="eventType">Event Type</CustomFormLabel>
-            <Autocomplete
-              disablePortal
-              id="eventType"
-              options={eventTypes ?? []}
-              getOptionLabel={(option) => option.name}
-              value={formik.values.eventType}
+            <RadioGroup
+              row
+              name="eventTypeSpecificity"
+              sx={{ paddingBottom: "5px" }}
               onChange={(e, newValue) => {
-                formik.setFieldValue("eventType", newValue);
+                setEventTypeSpecificity(newValue);
               }}
-              fullWidth
-              renderInput={(params) => (
-                <CustomTextField
-                  {...params}
-                  placeholder="Select event type"
-                  aria-label="Select event type"
-                  error={
-                    formik.touched.eventType &&
-                    Boolean(formik.errors.eventType?.name)
-                  }
-                  helperText={
-                    formik.touched.eventType && formik.errors.eventType?.name
-                  }
-                />
-              )}
-            />
+              value={eventTypeSpecificity}
+            >
+              <FormControlLabel
+                value={"allTypes"}
+                control={<CustomRadio color="primary" />}
+                label="All types"
+                labelPlacement="end"
+              />
+              <FormControlLabel
+                value={"specificType"}
+                control={<CustomRadio color="primary" />}
+                label="Specific type"
+                labelPlacement="end"
+              />
+            </RadioGroup>
+            {eventTypeSpecificity === "specificType" && (
+              <Autocomplete
+                disablePortal
+                id="eventType"
+                options={eventTypes ?? []}
+                getOptionLabel={(option) => option.name}
+                value={formik.values.eventType}
+                onChange={(e, newValue) => {
+                  formik.setFieldValue("eventType", newValue);
+                }}
+                fullWidth
+                renderInput={(params) => (
+                  <CustomTextField
+                    {...params}
+                    placeholder="Select event type"
+                    aria-label="Select event type"
+                    error={
+                      formik.touched.eventType &&
+                      Boolean(formik.errors.eventType?.name)
+                    }
+                    helperText={
+                      formik.touched.eventType && formik.errors.eventType?.name
+                    }
+                  />
+                )}
+              />
+            )}
           </>
         )}
         <Box>
@@ -791,7 +839,7 @@ const PlaylistEdit = ({
                     variant="outlined"
                     size="medium"
                     onClick={handleAddToPlaylist}
-                    disabled={!playlist || playlist?.tracks.length === 0}
+                    disabled={!playlist || playlist?.tracks?.length === 0}
                     aria-label="add to playlist"
                   >
                     Add to playlist

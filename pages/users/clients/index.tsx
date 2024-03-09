@@ -230,7 +230,11 @@ const Customers = () => {
               ))}
             </Tabs>
             {TABS.map((panel) => (
-              <TabPanel key={panel.value} value={panel.value}>
+              <TabPanel
+                key={panel.value}
+                value={panel.value}
+                sx={{ padding: "0px" }}
+              >
                 <SmartTable
                   tableName="Clients"
                   getData={getClients}

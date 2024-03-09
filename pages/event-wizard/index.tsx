@@ -128,6 +128,7 @@ const EventWizard = () => {
               steps,
             }}
             eventId={eventInfoValues?.id}
+            eventTypeId={eventInfoValues?.eventType.id}
             values={playlistValues}
             setValues={setPlaylistValues}
           />

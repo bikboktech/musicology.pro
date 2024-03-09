@@ -462,13 +462,13 @@ const TimelineEdit = ({
                 <FormControlLabel
                   value={"recommended"}
                   control={<CustomRadio color="primary" />}
-                  label="Recommended"
+                  label="Recommended Timeline"
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={"custom"}
                   control={<CustomRadio color="primary" />}
-                  label="Custom"
+                  label="Custom Timeline"
                   labelPlacement="end"
                 />
               </RadioGroup>

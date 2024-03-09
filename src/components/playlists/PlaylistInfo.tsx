@@ -1,31 +1,25 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
-  CardContent,
   Grid,
   Typography,
-  MenuItem,
   Box,
-  Avatar,
   Button,
   CircularProgress,
   ListItem,
-  ListItemAvatar,
-  ListItemText,
   List,
   Paper,
   useTheme,
 } from "@mui/material";
 
 // components
-import BlankCard from "../shared/BlankCard";
-import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
+import PlaylistTrack from "./PlaylistTrack";
 
 // images
 import { Stack } from "@mui/system";
 import { useRouter } from "next/router";
-import { EventInfoData } from "../../types/events/EventInfoData";
 import { PlaylistInfoData } from "../../types/playlist/PlaylistInfoData";
 import downloadPlaylist from "../../utils/downloadPlaylist";
+import { TrackInfo } from "../../types/playlist/TrackInfo";
 
 const PlaylistInfo = ({
   setEdit,
@@ -40,8 +34,12 @@ const PlaylistInfo = ({
 }) => {
   const router = useRouter();
   const theme = useTheme();
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string>();
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [playingTrack, setPlayingTrack] = useState<
+    TrackInfo & { audio?: HTMLAudioElement }
+  >();
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const borderColor = theme.palette.primary.main;
 
@@ -60,9 +58,7 @@ const PlaylistInfo = ({
     }
   };
 
-  if (!values) {
-    return <CircularProgress />;
-  } else if (!Object.keys(values).length) {
+  if (!Object.keys(values ?? {}).length) {
     return (
       <Grid container spacing={3}>
         {/* Edit Details */}
@@ -98,7 +94,7 @@ const PlaylistInfo = ({
           <Grid container spacing={3}>
             <Grid item xs={6} sm={6}>
               <Typography variant="h5" mb={1}>
-                {values.name}
+                {values?.name}
               </Typography>
               <Typography color="textSecondary" mb={3}>
                 To change your playlist, click on Edit
@@ -157,27 +153,17 @@ const PlaylistInfo = ({
                   component="div"
                   role="list"
                 >
-                  {values.tracks?.map((track) => {
+                  {values?.tracks?.map((track, index) => {
                     const labelId = `transfer-list-all-item-${track.id}-label`;
 
                     return (
-                      <a
-                        href={track.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ textDecoration: "none", color: "inherit" }}
-                      >
-                        <ListItem key={track.id} role="listitem" button>
-                          <ListItemAvatar>
-                            <Avatar src={track.imageUrl} />
-                          </ListItemAvatar>
-                          <ListItemText
-                            id={labelId}
-                            primary={track.name}
-                            secondary={track.artists}
-                          />
-                        </ListItem>
-                      </a>
+                      <PlaylistTrack
+                        track={track}
+                        playingTrack={playingTrack}
+                        setPlayingTrack={setPlayingTrack}
+                        isPlaying={isPlaying}
+                        setIsPlaying={setIsPlaying}
+                      />
                     );
                   })}
                   <ListItem />

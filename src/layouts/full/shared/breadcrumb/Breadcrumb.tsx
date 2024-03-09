@@ -66,7 +66,7 @@ const Breadcrumb = ({ subtitle, items, title, children }: BreadCrumbType) => (
     <Grid item xs={12} sm={6} lg={4} display="flex" alignItems="flex-end">
       <Box
         sx={{
-          display: { xs: "none", md: "block", lg: "flex" },
+          display: { xs: "none", md: "flex", lg: "flex" },
           alignItems: "center",
           justifyContent: "flex-end",
           width: "100%",

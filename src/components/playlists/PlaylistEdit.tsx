@@ -55,37 +55,6 @@ import { useRouter } from "next/router";
 import { debounce } from "lodash";
 import PlaylistTrack from "./PlaylistTrack";
 
-const TABS = [
-  {
-    value: "playlistTemplate1",
-    label: "Playlist Template 1",
-  },
-  {
-    value: "playlistTemplate2",
-    label: "Playlist Template 2",
-  },
-  {
-    value: "playlistTemplate3",
-    label: "Playlist Template 3",
-  },
-  {
-    value: "playlistTemplate4",
-    label: "Playlist Template 4",
-  },
-  {
-    value: "playlistTemplate5",
-    label: "Playlist Template 5",
-  },
-  {
-    value: "playlistTemplate6",
-    label: "Playlist Template 6",
-  },
-  {
-    value: "playlistTemplate7",
-    label: "Playlist Template 7",
-  },
-];
-
 type SpotifyPlaylistInfo = {
   id: string;
   name: string;
@@ -262,9 +231,7 @@ const PlaylistEdit = ({
       playlistName: yup.string().required("Playlist name is required"),
       eventType: yup.object({
         id: yup.number(),
-        name: isTemplatePlaylist
-          ? yup.string().required("Event type is required")
-          : yup.string(),
+        name: yup.string(),
       }),
     }),
     onSubmit: async (formData) => {
@@ -283,6 +250,7 @@ const PlaylistEdit = ({
                       ? null
                       : formData.eventType.id,
                   trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
+                  spotifyPlaylistId: playlist?.id,
                 }),
                 {
                   headers: { "Content-Type": "application/json" },
@@ -336,6 +304,7 @@ const PlaylistEdit = ({
                 JSON.stringify({
                   playlistName: formData.playlistName,
                   trackIds: values?.tracks?.map((track: TrackInfo) => track.id),
+                  spotifyPlaylistId: playlist?.id,
                 }),
                 {
                   headers: { "Content-Type": "application/json" },

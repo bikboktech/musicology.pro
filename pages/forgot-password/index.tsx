@@ -42,7 +42,7 @@ const ForgotPasswordPage = () => (
             }}
           >
             <img
-              src={"/images/backgrounds/login-background.jpg"}
+              src={"/images/backgrounds/musicologypro-1.png"}
               alt="bg"
               style={{
                 width: "100%",

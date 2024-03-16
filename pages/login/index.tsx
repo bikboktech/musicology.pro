@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Grid, Box, Stack, Typography } from "@mui/material";
+import { Grid, Box, Typography } from "@mui/material";
 import PageContainer from "../../src/components/container/PageContainer";
 import Login from "./Login";
 import Image from "next/image";
@@ -44,7 +43,7 @@ const LoginPage = () => (
             }}
           >
             <img
-              src={"/images/backgrounds/login-background.jpg"}
+              src={"/images/backgrounds/musicologypro-2.png"}
               alt="bg"
               style={{
                 width: "100%",

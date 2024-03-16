@@ -18,13 +18,11 @@ import PlaylistTrack from "./PlaylistTrack";
 import { Stack } from "@mui/system";
 import { useRouter } from "next/router";
 import { PlaylistInfoData } from "../../types/playlist/PlaylistInfoData";
-import downloadPlaylist from "../../utils/downloadPlaylist";
 import { TrackInfo } from "../../types/playlist/TrackInfo";
 
 const PlaylistInfo = ({
   setEdit,
   values,
-  setValues,
   isTemplatePlaylist,
 }: {
   setEdit: Dispatch<SetStateAction<boolean>>;
@@ -43,22 +41,11 @@ const PlaylistInfo = ({
 
   const borderColor = theme.palette.primary.main;
 
-  const download = async () => {
-    if (values) {
-      setLoading(true);
-      try {
-        const spotifyLink = `https://open.spotify.com/${values.spotifyPlaylistId}`;
-        await downloadPlaylist(spotifyLink);
+  if (!values) {
+    return <CircularProgress />;
+  }
 
-        setLoading(false);
-      } catch (err: any) {
-        setLoading(false);
-        setError(err.response.data);
-      }
-    }
-  };
-
-  if (!Object.keys(values ?? {}).length) {
+  if (!Object.keys(values).length) {
     return (
       <Grid container spacing={3}>
         {/* Edit Details */}
@@ -122,18 +109,6 @@ const PlaylistInfo = ({
                       onClick={() => setEdit(true)}
                     >
                       Edit
-                    </Button>
-                    <Button
-                      size="large"
-                      variant="outlined"
-                      color="primary"
-                      style={{
-                        marginBottom: "8px",
-                        maxHeight: "50px",
-                      }}
-                      onClick={() => download()}
-                    >
-                      Download
                     </Button>
                   </>
                 )}

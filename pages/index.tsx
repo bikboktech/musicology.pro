@@ -1,7 +1,6 @@
-import React from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   Alert,
-  Avatar,
   Box,
   Button,
   Card,
@@ -32,15 +31,32 @@ type Events = {
   signedContract: boolean;
 }[];
 
-const Modern = ({ events }: { events: Events }) => {
+const getEvents = async (
+  setEvents: Dispatch<SetStateAction<Events | undefined>>
+) => {
+  const events = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/upcoming`
+  );
+
+  setEvents(events.data ?? []);
+};
+
+const Modern = () => {
+  const [events, setEvents] = useState<Events>();
   const router = useRouter();
   const { user, isLoading } = useAuth();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login");
     }
   }, [isLoading, user, router]);
+
+  useEffect(() => {
+    if (user && !events) {
+      getEvents(setEvents);
+    }
+  }, [user, events]);
 
   if (isLoading) {
     return <CircularProgress />;
@@ -102,174 +118,178 @@ const Modern = ({ events }: { events: Events }) => {
         </Typography>
       </Box>
       <Box>
-        {events && events.length ? (
-          events.map((event) => {
-            const eventCompleted =
-              ((1 +
-                +event.hasPlaylist +
-                +event.hasTimeline +
-                +event.signedContract) /
-                4) *
-              100;
-            return (
-              <Box key={event.id} px={2}>
-                <Box
-                  p={2}
-                  sx={{
-                    position: "relative",
-                    cursor: "pointer",
-                    mb: 1,
-                    transition: "0.1s ease-in",
-                    backgroundColor: (theme) => theme.palette.secondary.light,
-                    border: "2px solid white",
-                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-                    "&:hover": {
-                      boxShadow: "0px 8px 25px rgba(0, 0, 0, 0.15)",
-                    },
-                  }}
-                  onClick={() => router.push(`/events/${event.id}`)}
-                >
-                  <Grid container spacing={3} justifyContent="space-between">
-                    <Grid
-                      item
-                      sm={7}
-                      display="flex"
-                      alignItems="left"
-                      flexDirection="column"
-                    >
-                      <Typography variant="h5" noWrap>
-                        {event.eventName}
-                      </Typography>
-                      <Stack
-                        direction="column"
+        {events ? (
+          events.length ? (
+            events.map((event) => {
+              const eventCompleted =
+                ((1 +
+                  +event.hasPlaylist +
+                  +event.hasTimeline +
+                  +event.signedContract) /
+                  4) *
+                100;
+              return (
+                <Box key={event.id} px={2}>
+                  <Box
+                    p={2}
+                    sx={{
+                      position: "relative",
+                      cursor: "pointer",
+                      mb: 1,
+                      transition: "0.1s ease-in",
+                      backgroundColor: (theme) => theme.palette.secondary.light,
+                      border: "2px solid white",
+                      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                      "&:hover": {
+                        boxShadow: "0px 8px 25px rgba(0, 0, 0, 0.15)",
+                      },
+                    }}
+                    onClick={() => router.push(`/events/${event.id}`)}
+                  >
+                    <Grid container spacing={3} justifyContent="space-between">
+                      <Grid
+                        item
+                        sm={7}
+                        display="flex"
                         alignItems="left"
-                        sx={{ pt: "10px" }}
+                        flexDirection="column"
                       >
-                        <Typography
-                          variant="caption"
-                          sx={{ fontSize: "0.85rem" }}
-                        >{`Type: ${event.eventType}`}</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ fontSize: "0.85rem" }}
-                        >{`Date: ${event.eventDate}`}</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ fontSize: "0.85rem" }}
-                        >{`Client: ${event.client}`}</Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ fontSize: "0.85rem" }}
-                        >{`Client: ${event.artist}`}</Typography>
-                      </Stack>
-                      <Typography variant="h6" sx={{ pt: "20px" }} noWrap>
-                        {`Event completed: ${eventCompleted.toFixed(2)} %`}
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      item
-                      sm={5}
-                      display="flex"
-                      alignItems="right"
-                      flexDirection="row"
-                      justifyContent="flex-end"
-                      pt={0}
-                      sx={{
-                        display: {
-                          xs: "none",
-                          sm: "flex",
-                          md: "flex",
-                          lg: "flex",
-                        },
-                      }}
-                    >
-                      <Stack
-                        direction="column"
-                        alignItems="end"
-                        justifyContent="space-around"
+                        <Typography variant="h5" noWrap>
+                          {event.eventName}
+                        </Typography>
+                        <Stack
+                          direction="column"
+                          alignItems="left"
+                          sx={{ pt: "10px" }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: "0.85rem" }}
+                          >{`Type: ${event.eventType}`}</Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: "0.85rem" }}
+                          >{`Date: ${event.eventDate}`}</Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: "0.85rem" }}
+                          >{`Client: ${event.client}`}</Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: "0.85rem" }}
+                          >{`Client: ${event.artist}`}</Typography>
+                        </Stack>
+                        <Typography variant="h6" sx={{ pt: "20px" }} noWrap>
+                          {`Event completed: ${eventCompleted.toFixed(2)} %`}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        sm={5}
+                        display="flex"
+                        alignItems="right"
+                        flexDirection="row"
+                        justifyContent="flex-end"
+                        pt={0}
+                        sx={{
+                          display: {
+                            xs: "none",
+                            sm: "flex",
+                            md: "flex",
+                            lg: "flex",
+                          },
+                        }}
                       >
                         <Stack
-                          direction="row"
-                          spacing={1}
-                          my={1}
-                          alignItems="center"
+                          direction="column"
+                          alignItems="end"
+                          justifyContent="space-around"
                         >
-                          <Typography
-                            variant="caption"
-                            sx={{ fontSize: "0.85rem" }}
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            my={1}
+                            alignItems="center"
                           >
-                            Playlist
-                          </Typography>{" "}
-                          <div>
-                            {event.hasPlaylist ? (
-                              <IconCircleCheck />
-                            ) : (
-                              <IconXboxX />
-                            )}
-                          </div>
-                        </Stack>
-                        <Stack
-                          direction="row"
-                          spacing={1}
-                          my={1}
-                          alignItems="center"
-                        >
-                          <Typography
-                            variant="caption"
-                            sx={{ fontSize: "0.85rem" }}
+                            <Typography
+                              variant="caption"
+                              sx={{ fontSize: "0.85rem" }}
+                            >
+                              Playlist
+                            </Typography>{" "}
+                            <div>
+                              {event.hasPlaylist ? (
+                                <IconCircleCheck />
+                              ) : (
+                                <IconXboxX />
+                              )}
+                            </div>
+                          </Stack>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            my={1}
+                            alignItems="center"
                           >
-                            Timeline
-                          </Typography>
-                          <div>
-                            {event.hasTimeline ? (
-                              <IconCircleCheck />
-                            ) : (
-                              <IconXboxX />
-                            )}
-                          </div>
-                        </Stack>
-                        <Stack
-                          direction="row"
-                          spacing={1}
-                          my={1}
-                          alignItems="center"
-                        >
-                          <Typography
-                            variant="caption"
-                            sx={{ fontSize: "0.85rem" }}
+                            <Typography
+                              variant="caption"
+                              sx={{ fontSize: "0.85rem" }}
+                            >
+                              Timeline
+                            </Typography>
+                            <div>
+                              {event.hasTimeline ? (
+                                <IconCircleCheck />
+                              ) : (
+                                <IconXboxX />
+                              )}
+                            </div>
+                          </Stack>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            my={1}
+                            alignItems="center"
                           >
-                            Contract
-                          </Typography>
-                          <div>
-                            {event.signedContract ? (
-                              <IconCircleCheck />
-                            ) : (
-                              <IconXboxX />
-                            )}
-                          </div>
+                            <Typography
+                              variant="caption"
+                              sx={{ fontSize: "0.85rem" }}
+                            >
+                              Contract
+                            </Typography>
+                            <div>
+                              {event.signedContract ? (
+                                <IconCircleCheck />
+                              ) : (
+                                <IconXboxX />
+                              )}
+                            </div>
+                          </Stack>
                         </Stack>
-                      </Stack>
+                      </Grid>
                     </Grid>
-                  </Grid>
+                  </Box>
                 </Box>
-              </Box>
-            );
-          })
+              );
+            })
+          ) : (
+            <Box ml={2}>
+              <Alert
+                severity="info"
+                variant="outlined"
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  borderColor: "white",
+                  color: "white",
+                }}
+              >
+                No Events Found!
+              </Alert>
+            </Box>
+          )
         ) : (
-          <Box ml={2}>
-            <Alert
-              severity="info"
-              variant="outlined"
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                borderColor: "white",
-                color: "white",
-              }}
-            >
-              No Events Found!
-            </Alert>
-          </Box>
+          <CircularProgress />
         )}
       </Box>
     </PageContainer>

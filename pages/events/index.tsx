@@ -11,6 +11,7 @@ import buildQueryParams, {
 } from "../../src/components/smart-table/utils/buildQueryParams";
 import { useRouter } from "next/router";
 import { useAuth } from "../../context/AuthContext";
+import { format } from "date-fns";
 
 type Events = {
   data: {

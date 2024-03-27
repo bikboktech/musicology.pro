@@ -100,7 +100,7 @@ const ContractInfo = ({
 
   React.useEffect(() => {
     if (values?.contract?.id && !signedContract) {
-      var signWellEmbed = new SignWellEmbed({
+      const signWellEmbed = new SignWellEmbed({
         url: values.contract.url,
         containerId: "signWellEmbedContainer",
         events: {

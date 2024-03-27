@@ -35,6 +35,8 @@ type QuoteInfoData = {
   audioSupport: string;
   referencePlaylistLink: string;
   marketingType: string;
+  hoursOfEntertainment: string;
+  naturalApproachInteractions: string;
   budget: string;
   approved: boolean;
 };
@@ -80,15 +82,15 @@ const Quote = () => {
     }
   }, [isLoading, user, router]);
 
-  if (isLoading) {
-    return <CircularProgress />;
-  }
-
   React.useEffect(() => {
     if (user && !quoteInfo && router.query.quoteId) {
       getQuoteInfo(router.query.quoteId as string, setQuoteInfo);
     }
   }, [user, quoteInfo, router.query.quoteId]);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   const approveQuote = async () => {
     if (quoteInfo) {
@@ -293,7 +295,35 @@ const Quote = () => {
                                 Heard about us from
                               </CustomFormLabel>
                               <Typography color="textSecondary" mb={3}>
-                                {quoteInfo.eventLocation}
+                                {quoteInfo.marketingType}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              {/* 7 */}
+                              <CustomFormLabel
+                                sx={{
+                                  mt: 0,
+                                }}
+                                htmlFor="text-additional-info"
+                              >
+                                Interactions approach
+                              </CustomFormLabel>
+                              <Typography color="textSecondary" mb={3}>
+                                {quoteInfo.naturalApproachInteractions}
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              {/* 7 */}
+                              <CustomFormLabel
+                                sx={{
+                                  mt: 0,
+                                }}
+                                htmlFor="text-additional-info"
+                              >
+                                Hours of entertainment
+                              </CustomFormLabel>
+                              <Typography color="textSecondary" mb={3}>
+                                {quoteInfo.hoursOfEntertainment}
                               </Typography>
                             </Grid>
                           </Grid>

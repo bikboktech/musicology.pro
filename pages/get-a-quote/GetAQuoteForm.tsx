@@ -118,6 +118,25 @@ const MARKETING_TYPE_OPTIONS = [
   },
 ];
 
+const HOURS_OF_ENTERTAINMENT_OPTIONS = [
+  {
+    id: "4hrs",
+    label: "Up to 4hrs of music",
+  },
+  {
+    id: "6hrs",
+    label: "Up to 6hrs of music",
+  },
+  {
+    id: "10hrs",
+    label: "Up to 10hrs of music",
+  },
+  {
+    id: "other",
+    label: "Other",
+  },
+];
+
 const GetAQuoteForm = () => {
   const [eventTypes, setEventTypes] =
     useState<{ id: number; name: string }[]>();
@@ -140,11 +159,13 @@ const GetAQuoteForm = () => {
       eventLocation: "",
       eventBudget: EVENT_BUDGET_OPTIONS[0].id,
       marketingType: MARKETING_TYPE_OPTIONS[0].id,
+      hoursOfEntertainment: HOURS_OF_ENTERTAINMENT_OPTIONS[0].id,
       extraMusician: EXTRA_MUSICIAN_OPTIONS[0].id,
       audioSupport: false,
       naturalApproachInteractions: NATURAL_APPROACH_INTERACTION_OPTIONS[0].id,
       referencePlaylistLink: "",
       otherMarketingType: "",
+      otherHoursOfEntertainment: "",
     },
     validationSchema: yup.object({
       email: yup
@@ -185,6 +206,14 @@ const GetAQuoteForm = () => {
               (extraMusicianOption) =>
                 extraMusicianOption.id === data.extraMusician
             )?.label,
+            hoursOfEntertainment:
+              data.hoursOfEntertainment === "other"
+                ? data.otherHoursOfEntertainment
+                : HOURS_OF_ENTERTAINMENT_OPTIONS.find(
+                    (hoursOfEntertainmentOption) =>
+                      hoursOfEntertainmentOption.id ===
+                      data.hoursOfEntertainment
+                  )?.label,
             audioSupport: data.audioSupport,
             naturalApproachInteractions:
               NATURAL_APPROACH_INTERACTION_OPTIONS.find(
@@ -213,11 +242,7 @@ const GetAQuoteForm = () => {
           Thank you for taking the time to fill out this form, we will get back
           to you as soon as possible.
         </Typography>
-        <Button
-          // component={Link}
-          // href="/apps/ecommerce/shop"
-          variant="contained"
-        >
+        <Button component={Link} href="/" variant="contained">
           Go back to Homepage
         </Button>
       </Box>
@@ -399,6 +424,42 @@ const GetAQuoteForm = () => {
                 labelPlacement="end"
               />
             </RadioGroup>
+          </Box>
+          <Box>
+            <CustomFormLabel htmlFor="hoursOfEntertainment">
+              How many hours of music/entertainment do you require? (start and
+              end time)
+            </CustomFormLabel>
+            <RadioGroup
+              row
+              aria-label="hoursOfEntertainment"
+              name="hoursOfEntertainment"
+              onChange={(e, newValue) => {
+                formik.setFieldValue("hoursOfEntertainment", newValue);
+              }}
+              value={formik.values.hoursOfEntertainment}
+            >
+              {HOURS_OF_ENTERTAINMENT_OPTIONS.map(
+                (hoursOfEntertainmentOption) => (
+                  <FormControlLabel
+                    key={hoursOfEntertainmentOption.id}
+                    value={hoursOfEntertainmentOption.id}
+                    control={<CustomRadio color="primary" />}
+                    label={hoursOfEntertainmentOption.label}
+                    labelPlacement="end"
+                  />
+                )
+              )}
+            </RadioGroup>
+            {formik.values.hoursOfEntertainment === "other" && (
+              <CustomTextField
+                id="otherHoursOfEntertainment"
+                variant="outlined"
+                fullWidth
+                value={formik.values.otherHoursOfEntertainment}
+                onChange={formik.handleChange}
+              />
+            )}
           </Box>
           <Box>
             <CustomFormLabel htmlFor="audioSupport">

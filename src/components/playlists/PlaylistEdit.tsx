@@ -678,11 +678,14 @@ const PlaylistEdit = ({
               }
               getOptionDisabled={(option) => compareSelected(option, values)}
               options={
-                tracks?.map((option, index) => ({
-                  ...option,
-                  value: index,
-                })) || []
+                tracks?.map((option, index) => {
+                  return {
+                    ...option,
+                    value: index,
+                  };
+                }) || []
               }
+              filterOptions={(options) => options}
               renderInput={(params) => (
                 <CustomTextField
                   {...params}

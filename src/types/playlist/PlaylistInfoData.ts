@@ -4,6 +4,7 @@ export type PlaylistInfoData = {
   id?: number | null;
   spotifyPlaylistId?: number | null;
   eventId?: number | null;
+  playlistUrl?: string | null;
   eventType?: {
     id: number;
     name: string;

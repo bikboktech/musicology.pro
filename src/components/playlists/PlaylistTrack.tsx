@@ -54,6 +54,8 @@ const PlaylistTrack = ({
     }
   };
 
+  console.log(track, "track");
+
   return (
     <ListItem
       key={track.id}

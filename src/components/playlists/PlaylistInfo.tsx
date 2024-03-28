@@ -114,6 +114,19 @@ const PlaylistInfo = ({
                 )}
               </Box>
             </Grid>
+            <Grid item xs={6} sm={6}>
+              <Typography color="textSecondary" mb={1}>
+                Playlist URL:{" "}
+                <a
+                  href={values?.playlistUrl ?? ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  {values?.playlistUrl}
+                </a>
+              </Typography>
+            </Grid>
             <Grid item xs={12} sm={12}>
               <Paper
                 variant="outlined"

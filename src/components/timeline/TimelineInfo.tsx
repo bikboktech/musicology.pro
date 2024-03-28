@@ -45,6 +45,8 @@ import {
   ContentText,
   ContentTocItem,
 } from "pdfmake/interfaces";
+import PlaylistTrack from "../playlists/PlaylistTrack";
+import { TrackInfo } from "../../types/playlist/TrackInfo";
 
 type ContentType = string | { text: string; style?: string };
 
@@ -105,6 +107,10 @@ const TimelineInfo = ({
   }>({
     state: false,
   });
+  const [playingTrack, setPlayingTrack] = useState<
+    TrackInfo & { audio?: HTMLAudioElement }
+  >();
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const theme = useTheme();
   const router = useRouter();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -369,24 +375,13 @@ const TimelineInfo = ({
                   (open.timelineCard.time as Dayjs).format("YYYY MM DD HH:MM")}
               </Typography>
               {open.timelineCard?.track && (
-                <a
-                  href={open.timelineCard?.track.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <CustomFormLabel htmlFor="playlistName">Song</CustomFormLabel>
-                  <ListItem>
-                    <ListItemAvatar>
-                      <Avatar src={open.timelineCard?.track.imageUrl} />
-                    </ListItemAvatar>
-                    <ListItemText
-                      id={open.timelineCard?.track.id}
-                      primary={open.timelineCard?.track.name}
-                      secondary={open.timelineCard?.track.artists}
-                    />
-                  </ListItem>
-                </a>
+                <PlaylistTrack
+                  track={open.timelineCard?.track}
+                  playingTrack={playingTrack}
+                  setPlayingTrack={setPlayingTrack}
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
+                />
               )}
               <CustomFormLabel htmlFor="instructions">
                 Instructions

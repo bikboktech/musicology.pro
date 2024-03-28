@@ -84,6 +84,9 @@ const TIMELINE_NAME_RECOMMENDATIONS = [
   "Bouquet Toss",
   "Garter Toss",
   "Last Dance/Song",
+  "Cocktail Hour",
+  "Aperitivo",
+  "Dinner Background",
 ];
 
 const TimelineEdit = ({

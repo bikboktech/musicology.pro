@@ -5,6 +5,7 @@ import { Autocomplete, Box, Button, CircularProgress } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 
 import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
 import CustomTextField from "../forms/theme-elements/CustomTextField";
@@ -12,6 +13,8 @@ import axios from "../../utils/axios";
 import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
 import { EventInfoData } from "../../types/events/EventInfoData";
 import ErrorSnackbar from "../../components/error/ErrorSnackbar";
+
+dayjs.extend(customParseFormat);
 
 const ARTIST_ID = 2;
 const CLIENT_ID = 3;
@@ -80,7 +83,9 @@ const EventInfoEdit = ({
         id: 0,
         fullName: "",
       },
-      eventDate: values?.eventDate || dayjs().add(1, "month"),
+      eventDate: values?.eventDate
+        ? dayjs(values?.eventDate, "DD/MM/YYYY")
+        : dayjs().add(1, "month"),
       guestCount: values?.guestCount || null,
       artist: values?.artist || {
         id: 0,
@@ -176,6 +181,9 @@ const EventInfoEdit = ({
     const el = document.querySelector(".Mui-error, [data-error]");
     (el?.parentElement ?? el)?.scrollIntoView();
   }, [formik.isSubmitting]);
+
+  console.log(values?.eventDate, "BBBBBB");
+  console.log(formik.values, "AAAAAAAA");
 
   return (
     <Box>

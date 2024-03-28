@@ -224,6 +224,10 @@ const TimelineEdit = ({
   };
 
   const handleSave = async (values: TimelineData[] | undefined) => {
+    if (!values?.length) {
+      setError("Timeline is empty");
+    }
+
     setLoading(true);
 
     try {

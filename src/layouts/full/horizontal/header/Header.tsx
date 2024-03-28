@@ -13,11 +13,7 @@ import {
 import { useSelector, useDispatch } from "../../../../store/Store";
 import { toggleMobileSidebar } from "../../../../store/customizer/CustomizerSlice";
 import { IconMenu2 } from "@tabler/icons-react";
-import Notifications from "../../../../layouts/full/vertical/header/Notification";
 import Profile from "../../../../layouts/full/vertical/header/Profile";
-import Search from "../../../../layouts/full/vertical/header/Search";
-import Language from "../../../../layouts/full/vertical/header/Language";
-import Navigation from "../../../../layouts/full/vertical/header/Navigation";
 import Logo from "../../../../layouts/full/shared/logo/Logo";
 import { AppState } from "../../../../store/Store";
 
@@ -54,9 +50,6 @@ const Header = () => {
         <Box sx={{ width: lgDown ? "45px" : "auto", overflow: "hidden" }}>
           <Logo />
         </Box>
-        {/* ------------------------------------------- */}
-        {/* Toggle Button Sidebar */}
-        {/* ------------------------------------------- */}
         {lgDown ? (
           <IconButton
             color="inherit"
@@ -68,22 +61,8 @@ const Header = () => {
         ) : (
           ""
         )}
-        {/* ------------------------------------------- */}
-        {/* Search Dropdown */}
-        {/* ------------------------------------------- */}
-        {/* {lgUp ? (
-          <>
-            <Navigation />
-          </>
-        ) : null} */}
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-          {/* ------------------------------------------- */}
-          {/* Ecommerce Dropdown */}
-          {/* ------------------------------------------- */}
-          {/* ------------------------------------------- */}
-          {/* End Ecommerce Dropdown */}
-          {/* ------------------------------------------- */}
           <Profile />
         </Stack>
       </ToolbarStyled>

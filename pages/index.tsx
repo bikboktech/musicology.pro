@@ -14,9 +14,7 @@ import PageContainer from "../src/components/container/PageContainer";
 import { useRouter } from "next/router";
 import { useAuth } from "../context/AuthContext";
 import axios from "../src/utils/axios";
-import { getCookie } from "cookies-next";
 import { IconXboxX, IconCircleCheck } from "@tabler/icons-react";
-import { GetServerSidePropsContext } from "next";
 
 type Events = {
   id: number;
@@ -294,48 +292,6 @@ const Modern = () => {
       </Box>
     </PageContainer>
   );
-};
-
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  const { req } = context;
-
-  try {
-    const token = getCookie(process.env.NEXT_PUBLIC_AUTH_COOKIE_KEY as string, {
-      req,
-    });
-
-    if (token) {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/upcoming`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      return {
-        props: {
-          events: response.data,
-        },
-      };
-    }
-
-    return {
-      props: {
-        events: [],
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        events: [],
-        error: "Failed to load events.",
-      },
-    };
-  }
 };
 
 export default Modern;

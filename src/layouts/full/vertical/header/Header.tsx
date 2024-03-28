@@ -6,6 +6,7 @@ import {
   Toolbar,
   styled,
   Stack,
+  Typography,
 } from "@mui/material";
 import { useSelector, useDispatch } from "../../../../store/Store";
 import {
@@ -46,9 +47,6 @@ const Header = () => {
   return (
     <AppBarStyled position="sticky" color="default">
       <ToolbarStyled>
-        {/* ------------------------------------------- */}
-        {/* Toggle Button Sidebar */}
-        {/* ------------------------------------------- */}
         <IconButton
           color="inherit"
           aria-label="menu"
@@ -60,28 +58,20 @@ const Header = () => {
         >
           <IconMenu2 size="20" />
         </IconButton>
-
-        {/* ------------------------------------------- */}
-        {/* Search Dropdown */}
-        {/* ------------------------------------------- */}
-        {/* {lgUp ? (
-          <>
-            <Navigation />
-          </>
-        ) : null} */}
-
+        <Box style={{ width: "100%", paddingLeft: "10px" }}>
+          <div style={{ color: "white", width: "100%" }}>
+            <a
+              href={"https://musicologyentertainment.com/dwk"}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <Typography variant="h6">DWK</Typography>
+            </a>
+          </div>
+        </Box>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-          {/* ------------------------------------------- */}
-          {/* Ecommerce Dropdown */}
-          {/* ------------------------------------------- */}
-          {/* ------------------------------------------- */}
-          {/* End Ecommerce Dropdown */}
-          {/* ------------------------------------------- */}
-          {/* ------------------------------------------- */}
-          {/* Toggle Right Sidebar for mobile */}
-          {/* ------------------------------------------- */}
-
           <Profile />
         </Stack>
       </ToolbarStyled>

@@ -182,9 +182,6 @@ const EventInfoEdit = ({
     (el?.parentElement ?? el)?.scrollIntoView();
   }, [formik.isSubmitting]);
 
-  console.log(values?.eventDate, "BBBBBB");
-  console.log(formik.values, "AAAAAAAA");
-
   return (
     <Box>
       <form onSubmit={formik.handleSubmit}>

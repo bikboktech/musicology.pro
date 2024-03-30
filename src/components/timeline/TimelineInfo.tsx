@@ -299,11 +299,11 @@ const TimelineInfo = ({
                             variant="h6"
                             noWrap
                             color={"primary.main"}
-                            sx={{ paddingBottom: "5px" }}
+                            sx={{ paddingBottom: "5px", width: "100%" }}
                           >
                             {card.name}
                           </Typography>
-                          {card.track && (
+                          {card.track?.id && (
                             <Stack
                               direction="row"
                               justifyContent="space-between"
@@ -326,7 +326,15 @@ const TimelineInfo = ({
                               </Typography>
                             </Stack>
                           )}
-                          <Typography variant="caption">
+                          <Typography
+                            variant="caption"
+                            style={{
+                              width: "100%",
+                              display: "block",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
                             {`Instructions: ${card.instructions || "/"}`}
                           </Typography>
                         </Box>

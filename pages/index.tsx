@@ -151,6 +151,7 @@ const Modern = () => {
                         display="flex"
                         alignItems="left"
                         flexDirection="column"
+                        style={{ width: "100%" }}
                       >
                         <Typography variant="h5" noWrap>
                           {event.eventName}

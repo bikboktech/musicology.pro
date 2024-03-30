@@ -322,10 +322,29 @@ const TimelineEdit = ({
             >
               {values?.map((card) => (
                 <TimelineItem>
-                  <TimelineOppositeContent sx={{ m: "auto 0" }}>
+                  <TimelineOppositeContent
+                    sx={{
+                      m: "auto 0",
+                      display: {
+                        xs: "none",
+                        sm: "block",
+                        md: "block",
+                        lg: "block",
+                      },
+                    }}
+                  >
                     {dayjs(card.time).format("YY/MM/DD HH:mm")}
                   </TimelineOppositeContent>
-                  <TimelineSeparator>
+                  <TimelineSeparator
+                    sx={{
+                      paddingLeft: {
+                        xs: "10%",
+                        sm: "0px",
+                        md: "0px",
+                        lg: "0px",
+                      },
+                    }}
+                  >
                     <TimelineConnector />
                     <TimelineDot color="primary" variant="outlined" />
                     <TimelineConnector />
@@ -390,7 +409,15 @@ const TimelineEdit = ({
                           </Tooltip>
                         </Stack>
                       )}
-                      <Typography variant="caption">
+                      <Typography
+                        variant="caption"
+                        style={{
+                          width: "100%",
+                          display: "block",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
                         {`Instructions: ${card.instructions}`}
                       </Typography>
                     </Box>

@@ -1,0 +1,31 @@
+name: Deploy to Azure Container Registry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: azure/docker-login@v1
+        with:
+          login-server: 'musicologypro.azurecr.io' # default: index.docker.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          IMAGE_TAG: latest
+          DOCKERFILE: Dockerfile.FRONTEND
+          REPOSITORY_NAME: musicology.pro
+        run: |
+          # Build a docker container and push it to ECR so that it can be deployed to ECS.
+          docker build --file ${DOCKERFILE} --tag musicologypro.azurecr.io/${REPOSITORY_NAME}:${IMAGE_TAG} --push .
+          echo "image=musicologypro.azurecr.io/$REPOSITORY_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT

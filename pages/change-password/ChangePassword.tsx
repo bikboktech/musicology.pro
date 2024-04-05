@@ -18,32 +18,41 @@ import * as yup from "yup";
 import axios from "../../src/utils/axios";
 import { useState } from "react";
 import ErrorSnackbar from "../../src/components/error/ErrorSnackbar";
-import { setCookie } from "cookies-next";
 import { useRouter } from "next/router";
-import { useAuth } from "../../context/AuthContext";
 
-const AuthLogin = ({ title, subtext }: loginType) => {
+const ChangePassword = ({ title, subtext }: loginType) => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { login } = useAuth();
 
   const formik = useFormik({
     initialValues: {
-      email: "",
       password: "",
+      confirmPassword: "",
     },
     validationSchema: yup.object({
-      email: yup
-        .string()
-        .email("Email must be valid")
-        .required("Email is required"),
       password: yup.string().required("Password is required"),
+      confirmPassword: yup.string().required("Password is required"),
     }),
     onSubmit: async (data) => {
-      try {
-        await login(data.email, data.password);
+      if (data.password !== data.confirmPassword) {
+        setError("Passwords are not matching. Try again");
 
-        router.push(`/`);
+        return;
+      }
+
+      try {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/password`,
+          JSON.stringify({
+            password: data.password,
+            token: router.query.token,
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        router.push(`/reset-password-complete`);
       } catch (err: any) {
         setError(err.response.data);
       }
@@ -60,19 +69,7 @@ const AuthLogin = ({ title, subtext }: loginType) => {
 
       {subtext}
       <form onSubmit={formik.handleSubmit}>
-        <Stack>
-          <Box>
-            <CustomFormLabel htmlFor="email">Email</CustomFormLabel>
-            <CustomTextField
-              id="email"
-              variant="outlined"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              error={formik.touched.email && Boolean(formik.errors.email)}
-              helperText={formik.touched.email && formik.errors.email}
-              fullWidth
-            />
-          </Box>
+        <Stack mb={2}>
           <Box>
             <CustomFormLabel htmlFor="password">Password</CustomFormLabel>
             <CustomTextField
@@ -86,30 +83,26 @@ const AuthLogin = ({ title, subtext }: loginType) => {
               fullWidth
             />
           </Box>
-          <Stack
-            justifyContent="space-between"
-            direction="row"
-            alignItems="center"
-            my={2}
-          >
-            <FormGroup>
-              <FormControlLabel
-                control={<CustomCheckbox defaultChecked />}
-                label="Remeber Me"
-              />
-            </FormGroup>
-            <Typography
-              component={Link}
-              href="/change-password-request"
-              fontWeight="500"
-              sx={{
-                textDecoration: "none",
-                color: "primary.main",
-              }}
-            >
-              Change Password ?
-            </Typography>
-          </Stack>
+          <Box>
+            <CustomFormLabel htmlFor="confirmPassword">
+              Confirm Password
+            </CustomFormLabel>
+            <CustomTextField
+              id="confirmPassword"
+              type="password"
+              variant="outlined"
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.confirmPassword &&
+                Boolean(formik.errors.confirmPassword)
+              }
+              helperText={
+                formik.touched.confirmPassword && formik.errors.confirmPassword
+              }
+              fullWidth
+            />
+          </Box>
         </Stack>
         <Box>
           {formik.isSubmitting ? (
@@ -122,7 +115,7 @@ const AuthLogin = ({ title, subtext }: loginType) => {
               fullWidth
               type="submit"
             >
-              Sign In
+              Submit
             </Button>
           )}
           <ErrorSnackbar error={error} setError={setError} />
@@ -132,4 +125,4 @@ const AuthLogin = ({ title, subtext }: loginType) => {
   );
 };
 
-export default AuthLogin;
+export default ChangePassword;

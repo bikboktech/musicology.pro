@@ -4,7 +4,7 @@ import Link from "next/link";
 import CustomTextField from "../../src/components/forms/theme-elements/CustomTextField";
 import CustomFormLabel from "../../src/components/forms/theme-elements/CustomFormLabel";
 
-const ForgotPassword = () => (
+const ChangePassword = () => (
   <>
     <Stack mt={4} spacing={2}>
       <CustomFormLabel htmlFor="reset-email">Email Adddress</CustomFormLabel>
@@ -18,7 +18,7 @@ const ForgotPassword = () => (
         component={Link}
         href="/"
       >
-        Forgot Password
+        Send
       </Button>
       <Button
         color="primary"
@@ -39,4 +39,4 @@ const ForgotPassword = () => (
   </>
 );
 
-export default ForgotPassword;
+export default ChangePassword;

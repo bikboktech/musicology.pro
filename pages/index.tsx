@@ -176,7 +176,7 @@ const Modern = () => {
                           <Typography
                             variant="caption"
                             sx={{ fontSize: "0.85rem" }}
-                          >{`Client: ${event.artist}`}</Typography>
+                          >{`Artist: ${event.artist}`}</Typography>
                         </Stack>
                         <Typography variant="h6" sx={{ pt: "20px" }} noWrap>
                           {`Event completed: ${eventCompleted.toFixed(2)} %`}

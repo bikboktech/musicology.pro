@@ -58,7 +58,7 @@ const Header = () => {
         >
           <IconMenu2 size="20" />
         </IconButton>
-        <Box style={{ width: "100%", paddingLeft: "10px" }}>
+        <Box style={{ paddingLeft: "10px" }}>
           <div style={{ color: "white", width: "100%" }}>
             <a
               href={"https://musicologyentertainment.com/dwk"}

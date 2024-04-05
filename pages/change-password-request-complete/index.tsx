@@ -1,8 +1,8 @@
-import { Grid, Box, Typography } from "@mui/material";
+import { Grid, Box, Typography, Stack, Button } from "@mui/material";
 import PageContainer from "../../src/components/container/PageContainer";
-import ForgotPassword from "./ForgotPassword";
+import Link from "next/link";
 
-const ForgotPasswordPage = () => (
+const ChangePasswordRequestCompletePage = () => (
   <PageContainer>
     <Grid
       container
@@ -42,7 +42,7 @@ const ForgotPasswordPage = () => (
             }}
           >
             <img
-              src={"/images/backgrounds/musicologypro-1.png"}
+              src={"/images/backgrounds/musicologypro-2.png"}
               alt="bg"
               style={{
                 width: "100%",
@@ -64,7 +64,7 @@ const ForgotPasswordPage = () => (
       >
         <Box p={4}>
           <Typography variant="h4" fontWeight="700">
-            Forgot your password?
+            Password Change Successfully Requested
           </Typography>
 
           <Typography
@@ -73,15 +73,14 @@ const ForgotPasswordPage = () => (
             fontWeight="400"
             mt={2}
           >
-            Please enter the email address associated with your account and We
-            will email you a link to reset your password.
+            You will shortly receive an email with the link to change your
+            password.
           </Typography>
-          <ForgotPassword />
         </Box>
       </Grid>
     </Grid>
   </PageContainer>
 );
 
-ForgotPasswordPage.layout = "Blank";
-export default ForgotPasswordPage;
+ChangePasswordRequestCompletePage.layout = "Blank";
+export default ChangePasswordRequestCompletePage;

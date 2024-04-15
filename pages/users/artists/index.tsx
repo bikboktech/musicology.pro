@@ -53,8 +53,13 @@ const ARTIST_ID = 2;
 
 const getArtists = async (
   setArtists: Dispatch<SetStateAction<Artists | undefined>>,
-  params: QueryParams
+  params: QueryParams,
+  setLoading?: Dispatch<SetStateAction<boolean>>
 ) => {
+  if (setLoading) {
+    setLoading(true);
+  }
+
   const queryParams = buildQueryParams(params);
 
   const artists = await axios.get(
@@ -62,6 +67,10 @@ const getArtists = async (
   );
 
   setArtists(artists.data);
+
+  if (setLoading) {
+    setLoading(false);
+  }
 };
 
 const handleDeleteRows = async (

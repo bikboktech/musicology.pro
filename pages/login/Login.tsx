@@ -95,7 +95,7 @@ const AuthLogin = ({ title, subtext }: loginType) => {
             <FormGroup>
               <FormControlLabel
                 control={<CustomCheckbox defaultChecked />}
-                label="Remeber Me"
+                label="Remember Me"
               />
             </FormGroup>
             <Typography
@@ -122,7 +122,7 @@ const AuthLogin = ({ title, subtext }: loginType) => {
               fullWidth
               type="submit"
             >
-              Sign In
+              Log In
             </Button>
           )}
           <ErrorSnackbar error={error} setError={setError} />

@@ -38,8 +38,13 @@ const BCrumb = [
 
 const getEvents = async (
   setEvents: Dispatch<SetStateAction<Events | undefined>>,
-  params: QueryParams
+  params: QueryParams,
+  setLoading?: Dispatch<SetStateAction<boolean>>
 ) => {
+  if (setLoading) {
+    setLoading(true);
+  }
+
   const queryParams = buildQueryParams(params);
 
   const events = await axios.get(
@@ -47,6 +52,10 @@ const getEvents = async (
   );
 
   setEvents(events.data);
+
+  if (setLoading) {
+    setLoading(false);
+  }
 };
 
 const handleDeleteRows = async (

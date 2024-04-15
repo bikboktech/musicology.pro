@@ -247,7 +247,7 @@ const TimelineInfo = ({
                           },
                         }}
                       >
-                        {dayjs(card.time).format("YY/MM/DD HH:mm")}
+                        {dayjs(card.time).format("DD/MM/YYYY HH:mm")}
                       </TimelineOppositeContent>
                       <TimelineSeparator
                         sx={{
@@ -293,7 +293,7 @@ const TimelineInfo = ({
                               },
                             }}
                           >
-                            {dayjs(card.time).format("YY/MM/DD HH:mm")}
+                            {dayjs(card.time).format("DD/MM/YYYY HH:mm")}
                           </Typography>
                           <Typography
                             variant="h6"
@@ -380,7 +380,7 @@ const TimelineInfo = ({
               <CustomFormLabel htmlFor="time">Time</CustomFormLabel>
               <Typography color="textSecondary" mb={3}>
                 {open.timelineCard?.time &&
-                  (open.timelineCard.time as Dayjs).format("YYYY MM DD HH:MM")}
+                  (open.timelineCard.time as Dayjs).format("DD/MM/YYYY HH:mm")}
               </Typography>
               {open.timelineCard?.track && (
                 <PlaylistTrack

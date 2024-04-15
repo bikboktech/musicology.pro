@@ -39,8 +39,13 @@ const BCrumb = [
 
 const getQuotes = async (
   setQuotes: Dispatch<SetStateAction<Quotes | undefined>>,
-  params: QueryParams
+  params: QueryParams,
+  setLoading?: Dispatch<SetStateAction<boolean>>
 ) => {
+  if (setLoading) {
+    setLoading(true);
+  }
+
   const queryParams = buildQueryParams(params);
 
   const quotes = await axios.get(
@@ -48,6 +53,10 @@ const getQuotes = async (
   );
 
   setQuotes(quotes.data);
+
+  if (setLoading) {
+    setLoading(false);
+  }
 };
 
 const handleDeleteRows = async (

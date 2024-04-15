@@ -7,8 +7,10 @@ import {
   Box,
   CircularProgress,
   Table,
+  TableCell,
   TableContainer,
   TablePagination,
+  TableRow,
   debounce,
 } from "@mui/material";
 import BlankCard from "../../../src/components/shared/BlankCard";
@@ -84,18 +86,24 @@ const SmartTable = ({
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [search, setSearch] = React.useState("");
+  const [loading, setLoading] = React.useState<boolean>(true);
 
   useEffect(() => {
-    getData(setData, {
-      search,
-      limit: rowsPerPage || 5,
-      offset: page * rowsPerPage,
-      sort: {
-        field:
-          columns.find((column) => orderBy === column.id)?.sqlColumn || orderBy,
-        direction: order,
+    getData(
+      setData,
+      {
+        search,
+        limit: rowsPerPage || 5,
+        offset: page * rowsPerPage,
+        sort: {
+          field:
+            columns.find((column) => orderBy === column.id)?.sqlColumn ||
+            orderBy,
+          direction: order,
+        },
       },
-    });
+      setLoading
+    );
   }, [search, rowsPerPage, page, order, orderBy]);
 
   const tableData = useMemo(
@@ -172,13 +180,29 @@ const SmartTable = ({
               columns={columns}
             />
 
-            <EnhancedTableBody
-              columns={columns}
-              tableData={tableData}
-              handleRowClick={handleRowClick}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      padding: "15px",
+                    }}
+                  >
+                    <CircularProgress />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              <EnhancedTableBody
+                columns={columns}
+                tableData={tableData}
+                handleRowClick={handleRowClick}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
           </Table>
         </TableContainer>
         <TablePagination

@@ -72,7 +72,7 @@ const ChangePasswordPage = () => (
             fontWeight="400"
             mt={2}
           >
-            Type your new password into the inputs below
+            Type your new password into the fields below
           </Typography>
 
           <ChangePassword />

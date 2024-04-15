@@ -168,13 +168,23 @@ const Customers = () => {
     formik.setFieldValue("email", "");
     formik.setFieldValue("phone", "");
 
+    formik.setTouched({
+      fullName: false,
+      phone: false,
+    });
+
     setOpen(false);
   };
 
   const getClients = async (
     setClients: Dispatch<SetStateAction<Clients | undefined>>,
-    params: QueryParams
+    params: QueryParams,
+    setLoading?: Dispatch<SetStateAction<boolean>>
   ) => {
+    if (setLoading) {
+      setLoading(true);
+    }
+
     const queryParams = buildQueryParams(params);
 
     const clients = await axios.get(
@@ -186,6 +196,10 @@ const Customers = () => {
     );
 
     setClients(clients.data);
+
+    if (setLoading) {
+      setLoading(false);
+    }
   };
 
   const handleDeleteRows = async (
@@ -203,6 +217,9 @@ const Customers = () => {
     setSelected([]);
     await getClients(setClients, {});
   };
+
+  console.log(formik.touched, "touched");
+  console.log(formik.errors, "errors");
 
   return (
     <>

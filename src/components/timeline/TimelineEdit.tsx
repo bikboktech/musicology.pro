@@ -40,7 +40,7 @@ import { useFormik } from "formik";
 import dayjs from "dayjs";
 
 import Scrollbar from "../custom-scroll/Scrollbar";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
 import CustomTextField from "../forms/theme-elements/CustomTextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -56,6 +56,7 @@ import * as yup from "yup";
 import { CardMembership } from "@mui/icons-material";
 import ErrorSnackbar from "../error/ErrorSnackbar";
 import CustomRadio from "../forms/theme-elements/CustomRadio";
+import { debounce } from "lodash";
 
 const getTracks = async (
   setTracks: Dispatch<SetStateAction<TrackInfo[]>>,
@@ -171,6 +172,13 @@ const TimelineEdit = ({
       setOpen({ state: false });
     },
   });
+
+  const debouncedGetTracks = useCallback(
+    debounce(async (data) => {
+      await getTracks(setTracks, { search: data });
+    }, 500),
+    []
+  );
 
   const handleClickOpen = (data?: TimelineData) => {
     if (data) {
@@ -333,7 +341,7 @@ const TimelineEdit = ({
                       },
                     }}
                   >
-                    {dayjs(card.time).format("YY/MM/DD HH:mm")}
+                    {dayjs(card.time).format("DD/MM/YYYY HH:mm")}
                   </TimelineOppositeContent>
                   <TimelineSeparator
                     sx={{
@@ -369,7 +377,23 @@ const TimelineEdit = ({
                         variant="h6"
                         noWrap
                         color={"primary.main"}
-                        sx={{ paddingBottom: "5px" }}
+                        sx={{
+                          paddingBottom: "5px",
+                          display: {
+                            xs: "block",
+                            sm: "none",
+                            md: "none",
+                            lg: "none",
+                          },
+                        }}
+                      >
+                        {dayjs(card.time).format("DD/MM/YYYY HH:mm")}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        noWrap
+                        color={"primary.main"}
+                        sx={{ paddingBottom: "5px", width: "100%" }}
                       >
                         {card.name}
                       </Typography>
@@ -576,49 +600,43 @@ const TimelineEdit = ({
                   mb: 2,
                 }}
                 onInputChange={async (_, data) => {
-                  await getTracks(setTracks, {
-                    search: data,
-                  });
+                  debouncedGetTracks(data);
                 }}
                 onChange={(_, data) => {
                   if (data) {
                     formik.setFieldValue("track", data);
                   }
                 }}
-                getOptionLabel={(option) =>
-                  typeof option === "object" ? option.name : ""
+                getOptionLabel={(option: string | TrackInfo) =>
+                  typeof option === "object"
+                    ? `${option.artists} ${option.name}`
+                    : ""
                 }
                 getOptionDisabled={(option) =>
                   compareSelected(option, eventPlaylist)
                 }
-                value={formik.values.track}
                 options={
-                  tracks?.map((option, index) => ({
-                    ...option,
-                    value: index,
-                  })) || []
+                  tracks?.map((option, index) => {
+                    return {
+                      ...option,
+                      value: index,
+                    };
+                  }) || []
                 }
+                filterOptions={(options) => options}
                 renderInput={(params) => (
                   <CustomTextField
                     {...params}
                     placeholder="Powered by Spotify"
                     aria-label="PoweredBySpotify"
+                    onKeyDown={(event: any) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }
+                    }}
                   />
                 )}
-                renderOption={(props, option) => {
-                  return (
-                    <ListItem {...props} key={option.id}>
-                      <ListItemAvatar>
-                        <Avatar src={option.imageUrl} />
-                      </ListItemAvatar>
-                      <ListItemText
-                        id={option.id}
-                        primary={option.name}
-                        secondary={option.artists}
-                      />
-                    </ListItem>
-                  );
-                }}
               />
               <CustomFormLabel htmlFor="instructions">
                 Instructions

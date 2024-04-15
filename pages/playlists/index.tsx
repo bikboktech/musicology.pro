@@ -33,8 +33,13 @@ const BCrumb = [
 
 const getTemplatePlaylists = async (
   setPlaylists: Dispatch<SetStateAction<Playlists | undefined>>,
-  params: QueryParams
+  params: QueryParams,
+  setLoading?: Dispatch<SetStateAction<boolean>>
 ) => {
+  if (setLoading) {
+    setLoading(true);
+  }
+
   const queryParams = buildQueryParams(params);
 
   const playlists = await axios.get(
@@ -42,6 +47,10 @@ const getTemplatePlaylists = async (
   );
 
   setPlaylists(playlists.data);
+
+  if (setLoading) {
+    setLoading(false);
+  }
 };
 
 const handleDeleteRows = async (

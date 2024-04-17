@@ -1,18 +1,8 @@
 import {
-  Avatar,
-  Box,
-  Button,
   Card,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  Grid,
-  Paper,
-  Stack,
   Tab,
   Tabs,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -27,14 +17,12 @@ import SmartTable from "../../../src/components/smart-table";
 import buildQueryParams, {
   QueryParams,
 } from "../../../src/components/smart-table/utils/buildQueryParams";
-import CustomFormLabel from "../../../src/components/forms/theme-elements/CustomFormLabel";
-import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "../../../src/utils/axios";
-import ErrorSnackbar from "../../../src/components/error/ErrorSnackbar";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../context/AuthContext";
+import UserDialog from "../../../src/components/users/UserDialog";
 
 type Clients = {
   data: {
@@ -73,8 +61,6 @@ const Customers = () => {
   const [openTab, setOpenTab] = useState("verified");
   const [clients, setClients] = useState<Clients>();
   const [open, setOpen] = useState<boolean>(false);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, isLoading } = useAuth();
@@ -218,9 +204,6 @@ const Customers = () => {
     await getClients(setClients, {});
   };
 
-  console.log(formik.touched, "touched");
-  console.log(formik.errors, "errors");
-
   return (
     <>
       <PageContainer>
@@ -280,77 +263,13 @@ const Customers = () => {
           </TabContext>
         </Card>
       </PageContainer>
-      <Dialog
-        fullScreen={fullScreen}
+      <UserDialog
         open={open}
-        onClose={handleClose}
-        aria-labelledby="responsive-dialog-title"
-        sx={{
-          "& .MuiPaper-root": {
-            width: "100%",
-          },
-        }}
-      >
-        <form onSubmit={formik.handleSubmit}>
-          <DialogContent>
-            <Box>
-              <CustomFormLabel htmlFor="fullName">Full Name</CustomFormLabel>
-              <CustomTextField
-                id="fullName"
-                variant="outlined"
-                name="fullName"
-                value={formik.values.fullName}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.fullName && Boolean(formik.errors.fullName)
-                }
-                disabled={openTab === "unverified"}
-                helperText={formik.touched.fullName && formik.errors.fullName}
-                fullWidth
-              />
-              <CustomFormLabel htmlFor="email">Email</CustomFormLabel>
-              <CustomTextField
-                id="email"
-                variant="outlined"
-                name="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                disabled={openTab === "unverified"}
-                helperText={formik.touched.email && formik.errors.email}
-                fullWidth
-              />
-              <CustomFormLabel htmlFor="phone">Phone</CustomFormLabel>
-              <CustomTextField
-                id="phone"
-                variant="outlined"
-                name="phone"
-                value={formik.values.phone}
-                onChange={formik.handleChange}
-                disabled={openTab === "unverified"}
-                fullWidth
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button autoFocus onClick={handleClose}>
-              Cancel
-            </Button>
-            {formik.isSubmitting ? (
-              <CircularProgress />
-            ) : openTab === "unverified" ? (
-              <Button type="submit" autoFocus>
-                Approve
-              </Button>
-            ) : (
-              <Button type="submit" autoFocus>
-                Confirm
-              </Button>
-            )}
-            <ErrorSnackbar error={error} setError={setError} />
-          </DialogActions>
-        </form>
-      </Dialog>
+        setOpen={setOpen}
+        error={error}
+        setError={setError}
+        formik={formik}
+      />
     </>
   );
 };

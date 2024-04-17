@@ -59,7 +59,14 @@ const AuthLogin = ({ title, subtext }: loginType) => {
       ) : null}
 
       {subtext}
-      <form onSubmit={formik.handleSubmit}>
+      <form
+        onSubmit={formik.handleSubmit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+          }
+        }}
+      >
         <Stack>
           <Box>
             <CustomFormLabel htmlFor="email">Email</CustomFormLabel>

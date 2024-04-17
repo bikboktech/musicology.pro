@@ -16,11 +16,70 @@ import { IconMail, IconSettings, IconUserCircle } from "@tabler/icons-react";
 import { Stack } from "@mui/system";
 import { useAuth } from "../../../../../context/AuthContext";
 import { useRouter } from "next/router";
+import * as yup from "yup";
+import UserDialog from "../../../../components/users/UserDialog";
+import axios from "../../../../utils/axios";
+import { useFormik } from "formik";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
-  const { user, logout } = useAuth();
+  const [open, setOpen] = useState<boolean>(false);
+  const { user, logout, setUser } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const formik = useFormik({
+    initialValues: {
+      id: null,
+      fullName: "",
+      email: "",
+      phone: "",
+    },
+    validationSchema: yup.object({
+      fullName: yup.string().required("Name is required"),
+      email: yup
+        .string()
+        .email("Email must be valid")
+        .required("Email is required"),
+    }),
+    onSubmit: async (data) => {
+      try {
+        if (user) {
+          const updatedUser = await axios.put(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/${data.id}`,
+            JSON.stringify({
+              ...data,
+              accountTypeId: user.accountType.id,
+              active: true,
+            }),
+            {
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+
+          setUser(updatedUser.data);
+        }
+
+        handleClose();
+      } catch (err: any) {
+        setError(err.response.data);
+      }
+    },
+  });
+
+  const handleClose = () => {
+    formik.setFieldValue("id", null);
+    formik.setFieldValue("fullName", "");
+    formik.setFieldValue("email", "");
+    formik.setFieldValue("phone", "");
+
+    formik.setTouched({
+      fullName: false,
+      phone: false,
+    });
+
+    setOpen(false);
+  };
 
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
@@ -99,49 +158,65 @@ const Profile = () => {
         {dropdownData.profile.slice(0, 1).map((profile) => (
           <Box key={profile.title}>
             <Box sx={{ py: 2, px: 0 }} className="hover-text-primary">
-              <Link href={profile.href}>
-                <Stack direction="row" spacing={2}>
-                  <Box
-                    width="45px"
-                    height="45px"
-                    bgcolor="primary.light"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
+              <Stack direction="row" spacing={2}>
+                <Box
+                  width="45px"
+                  height="45px"
+                  bgcolor="primary.light"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <IconButton
+                    onClick={() => {
+                      if (user) {
+                        formik.setFieldValue("id", user.id);
+                        formik.setFieldValue("fullName", user.fullName);
+                        formik.setFieldValue("email", user.email);
+                        formik.setFieldValue("phone", user.phone);
+
+                        setOpen(true);
+                      }
+                    }}
                   >
-                    <IconButton>
-                      <IconSettings />
-                    </IconButton>
-                  </Box>
-                  <Box>
-                    <Typography
-                      variant="subtitle2"
-                      fontWeight={600}
-                      color="textPrimary"
-                      className="text-hover"
-                      noWrap
-                      sx={{
-                        width: "240px",
-                      }}
-                    >
-                      {profile.title}
-                    </Typography>
-                    <Typography
-                      color="textSecondary"
-                      variant="subtitle2"
-                      sx={{
-                        width: "240px",
-                      }}
-                      noWrap
-                    >
-                      {profile.subtitle}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Link>
+                    <IconSettings />
+                  </IconButton>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={600}
+                    color="textPrimary"
+                    className="text-hover"
+                    noWrap
+                    sx={{
+                      width: "240px",
+                    }}
+                  >
+                    {profile.title}
+                  </Typography>
+                  <Typography
+                    color="textSecondary"
+                    variant="subtitle2"
+                    sx={{
+                      width: "240px",
+                    }}
+                    noWrap
+                  >
+                    {profile.subtitle}
+                  </Typography>
+                </Box>
+              </Stack>
             </Box>
           </Box>
         ))}
+        <UserDialog
+          open={open}
+          setOpen={setOpen}
+          error={error}
+          setError={setError}
+          formik={formik}
+        />
         <Box mt={2}>
           <Button
             variant="outlined"

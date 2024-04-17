@@ -442,7 +442,7 @@ const TimelineEdit = ({
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {`Instructions: ${card.instructions}`}
+                        {`Instructions: ${card.instructions || "/"}`}
                       </Typography>
                     </Box>
                   </TimelineContent>
@@ -502,7 +502,14 @@ const TimelineEdit = ({
           },
         }}
       >
-        <form onSubmit={formik.handleSubmit}>
+        <form
+          onSubmit={formik.handleSubmit}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+            }
+          }}
+        >
           <DialogContent>
             <Box>
               <CustomFormLabel htmlFor="name">Name</CustomFormLabel>
@@ -637,6 +644,20 @@ const TimelineEdit = ({
                     }}
                   />
                 )}
+                renderOption={(props, option) => {
+                  return (
+                    <ListItem {...props} key={option.id}>
+                      <ListItemAvatar>
+                        <Avatar src={option.imageUrl} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        id={option.id}
+                        primary={option.name}
+                        secondary={option.artists}
+                      />
+                    </ListItem>
+                  );
+                }}
               />
               <CustomFormLabel htmlFor="instructions">
                 Instructions

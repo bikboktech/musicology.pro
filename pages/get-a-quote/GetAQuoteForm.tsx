@@ -258,7 +258,14 @@ const GetAQuoteForm = () => {
       </Typography>
       Please fill out this form to get as much understanding of how you envision
       your special day.
-      <form onSubmit={formik.handleSubmit}>
+      <form
+        onSubmit={formik.handleSubmit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+          }
+        }}
+      >
         <Stack>
           <Box>
             <CustomFormLabel htmlFor="email">Email</CustomFormLabel>

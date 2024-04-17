@@ -184,7 +184,14 @@ const EventInfoEdit = ({
 
   return (
     <Box>
-      <form onSubmit={formik.handleSubmit}>
+      <form
+        onSubmit={formik.handleSubmit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+          }
+        }}
+      >
         <CustomFormLabel htmlFor="eventName">Event name</CustomFormLabel>
         <CustomTextField
           id="eventName"

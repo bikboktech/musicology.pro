@@ -54,6 +54,7 @@ import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import { debounce } from "lodash";
 import PlaylistTrack from "./PlaylistTrack";
+import { ElectricBikeTwoTone } from "@mui/icons-material";
 
 type SpotifyPlaylistInfo = {
   id: string;
@@ -545,7 +546,18 @@ const PlaylistEdit = ({
 
   return (
     <Box>
-      <form onSubmit={formik.handleSubmit}>
+      <form
+        onSubmit={formik.handleSubmit}
+        onKeyDown={(event) => {
+          if (
+            event.key === "Enter" &&
+            (event.target as EventTarget & { id: string }).id !==
+              "importExistingSpotifyLink"
+          ) {
+            event.preventDefault();
+          }
+        }}
+      >
         <CustomFormLabel htmlFor="playlistName">Playlist name</CustomFormLabel>
         <CustomTextField
           id="playlistName"
@@ -664,7 +676,7 @@ const PlaylistEdit = ({
                 debouncedGetTracks(data);
               }}
               onChange={(_, data) => {
-                if (typeof data === "object") {
+                if (data && typeof data === "object") {
                   setValues({
                     ...values,
                     tracks: [...(values?.tracks || []), data as TrackInfo],
@@ -733,6 +745,8 @@ const PlaylistEdit = ({
                 setSpotifyLink(event.target.value);
               }}
               onKeyPress={async (ev: any) => {
+                ev.preventDefault();
+
                 if (ev.key === "Enter") {
                   await getPlaylist(setPlaylist, spotifyLink);
                 }

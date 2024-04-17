@@ -68,7 +68,14 @@ const ChangePassword = ({ title, subtext }: loginType) => {
       ) : null}
 
       {subtext}
-      <form onSubmit={formik.handleSubmit}>
+      <form
+        onSubmit={formik.handleSubmit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+          }
+        }}
+      >
         <Stack mb={2}>
           <Box>
             <CustomFormLabel htmlFor="password">Password</CustomFormLabel>

@@ -147,6 +147,7 @@ const SmartTable = ({
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
+    setPage(0);
   };
 
   return (

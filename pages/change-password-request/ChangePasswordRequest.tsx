@@ -46,7 +46,14 @@ const ChangePasswordRequest = () => {
 
   return (
     <>
-      <form onSubmit={formik.handleSubmit}>
+      <form
+        onSubmit={formik.handleSubmit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+          }
+        }}
+      >
         <Stack mt={4} spacing={2}>
           <Box>
             <CustomFormLabel htmlFor="email">Email</CustomFormLabel>

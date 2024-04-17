@@ -139,8 +139,9 @@ const Quote = () => {
                                 {`Quote - ${quoteInfo.id}`}
                               </Typography>
                               <Typography color="textSecondary" mb={3}>
-                                To approve the Quote and create an Event click
-                                Approve
+                                {!quoteInfo.approved
+                                  ? "To approve the Quote and create an Event click Approve"
+                                  : "Quote Approved"}
                               </Typography>
                             </Grid>
                             {!quoteInfo.approved && (

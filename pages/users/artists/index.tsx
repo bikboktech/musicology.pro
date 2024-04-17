@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Card, CircularProgress, useMediaQuery, useTheme } from "@mui/material";
 
 import Breadcrumb from "../../../src/layouts/full/shared/breadcrumb/Breadcrumb";
 import PageContainer from "../../../src/components/container/PageContainer";
@@ -19,13 +9,11 @@ import axios from "../../../src/utils/axios";
 import buildQueryParams, {
   QueryParams,
 } from "../../../src/components/smart-table/utils/buildQueryParams";
-import CustomFormLabel from "../../../src/components/forms/theme-elements/CustomFormLabel";
-import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import ErrorSnackbar from "../../../src/components/error/ErrorSnackbar";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../context/AuthContext";
+import UserDialog from "../../../src/components/users/UserDialog";
 
 type Artist = {
   id: number;
@@ -93,7 +81,6 @@ const handleDeleteRows = async (
 const Artists = () => {
   const [open, setOpen] = useState<boolean>(false);
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [artists, setArtists] = useState<Artists>();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -184,6 +171,11 @@ const Artists = () => {
     formik.setFieldValue("email", "");
     formik.setFieldValue("phone", "");
 
+    formik.setTouched({
+      fullName: false,
+      phone: false,
+    });
+
     setOpen(false);
   };
 
@@ -219,70 +211,13 @@ const Artists = () => {
           />
         </Card>
       </PageContainer>
-      <Dialog
-        fullScreen={fullScreen}
+      <UserDialog
         open={open}
-        onClose={handleClose}
-        aria-labelledby="responsive-dialog-title"
-        sx={{
-          "& .MuiPaper-root": {
-            width: "100%",
-          },
-        }}
-      >
-        <form onSubmit={formik.handleSubmit}>
-          <DialogContent>
-            <Box>
-              <CustomFormLabel htmlFor="fullName">Full Name</CustomFormLabel>
-              <CustomTextField
-                id="fullName"
-                variant="outlined"
-                name="fullName"
-                value={formik.values.fullName}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.fullName && Boolean(formik.errors.fullName)
-                }
-                helperText={formik.touched.fullName && formik.errors.fullName}
-                fullWidth
-              />
-              <CustomFormLabel htmlFor="email">Email</CustomFormLabel>
-              <CustomTextField
-                id="email"
-                variant="outlined"
-                name="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-                fullWidth
-              />
-              <CustomFormLabel htmlFor="phone">Phone</CustomFormLabel>
-              <CustomTextField
-                id="phone"
-                variant="outlined"
-                name="phone"
-                value={formik.values.phone}
-                onChange={formik.handleChange}
-                fullWidth
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button autoFocus onClick={handleClose}>
-              Cancel
-            </Button>
-            {formik.isSubmitting ? (
-              <CircularProgress />
-            ) : (
-              <Button type="submit" autoFocus>
-                Confirm
-              </Button>
-            )}
-            <ErrorSnackbar error={error} setError={setError} />
-          </DialogActions>
-        </form>
-      </Dialog>
+        setOpen={setOpen}
+        error={error}
+        setError={setError}
+        formik={formik}
+      />
     </>
   );
 };

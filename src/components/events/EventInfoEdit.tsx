@@ -13,6 +13,7 @@ import axios from "../../utils/axios";
 import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
 import { EventInfoData } from "../../types/events/EventInfoData";
 import ErrorSnackbar from "../../components/error/ErrorSnackbar";
+import { User } from "../../../context/AuthContext";
 
 dayjs.extend(customParseFormat);
 
@@ -60,11 +61,13 @@ const EventInfoEdit = ({
   values,
   setValues,
   setEdit,
+  user,
 }: {
   wizardProps?: EventWizardProps;
   values: EventInfoData | undefined;
   setValues: Dispatch<SetStateAction<EventInfoData | undefined>>;
   setEdit?: Dispatch<SetStateAction<boolean>>;
+  user: User;
 }) => {
   const [clients, setClients] = useState<{ id: number; fullName: string }[]>();
   const [eventTypes, setEventTypes] =
@@ -79,18 +82,32 @@ const EventInfoEdit = ({
         id: 0,
         name: "",
       },
-      client: values?.client || {
-        id: 0,
-        fullName: "",
-      },
+      client:
+        values?.client ||
+        (user.accountType.id === CLIENT_ID
+          ? {
+              id: user.id,
+              fullName: user.fullName,
+            }
+          : {
+              id: 0,
+              fullName: "",
+            }),
       eventDate: values?.eventDate
         ? dayjs(values?.eventDate, "DD/MM/YYYY")
         : dayjs().add(1, "month"),
       guestCount: values?.guestCount || null,
-      artist: values?.artist || {
-        id: 0,
-        fullName: "",
-      },
+      artist:
+        values?.artist ||
+        (user.accountType.id === ARTIST_ID
+          ? {
+              id: user.id,
+              fullName: user.fullName,
+            }
+          : {
+              id: 0,
+              fullName: "",
+            }),
       location: values?.location || null,
       venueName: values?.venueName || null,
       venueContact: values?.venueContact || null,
@@ -239,6 +256,7 @@ const EventInfoEdit = ({
           onChange={(e, newValue) => {
             formik.setFieldValue("client", newValue);
           }}
+          disabled={user.accountType.id === CLIENT_ID}
           fullWidth
           renderInput={(params) => (
             <CustomTextField
@@ -299,6 +317,7 @@ const EventInfoEdit = ({
           disablePortal
           id="artist"
           options={artists ?? []}
+          disabled={user.accountType.id === ARTIST_ID}
           getOptionLabel={(option) => option.fullName}
           value={formik.values.artist}
           onChange={(e, newValue) => {

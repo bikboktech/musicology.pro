@@ -218,6 +218,7 @@ const Event = () => {
                     values={eventInfo}
                     setValues={setEventInfo}
                     setEdit={setEdit}
+                    user={user!}
                   />
                 ) : (
                   <EventInfo

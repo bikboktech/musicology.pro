@@ -114,6 +114,7 @@ const EventWizard = () => {
             }}
             values={eventInfoValues}
             setValues={setEventInfoValues}
+            user={user!}
           />
         );
       case 1:

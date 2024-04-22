@@ -20,6 +20,7 @@ import CustomSelect from "../forms/theme-elements/CustomSelect";
 import { Stack } from "@mui/system";
 import { useRouter } from "next/router";
 import { EventInfoData } from "../../types/events/EventInfoData";
+import { User } from "../../../context/AuthContext";
 
 const EventInfo = ({
   setEdit,

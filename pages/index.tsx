@@ -90,7 +90,11 @@ const Modern = () => {
                     creation tools, bringing your musical gatherings to life has
                     never been easier
                   </Typography>
-                  <Button variant="outlined" color="primary">
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    href={"/event-wizard"}
+                  >
                     Create an Event
                   </Button>
                 </Box>

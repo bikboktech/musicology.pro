@@ -11,6 +11,7 @@ import buildQueryParams, {
 } from "../../src/components/smart-table/utils/buildQueryParams";
 import { useRouter } from "next/router";
 import { useAuth } from "../../context/AuthContext";
+import { TableParams } from "../../src/types/smartTable/TableParams";
 
 type Playlists = {
   data: {
@@ -56,7 +57,7 @@ const getTemplatePlaylists = async (
 const handleDeleteRows = async (
   setPlaylists: Dispatch<SetStateAction<Playlists | undefined>>,
   ids: number[],
-  setSelected: Dispatch<SetStateAction<number[]>>
+  params: TableParams
 ) => {
   await axios.delete(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/template-playlists`,
@@ -68,8 +69,7 @@ const handleDeleteRows = async (
     }
   );
 
-  setSelected([]);
-  await getTemplatePlaylists(setPlaylists, {});
+  await getTemplatePlaylists(setPlaylists, params);
 };
 
 const Playlists = () => {

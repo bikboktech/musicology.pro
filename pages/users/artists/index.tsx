@@ -14,6 +14,7 @@ import * as yup from "yup";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../context/AuthContext";
 import UserDialog from "../../../src/components/users/UserDialog";
+import { TableParams } from "../../../src/types/smartTable/TableParams";
 
 type Artist = {
   id: number;
@@ -64,7 +65,7 @@ const getArtists = async (
 const handleDeleteRows = async (
   setArtists: Dispatch<SetStateAction<Artists | undefined>>,
   ids: number[],
-  setSelected: Dispatch<SetStateAction<number[]>>
+  params: TableParams
 ) => {
   await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts`, {
     data: JSON.stringify({
@@ -73,15 +74,14 @@ const handleDeleteRows = async (
     headers: { "Content-Type": "application/json" },
   });
 
-  setSelected([]);
-
-  await getArtists(setArtists, {});
+  await getArtists(setArtists, params);
 };
 
 const Artists = () => {
   const [open, setOpen] = useState<boolean>(false);
   const theme = useTheme();
   const [artists, setArtists] = useState<Artists>();
+  const [tableParams, setTableParams] = useState<TableParams>({});
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, isLoading } = useAuth();
@@ -134,12 +134,14 @@ const Artists = () => {
           );
         }
 
-        await getArtists(setArtists, {});
+        await getArtists(setArtists, tableParams);
 
         handleClose();
       } catch (err: any) {
         setError(err.response.data);
       }
+
+      setTableParams({});
     },
   });
 
@@ -190,13 +192,14 @@ const Artists = () => {
             tableName="Artists"
             getData={getArtists}
             handleDeleteRows={handleDeleteRows}
-            handleRowClick={(data) => {
+            handleRowClick={(data, params) => {
               formik.setFieldValue("id", data.id);
               formik.setFieldValue("fullName", data.fullName);
               formik.setFieldValue("email", data.email);
               formik.setFieldValue("phone", data.phone);
 
               setOpen(true);
+              setTableParams(params);
             }}
             data={artists?.data}
             count={artists?.count || 0}
@@ -204,8 +207,9 @@ const Artists = () => {
             structureTable={(data) => {
               return data;
             }}
-            onCreateClick={() => {
+            onCreateClick={(data, params) => {
               setOpen(true);
+              setTableParams(params);
             }}
             columns={columns}
           />

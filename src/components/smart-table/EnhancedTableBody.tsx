@@ -7,17 +7,20 @@ import {
 } from "@mui/material";
 import CustomCheckbox from "../../../src/components/forms/theme-elements/CustomCheckbox";
 import { HeadCell } from "./EnhancedTableHead";
+import { TableParams } from "../../types/smartTable/TableParams";
 
 interface EnhancedTableBodyProps {
   columns: HeadCell[];
   tableData: {}[];
-  handleRowClick: (data: any) => void;
+  handleRowClick: (data: any, params: TableParams) => void;
   selected: readonly number[];
   setSelected: (value: any) => void;
+  params: TableParams;
 }
 
 export default function EnhancedTableBody(props: EnhancedTableBodyProps) {
-  const { columns, handleRowClick, tableData, selected, setSelected } = props;
+  const { columns, handleRowClick, tableData, selected, params, setSelected } =
+    props;
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
@@ -58,7 +61,7 @@ export default function EnhancedTableBody(props: EnhancedTableBodyProps) {
               hover
               role="checkbox"
               aria-checked={isItemSelected}
-              onClick={() => handleRowClick(row)}
+              onClick={() => handleRowClick(row, params)}
               tabIndex={-1}
               key={row.id}
               sx={{ cursor: "pointer" }}

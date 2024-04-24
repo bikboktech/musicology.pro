@@ -23,6 +23,7 @@ import axios from "../../../src/utils/axios";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../context/AuthContext";
 import UserDialog from "../../../src/components/users/UserDialog";
+import { TableParams } from "../../../src/types/smartTable/TableParams";
 
 type Clients = {
   data: {
@@ -62,6 +63,7 @@ const Customers = () => {
   const [clients, setClients] = useState<Clients>();
   const [open, setOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [tableParams, setTableParams] = useState<TableParams>({});
   const router = useRouter();
   const { user, isLoading } = useAuth();
 
@@ -135,12 +137,14 @@ const Customers = () => {
           );
         }
 
-        await getClients(setClients, {});
+        await getClients(setClients, tableParams);
 
         handleClose();
       } catch (err: any) {
         setError(err.response.data);
       }
+
+      setTableParams({});
     },
   });
 
@@ -191,7 +195,7 @@ const Customers = () => {
   const handleDeleteRows = async (
     setClients: Dispatch<SetStateAction<Clients | undefined>>,
     ids: number[],
-    setSelected: Dispatch<SetStateAction<number[]>>
+    params: TableParams
   ) => {
     await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts`, {
       data: JSON.stringify({
@@ -200,8 +204,7 @@ const Customers = () => {
       headers: { "Content-Type": "application/json" },
     });
 
-    setSelected([]);
-    await getClients(setClients, {});
+    await getClients(setClients, params);
   };
 
   return (
@@ -239,13 +242,14 @@ const Customers = () => {
                   tableName="Clients"
                   getData={getClients}
                   handleDeleteRows={handleDeleteRows}
-                  handleRowClick={(data) => {
+                  handleRowClick={(data, params) => {
                     formik.setFieldValue("id", data.id);
                     formik.setFieldValue("fullName", data.fullName);
                     formik.setFieldValue("email", data.email);
                     formik.setFieldValue("phone", data.phone);
 
                     setOpen(true);
+                    setTableParams(params);
                   }}
                   data={clients?.data}
                   count={clients?.count || 0}
@@ -253,8 +257,9 @@ const Customers = () => {
                   structureTable={(data) => {
                     return data;
                   }}
-                  onCreateClick={() => {
+                  onCreateClick={(data, params) => {
                     setOpen(true);
+                    setTableParams(params);
                   }}
                   columns={columns}
                 />

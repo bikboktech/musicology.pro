@@ -14,6 +14,7 @@ import {
   debounce,
 } from "@mui/material";
 import BlankCard from "../../../src/components/shared/BlankCard";
+import { TableParams } from "../../types/smartTable/TableParams";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -70,11 +71,11 @@ const SmartTable = ({
   handleDeleteRows: (
     setResults: React.Dispatch<React.SetStateAction<any>>,
     ids: number[],
-    setSelected: React.Dispatch<React.SetStateAction<number[]>>
-  ) => void;
+    params: TableParams
+  ) => Promise<void>;
   getData: any;
-  handleRowClick: (data: any) => void;
-  onCreateClick?: (data: any) => void;
+  handleRowClick: (data: any, params: TableParams) => void;
+  onCreateClick?: (data: any, params: TableParams) => void;
   setData: React.Dispatch<React.SetStateAction<any>>;
   structureTable: (data: any[]) => any[] | undefined;
   columns: HeadCell[];
@@ -159,6 +160,17 @@ const SmartTable = ({
           data={data}
           tableName={tableName}
           onCreateClick={onCreateClick}
+          params={{
+            search,
+            limit: rowsPerPage || 5,
+            offset: page * rowsPerPage,
+            sort: {
+              field:
+                columns.find((column) => orderBy === column.id)?.sqlColumn ||
+                orderBy,
+              direction: order,
+            },
+          }}
           handleDeleteRows={handleDeleteRows}
           setData={setData}
           selected={selected}
@@ -200,6 +212,17 @@ const SmartTable = ({
                 columns={columns}
                 tableData={tableData}
                 handleRowClick={handleRowClick}
+                params={{
+                  search,
+                  limit: rowsPerPage || 5,
+                  offset: page * rowsPerPage,
+                  sort: {
+                    field:
+                      columns.find((column) => orderBy === column.id)
+                        ?.sqlColumn || orderBy,
+                    direction: order,
+                  },
+                }}
                 selected={selected}
                 setSelected={setSelected}
               />

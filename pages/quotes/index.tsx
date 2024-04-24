@@ -12,6 +12,7 @@ import buildQueryParams, {
 import { useRouter } from "next/router";
 import { IconCircleCheck, IconXboxX } from "@tabler/icons-react";
 import { useAuth } from "../../context/AuthContext";
+import { TableParams } from "../../src/types/smartTable/TableParams";
 
 type QuoteData = {
   id: number;
@@ -62,7 +63,7 @@ const getQuotes = async (
 const handleDeleteRows = async (
   setQuotes: Dispatch<SetStateAction<Quotes | undefined>>,
   ids: number[],
-  setSelected: Dispatch<SetStateAction<number[]>>
+  params: TableParams
 ) => {
   await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/quotes`, {
     data: JSON.stringify({
@@ -71,8 +72,7 @@ const handleDeleteRows = async (
     headers: { "Content-Type": "application/json" },
   });
 
-  setSelected([]);
-  await getQuotes(setQuotes, {});
+  await getQuotes(setQuotes, params);
 };
 const Quotes = () => {
   const [quotes, setQuotes] = useState<Quotes>();

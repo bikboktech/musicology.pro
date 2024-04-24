@@ -12,6 +12,7 @@ import buildQueryParams, {
 import { useRouter } from "next/router";
 import { useAuth } from "../../context/AuthContext";
 import { format } from "date-fns";
+import { TableParams } from "../../src/types/smartTable/TableParams";
 
 type Events = {
   data: {
@@ -61,7 +62,7 @@ const getEvents = async (
 const handleDeleteRows = async (
   setEvents: Dispatch<SetStateAction<Events | undefined>>,
   ids: number[],
-  setSelected: Dispatch<SetStateAction<number[]>>
+  params: TableParams
 ) => {
   await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/events`, {
     data: JSON.stringify({
@@ -70,8 +71,7 @@ const handleDeleteRows = async (
     headers: { "Content-Type": "application/json" },
   });
 
-  setSelected([]);
-  await getEvents(setEvents, {});
+  await getEvents(setEvents, params);
 };
 const Events = () => {
   const [events, setEvents] = useState<Events>();

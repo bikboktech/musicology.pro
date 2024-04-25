@@ -137,7 +137,10 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         <DialogContent>
           <Typography>
             Are you sure you want to delete {numSelected ?? 0}{" "}
-            {tableName.toLowerCase()}?
+            {numSelected === 1
+              ? tableName.substring(0, tableName.length - 1).toLowerCase()
+              : tableName.toLowerCase()}
+            ?
           </Typography>
         </DialogContent>
         <DialogActions>

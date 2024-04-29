@@ -11,8 +11,6 @@ import {
   Dialog,
   DialogContent,
   DialogActions,
-  useTheme,
-  useMediaQuery,
   CircularProgress,
 } from "@mui/material";
 import { IconTrash, IconFilter, IconPlus } from "@tabler/icons-react";
@@ -55,8 +53,6 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleClose = () => {
     setOpen(false);
@@ -124,7 +120,6 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         // </Tooltip>
       )}
       <Dialog
-        fullScreen={fullScreen}
         open={open}
         onClose={handleClose}
         aria-labelledby="responsive-dialog-title"

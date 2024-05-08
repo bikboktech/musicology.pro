@@ -84,7 +84,7 @@ const PlaylistInfo = ({
                 {values?.name}
               </Typography>
               <Typography color="textSecondary" mb={3}>
-                To change your playlist, click on Edit
+                To create/update your playlist, click on Edit
               </Typography>
             </Grid>
             <Grid item xs={6} sm={6}>

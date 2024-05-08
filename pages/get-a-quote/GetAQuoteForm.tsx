@@ -8,6 +8,7 @@ import {
   Divider,
   RadioGroup,
   CircularProgress,
+  FormHelperText,
 } from "@mui/material";
 import Link from "next/link";
 import dayjs, { Dayjs } from "dayjs";
@@ -118,6 +119,8 @@ const MARKETING_TYPE_OPTIONS = [
   },
 ];
 
+const WEDDING_EVENT_TYPE = 1;
+
 const HOURS_OF_ENTERTAINMENT_OPTIONS = [
   {
     id: "4hrs",
@@ -152,17 +155,17 @@ const GetAQuoteForm = () => {
   const formik = useFormik({
     initialValues: {
       email: "",
-      eventTypeId: 1,
+      eventTypeId: WEDDING_EVENT_TYPE,
       clientName: "",
       eventDate: dayjs().add(1, "month"),
       guestCount: null,
       eventLocation: "",
-      eventBudget: EVENT_BUDGET_OPTIONS[0].id,
-      marketingType: MARKETING_TYPE_OPTIONS[0].id,
-      hoursOfEntertainment: HOURS_OF_ENTERTAINMENT_OPTIONS[0].id,
-      extraMusician: EXTRA_MUSICIAN_OPTIONS[0].id,
+      eventBudget: null,
+      marketingType: null,
+      hoursOfEntertainment: null,
+      extraMusician: null,
       audioSupport: false,
-      naturalApproachInteractions: NATURAL_APPROACH_INTERACTION_OPTIONS[0].id,
+      naturalApproachInteractions: null,
       referencePlaylistLink: "",
       otherMarketingType: "",
       otherHoursOfEntertainment: "",
@@ -234,6 +237,8 @@ const GetAQuoteForm = () => {
     },
   });
 
+  console.log(formik);
+
   if (quoteId) {
     return (
       <Box textAlign="center" mb={3}>
@@ -286,7 +291,7 @@ const GetAQuoteForm = () => {
               aria-label="eventType"
               name="eventType"
               onChange={(e, newValue) => {
-                formik.setFieldValue("eventTypeId", newValue);
+                formik.setFieldValue("eventTypeId", parseInt(newValue));
               }}
               value={formik.values.eventTypeId}
             >
@@ -331,7 +336,12 @@ const GetAQuoteForm = () => {
             </LocalizationProvider>
           </Box>
           <Box>
-            <CustomFormLabel htmlFor="clientName">Client name</CustomFormLabel>
+            <CustomFormLabel htmlFor="clientName">
+              {formik.values.eventTypeId === WEDDING_EVENT_TYPE
+                ? "Bride and Groom"
+                : "Client"}{" "}
+              name
+            </CustomFormLabel>
             <CustomTextField
               id="clientName"
               variant="outlined"
@@ -494,6 +504,12 @@ const GetAQuoteForm = () => {
                 )
               )}
             </RadioGroup>
+            {formik.touched.naturalApproachInteractions &&
+              formik.errors.naturalApproachInteractions && (
+                <FormHelperText error>
+                  Choose your natural approach in interactions
+                </FormHelperText>
+              )}
           </Box>
           <Box>
             <CustomFormLabel htmlFor="eventBudget">

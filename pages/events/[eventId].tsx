@@ -166,6 +166,10 @@ const Event = () => {
     setValue(newValue);
   };
 
+  const disabledEditing = eventInfo
+    ? dayjs(eventInfo.eventDate, "DD/MM/YYYY").diff(dayjs(), "day") <= 7
+    : false;
+
   return (
     <PageContainer>
       {/* breadcrumb */}
@@ -223,6 +227,7 @@ const Event = () => {
                 ) : (
                   <EventInfo
                     setEdit={setEdit}
+                    disabledEditing={disabledEditing}
                     values={eventInfo}
                     setValues={setEventInfo}
                   />
@@ -241,6 +246,7 @@ const Event = () => {
                   <PlaylistInfo
                     setEdit={setEdit}
                     values={playlistInfo}
+                    disabledEditing={disabledEditing}
                     setValues={setPlaylistInfo}
                   />
                 )}
@@ -258,6 +264,7 @@ const Event = () => {
                   <TimelineInfo
                     setEdit={setEdit}
                     values={timelineInfo}
+                    disabledEditing={disabledEditing}
                     eventName={eventInfo?.eventName}
                   />
                 )}

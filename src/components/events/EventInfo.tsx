@@ -20,16 +20,18 @@ import CustomSelect from "../forms/theme-elements/CustomSelect";
 import { Stack } from "@mui/system";
 import { useRouter } from "next/router";
 import { EventInfoData } from "../../types/events/EventInfoData";
-import { User } from "../../../context/AuthContext";
+import dayjs from "dayjs";
 
 const EventInfo = ({
   setEdit,
   values,
   setValues,
+  disabledEditing,
 }: {
   setEdit: Dispatch<SetStateAction<boolean>>;
   values: EventInfoData | undefined;
   setValues: Dispatch<SetStateAction<EventInfoData | undefined>>;
+  disabledEditing: boolean;
 }) => {
   const router = useRouter();
 
@@ -49,14 +51,16 @@ const EventInfo = ({
             </Grid>
             <Grid item xs={4} sm={2}>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  size="large"
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setEdit(true)}
-                >
-                  Edit
-                </Button>
+                {!disabledEditing && (
+                  <Button
+                    size="large"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setEdit(true)}
+                  >
+                    Edit
+                  </Button>
+                )}
               </div>
             </Grid>
             <Grid item xs={12} sm={6}>

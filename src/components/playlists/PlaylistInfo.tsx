@@ -19,16 +19,19 @@ import { Stack } from "@mui/system";
 import { useRouter } from "next/router";
 import { PlaylistInfoData } from "../../types/playlist/PlaylistInfoData";
 import { TrackInfo } from "../../types/playlist/TrackInfo";
+import dayjs from "dayjs";
 
 const PlaylistInfo = ({
   setEdit,
   values,
   isTemplatePlaylist,
+  disabledEditing,
 }: {
   setEdit: Dispatch<SetStateAction<boolean>>;
   values: PlaylistInfoData | undefined;
   setValues: Dispatch<SetStateAction<PlaylistInfoData | undefined>>;
   isTemplatePlaylist?: boolean;
+  disabledEditing: boolean;
 }) => {
   const router = useRouter();
   const theme = useTheme();
@@ -60,14 +63,16 @@ const PlaylistInfo = ({
               </Typography>
             </Grid>
             <Grid item xs={4} sm={2}>
-              <Button
-                size="large"
-                variant="contained"
-                color="primary"
-                onClick={() => setEdit(true)}
-              >
-                Edit
-              </Button>
+              {!disabledEditing && (
+                <Button
+                  size="large"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setEdit(true)}
+                >
+                  Edit
+                </Button>
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -98,18 +103,20 @@ const PlaylistInfo = ({
                   <CircularProgress />
                 ) : (
                   <>
-                    <Button
-                      size="large"
-                      variant="contained"
-                      color="primary"
-                      style={{
-                        marginRight: "8px",
-                        marginBottom: "8px",
-                      }}
-                      onClick={() => setEdit(true)}
-                    >
-                      Edit
-                    </Button>
+                    {!disabledEditing && (
+                      <Button
+                        size="large"
+                        variant="contained"
+                        color="primary"
+                        style={{
+                          marginRight: "8px",
+                          marginBottom: "8px",
+                        }}
+                        onClick={() => setEdit(true)}
+                      >
+                        Edit
+                      </Button>
+                    )}
                   </>
                 )}
               </Box>

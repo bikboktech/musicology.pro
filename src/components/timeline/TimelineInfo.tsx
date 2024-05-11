@@ -96,10 +96,12 @@ const TimelineInfo = ({
   values,
   setEdit,
   eventName,
+  disabledEditing,
 }: {
   values: TimelineData[] | undefined;
   setEdit: Dispatch<SetStateAction<boolean>>;
   eventName?: string;
+  disabledEditing: boolean;
 }) => {
   const [open, setOpen] = useState<{
     state: boolean;
@@ -150,14 +152,16 @@ const TimelineInfo = ({
               </Typography>
             </Grid>
             <Grid item xs={4} sm={2}>
-              <Button
-                size="large"
-                variant="contained"
-                color="primary"
-                onClick={() => setEdit(true)}
-              >
-                Edit
-              </Button>
+              {!disabledEditing && (
+                <Button
+                  size="large"
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setEdit(true)}
+                >
+                  Edit
+                </Button>
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -185,18 +189,20 @@ const TimelineInfo = ({
                   alignItems={{ sm: "flex-end" }}
                   justifyContent={{ sm: "flex-end" }}
                 >
-                  <Button
-                    size="large"
-                    variant="contained"
-                    color="primary"
-                    style={{
-                      marginRight: "8px",
-                      marginBottom: "8px",
-                    }}
-                    onClick={() => setEdit(true)}
-                  >
-                    Edit
-                  </Button>
+                  {!disabledEditing && (
+                    <Button
+                      size="large"
+                      variant="contained"
+                      color="primary"
+                      style={{
+                        marginRight: "8px",
+                        marginBottom: "8px",
+                      }}
+                      onClick={() => setEdit(true)}
+                    >
+                      Edit
+                    </Button>
+                  )}
                   <Button
                     size="large"
                     variant="outlined"

@@ -85,6 +85,7 @@ const TemplatePlaylist = () => {
               values={playlistInfo}
               setValues={setPlaylistInfo}
               isTemplatePlaylist={true}
+              disabledEditing={false}
             />
           )}
         </CardContent>

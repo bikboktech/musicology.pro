@@ -125,6 +125,8 @@ const getTimeline = async (
   );
 };
 
+const ADMIN_ACCOUNT_TYPE = 1;
+
 const Event = () => {
   const [value, setValue] = React.useState(0);
   const [edit, setEdit] = React.useState(false);
@@ -166,9 +168,10 @@ const Event = () => {
     setValue(newValue);
   };
 
-  const disabledEditing = eventInfo
-    ? dayjs(eventInfo.eventDate, "DD/MM/YYYY").diff(dayjs(), "day") <= 7
-    : false;
+  const disabledEditing =
+    eventInfo && user?.accountType.id !== ADMIN_ACCOUNT_TYPE
+      ? dayjs(eventInfo.eventDate, "DD/MM/YYYY").diff(dayjs(), "day") <= 7
+      : false;
 
   return (
     <PageContainer>

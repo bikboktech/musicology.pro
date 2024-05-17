@@ -90,13 +90,6 @@ const Modern = () => {
                     creation tools, bringing your musical gatherings to life has
                     never been easier
                   </Typography>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    href={"/event-wizard"}
-                  >
-                    Create an Event
-                  </Button>
                 </Box>
               </Grid>
               <Grid item sm={3}>
@@ -111,189 +104,205 @@ const Modern = () => {
                 </Box>
               </Grid>
             </Grid>
+            <Box pb={3}>
+              <Typography variant="h4" mb={0} mt={4}>
+                Upcoming Events:
+              </Typography>
+            </Box>
+            <Box>
+              {events ? (
+                events.length ? (
+                  events.map((event) => {
+                    const eventCompleted =
+                      ((1 +
+                        +event.hasPlaylist +
+                        +event.hasTimeline +
+                        +event.signedContract) /
+                        4) *
+                      100;
+                    return (
+                      <Box key={event.id}>
+                        <Box
+                          p={2}
+                          sx={{
+                            position: "relative",
+                            cursor: "pointer",
+                            mb: 1,
+                            transition: "0.1s ease-in",
+                            backgroundColor: (theme) =>
+                              theme.palette.secondary.light,
+                            border: "2px solid white",
+                            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                            "&:hover": {
+                              boxShadow: "0px 8px 25px rgba(0, 0, 0, 0.15)",
+                            },
+                          }}
+                          onClick={() => router.push(`/events/${event.id}`)}
+                        >
+                          <Grid
+                            container
+                            spacing={3}
+                            justifyContent="space-between"
+                          >
+                            <Grid
+                              item
+                              sm={7}
+                              display="flex"
+                              alignItems="left"
+                              flexDirection="column"
+                              style={{ width: "100%" }}
+                            >
+                              <Typography variant="h5" noWrap>
+                                {event.eventName}
+                              </Typography>
+                              <Stack
+                                direction="column"
+                                alignItems="left"
+                                sx={{ pt: "10px" }}
+                              >
+                                <Typography
+                                  variant="caption"
+                                  sx={{ fontSize: "0.85rem" }}
+                                >{`Type: ${event.eventType}`}</Typography>
+                                <Typography
+                                  variant="caption"
+                                  sx={{ fontSize: "0.85rem" }}
+                                >{`Date: ${event.eventDate}`}</Typography>
+                                <Typography
+                                  variant="caption"
+                                  sx={{ fontSize: "0.85rem" }}
+                                >{`Client: ${event.client}`}</Typography>
+                                <Typography
+                                  variant="caption"
+                                  sx={{ fontSize: "0.85rem" }}
+                                >{`Artist: ${event.artist}`}</Typography>
+                              </Stack>
+                              <Typography
+                                variant="h6"
+                                sx={{ pt: "20px" }}
+                                noWrap
+                              >
+                                {`Event completed: ${eventCompleted.toFixed(
+                                  2
+                                )} %`}
+                              </Typography>
+                            </Grid>
+                            <Grid
+                              item
+                              sm={5}
+                              display="flex"
+                              alignItems="right"
+                              flexDirection="row"
+                              justifyContent="flex-end"
+                              pt={0}
+                              sx={{
+                                display: {
+                                  xs: "none",
+                                  sm: "flex",
+                                  md: "flex",
+                                  lg: "flex",
+                                },
+                              }}
+                            >
+                              <Stack
+                                direction="column"
+                                alignItems="end"
+                                justifyContent="space-around"
+                              >
+                                <Stack
+                                  direction="row"
+                                  spacing={1}
+                                  my={1}
+                                  alignItems="center"
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontSize: "0.85rem" }}
+                                  >
+                                    Playlist
+                                  </Typography>{" "}
+                                  <div>
+                                    {event.hasPlaylist ? (
+                                      <IconCircleCheck />
+                                    ) : (
+                                      <IconXboxX />
+                                    )}
+                                  </div>
+                                </Stack>
+                                <Stack
+                                  direction="row"
+                                  spacing={1}
+                                  my={1}
+                                  alignItems="center"
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontSize: "0.85rem" }}
+                                  >
+                                    Timeline
+                                  </Typography>
+                                  <div>
+                                    {event.hasTimeline ? (
+                                      <IconCircleCheck />
+                                    ) : (
+                                      <IconXboxX />
+                                    )}
+                                  </div>
+                                </Stack>
+                                <Stack
+                                  direction="row"
+                                  spacing={1}
+                                  my={1}
+                                  alignItems="center"
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ fontSize: "0.85rem" }}
+                                  >
+                                    Contract
+                                  </Typography>
+                                  <div>
+                                    {event.signedContract ? (
+                                      <IconCircleCheck />
+                                    ) : (
+                                      <IconXboxX />
+                                    )}
+                                  </div>
+                                </Stack>
+                              </Stack>
+                            </Grid>
+                          </Grid>
+                        </Box>
+                      </Box>
+                    );
+                  })
+                ) : (
+                  <Box ml={2}>
+                    <Alert
+                      severity="info"
+                      variant="outlined"
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        borderColor: "white",
+                        color: "white",
+                      }}
+                    >
+                      No Events Found!
+                    </Alert>
+                  </Box>
+                )
+              ) : (
+                <CircularProgress />
+              )}
+            </Box>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button variant="outlined" color="primary" href={"/event-wizard"}>
+                Create a New Event
+              </Button>
+            </div>
           </CardContent>
         </Card>
-      </Box>
-      <Box p={3} px={2}>
-        <Typography variant="h4" mb={0} mt={4} pl={1}>
-          Upcoming Events:
-        </Typography>
-      </Box>
-      <Box>
-        {events ? (
-          events.length ? (
-            events.map((event) => {
-              const eventCompleted =
-                ((1 +
-                  +event.hasPlaylist +
-                  +event.hasTimeline +
-                  +event.signedContract) /
-                  4) *
-                100;
-              return (
-                <Box key={event.id} px={2}>
-                  <Box
-                    p={2}
-                    sx={{
-                      position: "relative",
-                      cursor: "pointer",
-                      mb: 1,
-                      transition: "0.1s ease-in",
-                      backgroundColor: (theme) => theme.palette.secondary.light,
-                      border: "2px solid white",
-                      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-                      "&:hover": {
-                        boxShadow: "0px 8px 25px rgba(0, 0, 0, 0.15)",
-                      },
-                    }}
-                    onClick={() => router.push(`/events/${event.id}`)}
-                  >
-                    <Grid container spacing={3} justifyContent="space-between">
-                      <Grid
-                        item
-                        sm={7}
-                        display="flex"
-                        alignItems="left"
-                        flexDirection="column"
-                        style={{ width: "100%" }}
-                      >
-                        <Typography variant="h5" noWrap>
-                          {event.eventName}
-                        </Typography>
-                        <Stack
-                          direction="column"
-                          alignItems="left"
-                          sx={{ pt: "10px" }}
-                        >
-                          <Typography
-                            variant="caption"
-                            sx={{ fontSize: "0.85rem" }}
-                          >{`Type: ${event.eventType}`}</Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{ fontSize: "0.85rem" }}
-                          >{`Date: ${event.eventDate}`}</Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{ fontSize: "0.85rem" }}
-                          >{`Client: ${event.client}`}</Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{ fontSize: "0.85rem" }}
-                          >{`Artist: ${event.artist}`}</Typography>
-                        </Stack>
-                        <Typography variant="h6" sx={{ pt: "20px" }} noWrap>
-                          {`Event completed: ${eventCompleted.toFixed(2)} %`}
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        sm={5}
-                        display="flex"
-                        alignItems="right"
-                        flexDirection="row"
-                        justifyContent="flex-end"
-                        pt={0}
-                        sx={{
-                          display: {
-                            xs: "none",
-                            sm: "flex",
-                            md: "flex",
-                            lg: "flex",
-                          },
-                        }}
-                      >
-                        <Stack
-                          direction="column"
-                          alignItems="end"
-                          justifyContent="space-around"
-                        >
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            my={1}
-                            alignItems="center"
-                          >
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.85rem" }}
-                            >
-                              Playlist
-                            </Typography>{" "}
-                            <div>
-                              {event.hasPlaylist ? (
-                                <IconCircleCheck />
-                              ) : (
-                                <IconXboxX />
-                              )}
-                            </div>
-                          </Stack>
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            my={1}
-                            alignItems="center"
-                          >
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.85rem" }}
-                            >
-                              Timeline
-                            </Typography>
-                            <div>
-                              {event.hasTimeline ? (
-                                <IconCircleCheck />
-                              ) : (
-                                <IconXboxX />
-                              )}
-                            </div>
-                          </Stack>
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            my={1}
-                            alignItems="center"
-                          >
-                            <Typography
-                              variant="caption"
-                              sx={{ fontSize: "0.85rem" }}
-                            >
-                              Contract
-                            </Typography>
-                            <div>
-                              {event.signedContract ? (
-                                <IconCircleCheck />
-                              ) : (
-                                <IconXboxX />
-                              )}
-                            </div>
-                          </Stack>
-                        </Stack>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Box>
-              );
-            })
-          ) : (
-            <Box ml={2}>
-              <Alert
-                severity="info"
-                variant="outlined"
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  borderColor: "white",
-                  color: "white",
-                }}
-              >
-                No Events Found!
-              </Alert>
-            </Box>
-          )
-        ) : (
-          <CircularProgress />
-        )}
       </Box>
     </PageContainer>
   );

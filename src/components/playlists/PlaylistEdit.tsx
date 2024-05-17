@@ -21,6 +21,7 @@ import {
   Stack,
   ListItemButton,
   CircularProgress,
+  Typography,
 } from "@mui/material";
 import CustomFormLabel from "../../components/forms/theme-elements/CustomFormLabel";
 import CustomTextField from "../../components/forms/theme-elements/CustomTextField";
@@ -733,6 +734,9 @@ const PlaylistEdit = ({
             <CustomFormLabel htmlFor="importExistingSpotifyLink">
               Playlist link:
             </CustomFormLabel>
+            <Typography color="textSecondary" mb={3}>
+              Press enter after pasting the playlist link
+            </Typography>
             <CustomTextField
               id="importExistingSpotifyLink"
               variant="outlined"

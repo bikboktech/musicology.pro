@@ -78,10 +78,12 @@ const generatePDF = (timelineData: TimelineData[], eventName: string) => {
         style: "important",
       },
       (item.name ? { text: `Name: ${item.name}` } : {}) as ContentType,
-      {
-        text: `Track Name: ${item.track.name} - ${item.track.artists}`,
-        style: "important",
-      },
+      (item.track
+        ? {
+            text: `Track Name: ${item.track.name} - ${item.track.artists}`,
+            style: "important",
+          }
+        : {}) as ContentType,
       (item.instructions
         ? { text: `Instructions: ${item.instructions || ""}` }
         : {}) as ContentType,

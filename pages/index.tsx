@@ -296,7 +296,13 @@ const Modern = () => {
                 <CircularProgress />
               )}
             </Box>
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                paddingTop: "5px",
+              }}
+            >
               <Button variant="outlined" color="primary" href={"/event-wizard"}>
                 Create a New Event
               </Button>

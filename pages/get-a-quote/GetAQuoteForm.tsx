@@ -338,7 +338,7 @@ const GetAQuoteForm = () => {
           <Box>
             <CustomFormLabel htmlFor="clientName">
               {formik.values.eventTypeId === WEDDING_EVENT_TYPE
-                ? "Bride and Groom"
+                ? "Bride and Groom's"
                 : "Client"}{" "}
               name
             </CustomFormLabel>

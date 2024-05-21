@@ -31,7 +31,7 @@ import PlaylistInfo from "../../src/components/playlists/PlaylistInfo";
 import TimelineEdit from "../../src/components/timeline/TimelineEdit";
 import TimelineInfo from "../../src/components/timeline/TimelineInfo";
 import { TimelineData } from "../../src/types/timeline/TimelineData";
-import { useAuth } from "../../context/AuthContext";
+import { User, useAuth } from "../../context/AuthContext";
 import ContractInfo from "../../src/components/contract/ContractInfo";
 
 const BCrumb = [
@@ -230,7 +230,9 @@ const Event = () => {
                 ) : (
                   <EventInfo
                     setEdit={setEdit}
-                    disabledEditing={disabledEditing}
+                    disabledEditing={
+                      user?.accountType.id !== ADMIN_ACCOUNT_TYPE
+                    }
                     values={eventInfo}
                     setValues={setEventInfo}
                   />
@@ -261,6 +263,7 @@ const Event = () => {
                     setValues={setTimelineInfo}
                     setEdit={setEdit}
                     eventPlaylist={playlistInfo}
+                    getTimeline={getTimeline}
                     eventId={eventInfo?.id as number | undefined}
                   />
                 ) : (
@@ -273,7 +276,11 @@ const Event = () => {
                 )}
               </TabPanel>
               <TabPanel value={value} index={3}>
-                <ContractInfo values={eventInfo} setValues={setEventInfo} />
+                <ContractInfo
+                  values={eventInfo}
+                  setValues={setEventInfo}
+                  user={user as User}
+                />
               </TabPanel>
             </CardContent>
           </BlankCard>

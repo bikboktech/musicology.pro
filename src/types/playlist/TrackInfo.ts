@@ -4,4 +4,5 @@ export type TrackInfo = {
   imageUrl: string;
   name: string;
   url?: string;
+  link?: string;
 };

@@ -96,6 +96,7 @@ const TimelineEdit = ({
   setValues,
   setEdit,
   eventPlaylist,
+  getTimeline,
   eventId,
 }: {
   wizardProps?: EventWizardProps;
@@ -103,6 +104,12 @@ const TimelineEdit = ({
   setValues: Dispatch<SetStateAction<TimelineData[] | undefined>>;
   setEdit?: Dispatch<SetStateAction<boolean>>;
   eventPlaylist: PlaylistInfoData | undefined;
+  getTimeline?: (
+    eventId: string,
+    setTimelineInfo: React.Dispatch<
+      React.SetStateAction<TimelineData[] | undefined>
+    >
+  ) => Promise<void>;
   eventId?: number;
 }) => {
   const [open, setOpen] = useState<{ state: boolean; index?: number }>({
@@ -235,10 +242,6 @@ const TimelineEdit = ({
   };
 
   const handleSave = async (values: TimelineData[] | undefined) => {
-    if (!values?.length) {
-      setError("Timeline is empty");
-    }
-
     setLoading(true);
 
     try {
@@ -251,7 +254,7 @@ const TimelineEdit = ({
             time: timeline.time,
             name: timeline.name,
             description: timeline.instructions,
-            trackId: timeline.track.id,
+            trackId: timeline.track?.id,
             // notes: string().nullable(),
           })),
         }),
@@ -262,6 +265,10 @@ const TimelineEdit = ({
 
       if (setEdit) {
         setEdit(false);
+      }
+
+      if (getTimeline) {
+        await getTimeline(eventId!.toString(), setValues);
       }
 
       wizardProps?.handleNext();
@@ -397,12 +404,12 @@ const TimelineEdit = ({
                       >
                         {card.name}
                       </Typography>
-                      {card.track?.id && (
-                        <Stack
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                        >
+                      <Stack
+                        direction="row"
+                        justifyContent={"space-between"}
+                        alignItems="center"
+                      >
+                        {card.track?.id ? (
                           <Typography variant="caption">
                             <ListItem
                               key={card.track.id}
@@ -418,21 +425,23 @@ const TimelineEdit = ({
                               />
                             </ListItem>
                           </Typography>
-                          <Tooltip title="Delete">
-                            <IconButton
-                              aria-label="delete"
-                              size="small"
-                              onClick={(event) => {
-                                event.stopPropagation();
+                        ) : (
+                          <Typography variant="caption">Song: /</Typography>
+                        )}
+                        <Tooltip title="Delete">
+                          <IconButton
+                            aria-label="delete"
+                            size="small"
+                            onClick={(event) => {
+                              event.stopPropagation();
 
-                                removeFromTimeline(card);
-                              }}
-                            >
-                              <IconTrash width={18} />
-                            </IconButton>
-                          </Tooltip>
-                        </Stack>
-                      )}
+                              removeFromTimeline(card);
+                            }}
+                          >
+                            <IconTrash width={18} />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
                       <Typography
                         variant="caption"
                         style={{
@@ -610,9 +619,15 @@ const TimelineEdit = ({
                   debouncedGetTracks(data);
                 }}
                 onChange={(_, data) => {
-                  if (data) {
-                    formik.setFieldValue("track", data);
-                  }
+                  formik.setFieldValue(
+                    "track",
+                    data || {
+                      artists: "",
+                      id: "",
+                      imageUrl: "",
+                      name: "",
+                    }
+                  );
                 }}
                 getOptionLabel={(option: string | TrackInfo) =>
                   typeof option === "object"
@@ -620,8 +635,9 @@ const TimelineEdit = ({
                     : ""
                 }
                 getOptionDisabled={(option) =>
-                  compareSelected(option, eventPlaylist)
+                  compareSelected(option as TrackInfo, eventPlaylist)
                 }
+                defaultValue={formik.values.track}
                 options={
                   tracks?.map((option, index) => {
                     return {
@@ -645,15 +661,17 @@ const TimelineEdit = ({
                   />
                 )}
                 renderOption={(props, option) => {
+                  const track = option as TrackInfo;
+
                   return (
-                    <ListItem {...props} key={option.id}>
+                    <ListItem {...props} key={track.id}>
                       <ListItemAvatar>
-                        <Avatar src={option.imageUrl} />
+                        <Avatar src={track.imageUrl} />
                       </ListItemAvatar>
                       <ListItemText
-                        id={option.id}
-                        primary={option.name}
-                        secondary={option.artists}
+                        id={track.id}
+                        primary={track.name}
+                        secondary={track.artists}
                       />
                     </ListItem>
                   );

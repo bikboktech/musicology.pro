@@ -21,7 +21,7 @@ import EventInfoEdit from "../../src/components/events/EventInfoEdit";
 import { EventInfoData } from "../../src/types/events/EventInfoData";
 import { PlaylistInfoData } from "../../src/types/playlist/PlaylistInfoData";
 import { TimelineData } from "../../src/types/timeline/TimelineData";
-import { useAuth } from "../../context/AuthContext";
+import { User, useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/router";
 import ContractInfo from "../../src/components/contract/ContractInfo";
 
@@ -212,6 +212,7 @@ const EventWizard = () => {
                       handleNext,
                       steps,
                     }}
+                    user={user as User}
                     values={eventInfoValues}
                     setValues={setEventInfoValues}
                   />

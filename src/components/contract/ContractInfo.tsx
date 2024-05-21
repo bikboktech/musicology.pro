@@ -5,6 +5,7 @@ import { Box, Button, CircularProgress, Grid } from "@mui/material";
 import { AxiosResponse } from "axios";
 import ErrorSnackbar from "../error/ErrorSnackbar";
 import { EventWizardProps } from "../../types/eventWizard/EventWizardProps";
+import { User } from "../../../context/AuthContext";
 
 interface SignWellEmbed {
   new (config: {
@@ -24,6 +25,8 @@ type Contract = {
   url: string;
   signed: boolean;
 };
+
+const ARTIST_TYPE = 2;
 
 const FinalStepButtons = ({
   wizardProps,
@@ -87,10 +90,12 @@ const ContractInfo = ({
   wizardProps,
   values,
   setValues,
+  user,
 }: {
   wizardProps?: EventWizardProps;
   values: EventInfoData | undefined;
   setValues: Dispatch<SetStateAction<EventInfoData | undefined>>;
+  user: User;
 }) => {
   const [signedContract, setSignedContract] = React.useState(
     values?.contract?.signed
@@ -99,7 +104,11 @@ const ContractInfo = ({
   const [loading, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    if (values?.contract?.id && !signedContract) {
+    if (
+      user?.accountType.id !== ARTIST_TYPE &&
+      values?.contract?.id &&
+      !signedContract
+    ) {
       const signWellEmbed = new SignWellEmbed({
         url: values.contract.url,
         containerId: "signWellEmbedContainer",
@@ -168,7 +177,25 @@ const ContractInfo = ({
     setLoading(false);
   };
 
+  if (user?.accountType.id === ARTIST_TYPE) {
+    return (
+      <>
+        <div>Contract is generated</div>
+        {wizardProps && <FinalStepButtons wizardProps={wizardProps} />}
+      </>
+    );
+  }
+
   if (signedContract) {
+    if (user?.accountType.id === ARTIST_TYPE) {
+      return (
+        <>
+          <div>Contract is signed</div>
+          {wizardProps && <FinalStepButtons wizardProps={wizardProps} />}
+        </>
+      );
+    }
+
     return (
       <Grid container spacing={3}>
         <Grid item xs={12} sm={12}>

@@ -391,13 +391,26 @@ const TimelineInfo = ({
                   (open.timelineCard.time as Dayjs).format("DD/MM/YYYY HH:mm")}
               </Typography>
               {open.timelineCard?.track && (
-                <PlaylistTrack
-                  track={open.timelineCard?.track}
-                  playingTrack={playingTrack}
-                  setPlayingTrack={setPlayingTrack}
-                  isPlaying={isPlaying}
-                  setIsPlaying={setIsPlaying}
-                />
+                <>
+                  <PlaylistTrack
+                    track={open.timelineCard?.track}
+                    playingTrack={playingTrack}
+                    setPlayingTrack={setPlayingTrack}
+                    isPlaying={isPlaying}
+                    setIsPlaying={setIsPlaying}
+                  />
+                  <CustomFormLabel htmlFor="name">Song URL</CustomFormLabel>
+                  <a
+                    href={open.timelineCard?.track.link ?? ""}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <Typography color="textSecondary" mb={3}>
+                      {open.timelineCard?.track.link}
+                    </Typography>
+                  </a>
+                </>
               )}
               <CustomFormLabel htmlFor="instructions">
                 Instructions

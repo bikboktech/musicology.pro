@@ -13,7 +13,7 @@ interface MenuitemsType {
   chipColor?: string;
   variant?: string;
   external?: boolean;
-  protected: boolean;
+  accessLevel: number;
 }
 import {
   IconPoint,
@@ -23,6 +23,10 @@ import {
   IconReceipt,
 } from "@tabler/icons-react";
 import { User, useAuth } from "../../../../../context/AuthContext";
+
+const ADMIN_ID = 1;
+const ARTIST_ID = 2;
+const CLIENT_ID = 3;
 
 const allMenuitems: MenuitemsType[] = [
   // {
@@ -34,28 +38,28 @@ const allMenuitems: MenuitemsType[] = [
     title: "Events",
     icon: IconCalendarEvent,
     href: "/events",
-    protected: false,
+    accessLevel: CLIENT_ID,
   },
   {
     id: uniqueId(),
     title: "Users",
     icon: IconUsers,
     href: "/users",
-    protected: true,
+    accessLevel: ADMIN_ID,
     children: [
       {
         id: uniqueId(),
         title: "Clients",
         icon: IconPoint,
         href: "/users/clients",
-        protected: true,
+        accessLevel: ADMIN_ID,
       },
       {
         id: uniqueId(),
         title: "Artists",
         icon: IconPoint,
         href: "/users/artists",
-        protected: true,
+        accessLevel: ADMIN_ID,
       },
     ],
   },
@@ -64,23 +68,23 @@ const allMenuitems: MenuitemsType[] = [
     title: "Playlists",
     icon: IconMusic,
     href: "/playlists",
-    protected: true,
+    accessLevel: ARTIST_ID,
   },
   {
     id: uniqueId(),
     title: "Quotes",
     icon: IconReceipt,
     href: "/quotes",
-    protected: true,
+    accessLevel: ADMIN_ID,
   },
 ];
 
 const getMenuItems = (user: User | null): MenuitemsType[] => {
-  if (user?.accountType.id === 3) {
-    return allMenuitems.filter((menuItem) => !menuItem.protected);
-  }
+  const menuItems = allMenuitems.filter(
+    (menuItem) => menuItem.accessLevel >= (user?.accountType.id ?? CLIENT_ID)
+  );
 
-  return allMenuitems;
+  return menuItems;
 };
 
 export default getMenuItems;

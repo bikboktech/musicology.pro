@@ -77,7 +77,7 @@ const TIMELINE_NAME_RECOMMENDATIONS = [
   "Ceremony Begins",
   "Ceremony Ends",
   "Cake Cutting",
-  "Introduction",
+  "Introduction (Entrance Song)",
   "First Dance",
   "Father/Daughter Dance",
   "Mother/Son Dance",

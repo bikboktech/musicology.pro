@@ -75,6 +75,8 @@ const EventInfoEdit = ({
   const [artists, setArtists] = useState<{ id: number; fullName: string }[]>();
   const [error, setError] = useState<string | null>(null);
 
+  const disableEditing = !wizardProps && user?.accountType.id === CLIENT_ID;
+
   const formik = useFormik({
     initialValues: {
       eventName: values?.eventName || "",
@@ -214,6 +216,7 @@ const EventInfoEdit = ({
           id="eventName"
           variant="outlined"
           name="eventName"
+          disabled={disableEditing}
           value={formik.values.eventName}
           onChange={formik.handleChange}
           error={formik.touched.eventName && Boolean(formik.errors.eventName)}
@@ -225,6 +228,7 @@ const EventInfoEdit = ({
           disablePortal
           id="eventType"
           options={eventTypes ?? []}
+          disabled={disableEditing}
           getOptionLabel={(option) => option.name}
           value={formik.values.eventType}
           onChange={(e, newValue) => {
@@ -252,11 +256,11 @@ const EventInfoEdit = ({
           id="client"
           options={clients ?? []}
           getOptionLabel={(option) => option.fullName}
+          disabled={disableEditing}
           value={formik.values.client}
           onChange={(e, newValue) => {
             formik.setFieldValue("client", newValue);
           }}
-          disabled={user.accountType.id === CLIENT_ID}
           fullWidth
           renderInput={(params) => (
             <CustomTextField
@@ -281,6 +285,7 @@ const EventInfoEdit = ({
               onChange={(newValue) => {
                 formik.setFieldValue("eventDate", newValue);
               }}
+              disabled={disableEditing}
               renderInput={(inputProps) => (
                 <CustomTextField
                   fullWidth
@@ -307,6 +312,7 @@ const EventInfoEdit = ({
           id="guestCount"
           variant="outlined"
           name="guestCount"
+          disabled={disableEditing}
           type="number"
           onChange={formik.handleChange}
           value={formik.values.guestCount}
@@ -317,7 +323,7 @@ const EventInfoEdit = ({
           disablePortal
           id="artist"
           options={artists ?? []}
-          disabled={user.accountType.id === ARTIST_ID}
+          disabled={user.accountType.id === ARTIST_ID || disableEditing}
           getOptionLabel={(option) => option.fullName}
           value={formik.values.artist}
           onChange={(e, newValue) => {
@@ -343,6 +349,7 @@ const EventInfoEdit = ({
           id="location"
           variant="outlined"
           name="location"
+          disabled={disableEditing}
           value={formik.values.location}
           onChange={formik.handleChange}
           fullWidth

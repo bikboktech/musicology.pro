@@ -749,9 +749,9 @@ const PlaylistEdit = ({
                 setSpotifyLink(event.target.value);
               }}
               onKeyPress={async (ev: any) => {
-                ev.preventDefault();
-
                 if (ev.key === "Enter") {
+                  ev.preventDefault();
+
                   await getPlaylist(setPlaylist, spotifyLink);
                 }
               }}

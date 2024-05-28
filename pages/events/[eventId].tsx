@@ -126,6 +126,7 @@ const getTimeline = async (
 };
 
 const ADMIN_ACCOUNT_TYPE = 1;
+const ARTIST_ACCOUNT_TYPE = 2;
 
 const Event = () => {
   const [value, setValue] = React.useState(0);
@@ -231,7 +232,8 @@ const Event = () => {
                   <EventInfo
                     setEdit={setEdit}
                     disabledEditing={
-                      user?.accountType.id !== ADMIN_ACCOUNT_TYPE
+                      disabledEditing ||
+                      user?.accountType.id === ARTIST_ACCOUNT_TYPE
                     }
                     values={eventInfo}
                     setValues={setEventInfo}

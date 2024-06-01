@@ -77,7 +77,12 @@ const PlaylistTrack = ({
               display="flex"
               alignItems="center"
               justifyContent="center"
-              style={{ width: "40px" }}
+              style={{
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                borderRadius: "50%",
+                width: "40px",
+                height: "40px",
+              }}
             >
               <IconButton
                 size="small"

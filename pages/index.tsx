@@ -126,7 +126,6 @@ const Modern = () => {
                           p={2}
                           sx={{
                             position: "relative",
-                            cursor: "pointer",
                             mb: 1,
                             transition: "0.1s ease-in",
                             backgroundColor: (theme) =>
@@ -137,7 +136,6 @@ const Modern = () => {
                               boxShadow: "0px 8px 25px rgba(0, 0, 0, 0.15)",
                             },
                           }}
-                          onClick={() => router.push(`/events/${event.id}`)}
                         >
                           <Grid
                             container
@@ -272,41 +270,60 @@ const Modern = () => {
                               </Stack>
                             </Grid>
                           </Grid>
+                          <Stack>
+                            <Button
+                              size="large"
+                              variant="contained"
+                              color="primary"
+                              style={{
+                                marginTop: "8px",
+                              }}
+                              onClick={() => router.push(`/events/${event.id}`)}
+                            >
+                              View your event
+                            </Button>
+                          </Stack>
                         </Box>
                       </Box>
                     );
                   })
                 ) : (
-                  <Box ml={2}>
-                    <Alert
-                      severity="info"
-                      variant="outlined"
-                      sx={{
+                  <>
+                    <Box ml={2}>
+                      <Alert
+                        severity="info"
+                        variant="outlined"
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          borderColor: "white",
+                          color: "white",
+                        }}
+                      >
+                        No Events Found!
+                      </Alert>
+                    </Box>
+                    <div
+                      style={{
                         display: "flex",
                         justifyContent: "center",
-                        borderColor: "white",
-                        color: "white",
+                        paddingTop: "5px",
                       }}
                     >
-                      No Events Found!
-                    </Alert>
-                  </Box>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        href={"/event-wizard"}
+                      >
+                        Create a New Event
+                      </Button>
+                    </div>
+                  </>
                 )
               ) : (
                 <CircularProgress />
               )}
             </Box>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                paddingTop: "5px",
-              }}
-            >
-              <Button variant="outlined" color="primary" href={"/event-wizard"}>
-                Create a New Event
-              </Button>
-            </div>
           </CardContent>
         </Card>
       </Box>

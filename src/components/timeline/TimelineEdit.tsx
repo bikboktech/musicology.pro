@@ -592,6 +592,7 @@ const TimelineEdit = ({
                   onChange={(newValue) => {
                     formik.setFieldValue("time", newValue);
                   }}
+                  ampm={false}
                   renderInput={(inputProps) => (
                     <CustomTextField
                       fullWidth

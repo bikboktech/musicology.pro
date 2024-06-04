@@ -237,8 +237,6 @@ const GetAQuoteForm = () => {
     },
   });
 
-  console.log(formik);
-
   if (quoteId) {
     return (
       <Box textAlign="center" mb={3}>
@@ -247,7 +245,11 @@ const GetAQuoteForm = () => {
           Thank you for taking the time to fill out this form, we will get back
           to you as soon as possible.
         </Typography>
-        <Button component={Link} href="/" variant="contained">
+        <Button
+          component={Link}
+          href="https://musicologyentertainment.com/"
+          variant="contained"
+        >
           Go back to Homepage
         </Button>
       </Box>

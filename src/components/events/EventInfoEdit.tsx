@@ -6,6 +6,7 @@ import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import utc from "dayjs/plugin/utc";
 
 import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
 import CustomTextField from "../forms/theme-elements/CustomTextField";
@@ -16,6 +17,7 @@ import ErrorSnackbar from "../../components/error/ErrorSnackbar";
 import { User } from "../../../context/AuthContext";
 
 dayjs.extend(customParseFormat);
+dayjs.extend(utc);
 
 const ARTIST_ID = 2;
 const CLIENT_ID = 3;
@@ -96,8 +98,8 @@ const EventInfoEdit = ({
               fullName: "",
             }),
       eventDate: values?.eventDate
-        ? dayjs(values?.eventDate, "DD/MM/YYYY")
-        : dayjs().add(1, "month"),
+        ? dayjs(values?.eventDate, "DD/MM/YYYY").utc(true).format()
+        : dayjs().add(1, "month").utc(),
       guestCount: values?.guestCount || null,
       artist:
         values?.artist ||
@@ -134,6 +136,7 @@ const EventInfoEdit = ({
     onSubmit: async (data) => {
       try {
         if (values?.id) {
+          console.log(values);
           const response = await axios.put(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${values.id}`,
             JSON.stringify({
@@ -200,6 +203,8 @@ const EventInfoEdit = ({
     const el = document.querySelector(".Mui-error, [data-error]");
     (el?.parentElement ?? el)?.scrollIntoView();
   }, [formik.isSubmitting]);
+
+  console.log(formik.values);
 
   return (
     <Box>
@@ -283,7 +288,10 @@ const EventInfoEdit = ({
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <MobileDatePicker
               onChange={(newValue) => {
-                formik.setFieldValue("eventDate", newValue);
+                formik.setFieldValue(
+                  "eventDate",
+                  dayjs(newValue).utc(true).format()
+                );
               }}
               disabled={disableEditing}
               renderInput={(inputProps) => (

@@ -136,7 +136,6 @@ const EventInfoEdit = ({
     onSubmit: async (data) => {
       try {
         if (values?.id) {
-          console.log(values);
           const response = await axios.put(
             `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${values.id}`,
             JSON.stringify({
@@ -203,8 +202,6 @@ const EventInfoEdit = ({
     const el = document.querySelector(".Mui-error, [data-error]");
     (el?.parentElement ?? el)?.scrollIntoView();
   }, [formik.isSubmitting]);
-
-  console.log(formik.values);
 
   return (
     <Box>

@@ -150,14 +150,14 @@ const TimelineEdit = ({
         timeline.push({
           instructions: data.instructions,
           name: data.name,
-          time: data.time,
+          time: dayjs(data.time).format("YYYY-MM-DD HH:mm:ss"),
           track: data.track,
         });
       } else {
         timeline[open.index] = {
           instructions: data.instructions,
           name: data.name,
-          time: data.time,
+          time: dayjs(data.time).format("YYYY-MM-DD HH:mm:ss"),
           track: data.track,
         };
       }
@@ -190,7 +190,7 @@ const TimelineEdit = ({
   const handleClickOpen = (data?: TimelineData) => {
     if (data) {
       formik.setFieldValue("name", data.name);
-      formik.setFieldValue("time", data.time);
+      formik.setFieldValue("time", dayjs(data.time, "YYYY-MM-DD HH:mm:ss"));
       formik.setFieldValue("track", data.track);
       formik.setFieldValue("instructions", data.instructions);
     }
@@ -243,6 +243,8 @@ const TimelineEdit = ({
 
   const handleSave = async (values: TimelineData[] | undefined) => {
     setLoading(true);
+
+    console.log(values);
 
     try {
       await axios.put(
@@ -348,7 +350,9 @@ const TimelineEdit = ({
                       },
                     }}
                   >
-                    {dayjs(card.time).format("DD/MM/YYYY HH:mm")}
+                    {dayjs(card.time, "YYYY-MM-DD HH:mm:ss").format(
+                      "DD/MM/YYYY HH:mm"
+                    )}
                   </TimelineOppositeContent>
                   <TimelineSeparator
                     sx={{
@@ -394,7 +398,9 @@ const TimelineEdit = ({
                           },
                         }}
                       >
-                        {dayjs(card.time).format("DD/MM/YYYY HH:mm")}
+                        {dayjs(card.time, "YYYY-MM-DD HH:mm:ss").format(
+                          "DD/MM/YYYY HH:mm"
+                        )}
                       </Typography>
                       <Typography
                         variant="h6"

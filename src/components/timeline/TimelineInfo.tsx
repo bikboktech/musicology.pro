@@ -74,7 +74,9 @@ const generatePDF = (timelineData: TimelineData[], eventName: string) => {
   timelineData.forEach((item) => {
     docDefinition.content.push(
       {
-        text: `Time: ${dayjs(item.time).format("YY/MM/DD HH:mm")}`,
+        text: `Time: ${dayjs(item.time, "YYYY-MM-DD HH:mm:ss").format(
+          "YY/MM/DD HH:mm"
+        )}`,
         style: "important",
       },
       (item.name ? { text: `Name: ${item.name}` } : {}) as ContentType,
@@ -136,7 +138,6 @@ const TimelineInfo = ({
   const handleClose = () => {
     setOpen({ ...open, state: false });
   };
-
   if (!values) {
     return <CircularProgress />;
   } else if (!Object.keys(values).length) {
@@ -255,7 +256,9 @@ const TimelineInfo = ({
                           },
                         }}
                       >
-                        {dayjs(card.time).format("DD/MM/YYYY HH:mm")}
+                        {dayjs(card.time, "YYYY-MM-DD HH:mm:ss").format(
+                          "DD/MM/YYYY HH:mm"
+                        )}
                       </TimelineOppositeContent>
                       <TimelineSeparator
                         sx={{
@@ -301,7 +304,9 @@ const TimelineInfo = ({
                               },
                             }}
                           >
-                            {dayjs(card.time).format("DD/MM/YYYY HH:mm")}
+                            {dayjs(card.time, "YYYY-MM-DD HH:mm:ss").format(
+                              "DD/MM/YYYY HH:mm"
+                            )}
                           </Typography>
                           <Typography
                             variant="h6"
@@ -388,7 +393,9 @@ const TimelineInfo = ({
               <CustomFormLabel htmlFor="time">Time</CustomFormLabel>
               <Typography color="textSecondary" mb={3}>
                 {open.timelineCard?.time &&
-                  (open.timelineCard.time as Dayjs).format("DD/MM/YYYY HH:mm")}
+                  dayjs(open.timelineCard.time, "YYYY-MM-DD HH:mm:ss").format(
+                    "DD/MM/YYYY HH:mm"
+                  )}
               </Typography>
               {open.timelineCard?.track && (
                 <>

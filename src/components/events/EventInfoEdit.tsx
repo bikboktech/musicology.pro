@@ -6,7 +6,6 @@ import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import utc from "dayjs/plugin/utc";
 
 import CustomFormLabel from "../forms/theme-elements/CustomFormLabel";
 import CustomTextField from "../forms/theme-elements/CustomTextField";
@@ -17,7 +16,6 @@ import ErrorSnackbar from "../../components/error/ErrorSnackbar";
 import { User } from "../../../context/AuthContext";
 
 dayjs.extend(customParseFormat);
-dayjs.extend(utc);
 
 const ARTIST_ID = 2;
 const CLIENT_ID = 3;
@@ -98,8 +96,8 @@ const EventInfoEdit = ({
               fullName: "",
             }),
       eventDate: values?.eventDate
-        ? dayjs(values?.eventDate, "DD/MM/YYYY").utc(true).format()
-        : dayjs().add(1, "month").utc(),
+        ? dayjs(values?.eventDate, "DD/MM/YYYY")
+        : dayjs().add(1, "month"),
       guestCount: values?.guestCount || null,
       artist:
         values?.artist ||
@@ -285,10 +283,7 @@ const EventInfoEdit = ({
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <MobileDatePicker
               onChange={(newValue) => {
-                formik.setFieldValue(
-                  "eventDate",
-                  dayjs(newValue).utc(true).format()
-                );
+                formik.setFieldValue("eventDate", newValue);
               }}
               disabled={disableEditing}
               renderInput={(inputProps) => (

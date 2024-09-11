@@ -111,7 +111,7 @@ const getTimeline = async (
     timelines.data
       .map((timeline: TimelineData) => ({
         ...timeline,
-        time: dayjs(timeline.time),
+        time: timeline.time,
       }))
       .sort((cardA: TimelineData, cardB: TimelineData) => {
         if (cardA.time < cardB.time) {

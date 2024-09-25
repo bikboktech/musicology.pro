@@ -191,7 +191,7 @@ const GetAQuoteForm = () => {
           JSON.stringify({
             email: data.email,
             eventTypeId: data.eventTypeId,
-            eventDate: data.eventDate,
+            eventDate: dayjs(data?.eventDate).format("YYYY-MM-DD HH:mm:ss"),
             clientName: data.clientName,
             guestCount: data.guestCount,
             eventLocation: data.eventLocation,

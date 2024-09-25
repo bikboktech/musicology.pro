@@ -138,6 +138,7 @@ const EventInfoEdit = ({
             `${process.env.NEXT_PUBLIC_API_BASE_URL}/events/${values.id}`,
             JSON.stringify({
               ...data,
+              eventDate: dayjs(data?.eventDate).format("YYYY-MM-DD HH:mm:ss"),
               clientId: data?.client?.id,
               artistId: data?.artist?.id,
               eventTypeId: data?.eventType?.id,
@@ -159,6 +160,7 @@ const EventInfoEdit = ({
             `${process.env.NEXT_PUBLIC_API_BASE_URL}/events`,
             JSON.stringify({
               ...data,
+              eventDate: dayjs(data?.eventDate).format("YYYY-MM-DD HH:mm:ss"),
               clientId: data?.client?.id,
               artistId: data?.artist?.id,
               eventTypeId: data?.eventType?.id,
@@ -173,6 +175,7 @@ const EventInfoEdit = ({
           wizardProps?.handleNext();
         }
       } catch (err: any) {
+        console.log(err);
         setError(err.response.data);
       }
     },

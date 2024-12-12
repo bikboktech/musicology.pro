@@ -99,7 +99,7 @@ const EVENT_BUDGET_OPTIONS = [
 const MARKETING_TYPE_OPTIONS = [
   {
     id: "weddingPlanner",
-    label: "Wedding Planner",
+    label: "Event Planner",
   },
   {
     id: "instagramBrowsing",
@@ -339,10 +339,7 @@ const GetAQuoteForm = () => {
           </Box>
           <Box>
             <CustomFormLabel htmlFor="clientName">
-              {formik.values.eventTypeId === WEDDING_EVENT_TYPE
-                ? "Bride and Groom's"
-                : "Client"}{" "}
-              name
+              Client's name
             </CustomFormLabel>
             <CustomTextField
               id="clientName"
@@ -418,8 +415,7 @@ const GetAQuoteForm = () => {
           </Box>
           <Box>
             <CustomFormLabel htmlFor="audioSupport">
-              Do you require our ceremony audio support? (speakers, microphones
-              and prelude music for ceremony with support)
+              Do you require our Production (Audio & Visual setup)?
             </CustomFormLabel>
             <RadioGroup
               row
